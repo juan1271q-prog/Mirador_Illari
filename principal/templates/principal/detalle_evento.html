@@ -1,0 +1,93 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<section class="seccion detalle-evento-seccion">
+    <div class="container">
+
+        <nav class="migas-pan">
+            <a href="{% url 'inicio' %}">Inicio</a>
+            <span>›</span>
+            <a href="{% url 'eventos' %}">Eventos</a>
+            <span>›</span>
+            <span>{{ evento.titulo }}</span>
+        </nav>
+
+        <article class="detalle-evento">
+
+            <div class="detalle-imagen detalle-evento-imagen">
+
+                {% if evento.imagen %}
+                    <img
+                        src="{{ evento.imagen.url }}"
+                        alt="{{ evento.titulo }}"
+                    >
+                {% endif %}
+
+            </div>
+
+            <div class="detalle-evento-contenido detalle-contenido">
+
+                <span class="detalle-evento-tipo">
+                    {{ evento.tipo }}
+                </span>
+
+                <h1>{{ evento.titulo }}</h1>
+
+                <div class="detalle-evento-fechas">
+
+                    {% if evento.tipo == 'Evento' and evento.fecha_evento %}
+                        <div class="evento-dato">
+                            <span class="evento-dato-titulo">Fecha del evento</span>
+                            <strong>{{ evento.fecha_evento|date:"d/m/Y" }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if evento.precio_texto %}
+                        <div class="evento-dato">
+                            <span class="evento-dato-titulo">Precio</span>
+                            <strong>{{ evento.precio_texto }}</strong>
+                        </div>
+                    {% endif %}
+
+                    <div class="evento-dato">
+                        <span class="evento-dato-titulo">Fecha de publicación</span>
+                        <strong>{{ evento.fecha_publicacion|date:"d/m/Y" }}</strong>
+                    </div>
+
+                </div>
+
+                <div class="detalle-texto">
+                    {{ evento.contenido|safe }}
+                </div>
+
+                <div class="detalle-evento-acciones">
+
+                    {% if contact_site and contact_site.whatsapp %}
+                        <a
+                            href="https://wa.me/{{ contact_site.whatsapp|cut:'+'|cut:' '|cut:'-' }}?text=Hola,%20deseo%20información%20sobre%20{{ evento.titulo|urlencode }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn-evento-whatsapp"
+                        >
+                            Consultar por WhatsApp
+                        </a>
+                    {% endif %}
+
+                    <a
+                        href="{% url 'eventos' %}"
+                        class="btn-volver-eventos"
+                    >
+                        ← Volver a eventos
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </div>
+</section>
+
+{% endblock %}

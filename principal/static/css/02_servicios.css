@@ -1,0 +1,392 @@
+/* =========================================================
+   SERVICIOS - LISTA DE TARJETAS
+   ========================================================= */
+
+.resultados-servicios .servicios-grid {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: center;
+    gap: 22px;
+    align-items: stretch;
+}
+
+.resultados-servicios .servicio-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid rgba(11, 81, 61, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 8px 18px rgba(11, 81, 61, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.resultados-servicios .servicio-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(11, 81, 61, 0.12);
+}
+
+.resultados-servicios .imagen-adaptable.servicio-imagen-contenedor {
+    width: 100%;
+    height: 210px;
+    background-color: #f3f7f4;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.resultados-servicios .imagen-adaptable.servicio-imagen-contenedor img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+.resultados-servicios .servicio-contenido {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+    padding: 16px 16px 18px;
+}
+
+.resultados-servicios .servicio-contenido h2 {
+    margin: 0 0 10px;
+    color: #0b513d;
+    font-size: 1.15rem;
+    line-height: 1.3;
+}
+
+.resultados-servicios .servicio-contenido p {
+    margin: 0 0 10px;
+    color: #4b4b4b;
+    font-size: 0.93rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.resultados-servicios .servicio-contenido .precio-desde {
+    margin: 0 0 12px;
+    color: #0b513d;
+    font-weight: 700;
+}
+
+.resultados-servicios .servicio-contenido .precio-desde strong {
+    color: #0b513d;
+    font-weight: 800;
+}
+
+.resultados-servicios .servicio-contenido .btn-ver-detalles {
+    margin-top: auto;
+    min-height: 38px;
+    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #0b513d;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 800;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.resultados-servicios .servicio-contenido .btn-ver-detalles:hover {
+    background: #087558;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 1000px) {
+    .resultados-servicios .servicios-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .resultados-servicios .servicios-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .resultados-servicios .servicio-card {
+        min-height: auto;
+    }
+
+    .resultados-servicios .servicio-contenido .btn-ver-detalles {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* =========================================================
+   DETALLE DE SERVICIO
+   ========================================================= */
+
+.detalle-servicio-seccion {
+    background: var(--fondo-pagina);
+}
+
+.migas-pan {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 26px;
+    color: var(--texto-secundario);
+    font-size: 15px;
+}
+
+.migas-pan a {
+    color: #0b513d;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.migas-pan a:hover {
+    text-decoration: underline;
+}
+
+.detalle-modulo {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    gap: 38px;
+    align-items: start;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(20, 60, 45, 0.12);
+}
+
+.detalle-servicio-imagen img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px;
+}
+
+.detalle-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detalle-contenido h1 {
+    margin: 8px 0 10px;
+    color: #0b513d;
+    font-size: 34px;
+    line-height: 1.15;
+}
+
+.detalle-etiqueta {
+    display: inline-block;
+    padding: 7px 13px;
+    background: #e7f2ec;
+    color: #0b513d;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detalle-tipo {
+    margin: 0 0 18px;
+    color: #444444;
+    font-size: 17px;
+}
+
+.detalle-descripcion {
+    margin-bottom: 24px;
+    color: #3f3f3f;
+    line-height: 1.75;
+}
+
+.detalle-descripcion p {
+    margin-bottom: 12px;
+}
+
+.detalle-informacion {
+    padding: 22px;
+    background: #f3f8f5;
+    border: 1px solid #cbded4;
+    border-radius: 14px;
+}
+
+.detalle-informacion h2 {
+    margin: 0 0 16px;
+    color: #0b513d;
+    font-size: 20px;
+}
+
+.detalle-fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid #dce8e1;
+}
+
+.detalle-fila:last-child {
+    border-bottom: none;
+}
+
+.detalle-fila span {
+    color: #444444;
+}
+
+.detalle-fila strong {
+    color: #0b513d;
+    text-align: right;
+}
+
+.detalle-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.detalle-botones a,
+.detalle-botones button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.detalle-botones .btn-whatsapp {
+    background: #0b513d;
+    color: #ffffff;
+}
+
+.detalle-botones .btn-whatsapp:hover {
+    background: #087558;
+    transform: translateY(-2px);
+}
+
+.detalle-botones button {
+    background: #f3f8f5;
+    color: #0b513d;
+}
+
+.detalle-botones button:hover,
+.detalle-botones a.btn-secundario:hover {
+    background: #eaf4ec;
+    transform: translateY(-2px);
+}
+
+.detalle-botones a.btn-secundario {
+    background: #ffffff;
+    color: #0b513d;
+    border: 1px solid rgba(11, 81, 61, 0.12);
+}
+
+
+/* =========================================================
+   DISEÑO RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .servicios-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detalle-modulo {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-servicio-imagen img {
+        max-height: 350px;
+    }
+}
+
+@media (max-width: 650px) {
+    .servicios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .servicio-imagen {
+        height: 200px;
+    }
+
+    .detalle-modulo {
+        padding: 18px;
+        gap: 25px;
+    }
+
+    .detalle-servicio-imagen img {
+        max-height: 340px;
+    }
+
+    .detalle-contenido h1 {
+        font-size: 28px;
+    }
+
+    .detalle-fila {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .detalle-fila strong {
+        text-align: left;
+    }
+
+    .detalle-botones {
+        flex-direction: column;
+    }
+
+    .detalle-botones a,
+    .detalle-botones button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   AJUSTE FINAL DE SERVICIOS EN CELULAR
+========================================================= */
+@media (max-width: 650px) {
+    .resultados-servicios {
+        width: 100%;
+    }
+
+    .resultados-servicios .servicios-grid {
+        width: 100%;
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .resultados-servicios .servicio-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .resultados-servicios .servicio-contenido {
+        padding: 17px;
+    }
+
+    .resultados-servicios .servicio-contenido h2 {
+        font-size: 1.25rem;
+    }
+
+    .detalle-contenido h1 {
+        font-size: 1.8rem !important;
+        line-height: 1.2;
+    }
+
+    .migas-pan {
+        margin-bottom: 18px;
+        font-size: 14px;
+    }
+}
+

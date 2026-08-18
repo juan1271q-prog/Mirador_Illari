@@ -1,0 +1,341 @@
+{% extends 'principal/base.html' %}
+{% load static %}
+
+{% block contenido %}
+
+<!-- =====================================================
+     CARRUSEL PRINCIPAL
+     ===================================================== -->
+
+<section
+    class="hero"
+    aria-label="Presentación del Centro Turístico Mirador Illari"
+>
+
+    <div
+        class="hero-carousel"
+        aria-label="Galería destacada del inicio"
+    >
+        <div
+            class="hero-track"
+            id="heroTrack"
+            data-fallback-image="{% static 'img/fondo.jpeg' %}"
+        >
+
+            {% if carrusel %}
+
+                {% for item in carrusel %}
+
+                    <article
+                        class="hero-slide {% if forloop.first %}position-center{% else %}hidden{% endif %}"
+                        data-slide-index="{{ forloop.counter0 }}"
+                        aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+                    >
+
+                        {% if item.imagen %}
+
+                            <img
+                                class="hero-slide-media"
+                                src="{{ item.imagen.url }}"
+                                alt="Imagen {{ forloop.counter }} del Centro Turístico Mirador Illari"
+                                {% if forloop.first %}
+                                    loading="eager"
+                                    fetchpriority="high"
+                                {% else %}
+                                    loading="lazy"
+                                {% endif %}
+                                onerror="this.onerror=null; this.src='{% static 'img/fondo.jpeg' %}';"
+                            >
+
+                        {% else %}
+
+                            <img
+                                class="hero-slide-media"
+                                src="{% static 'img/fondo.jpeg' %}"
+                                alt="Imagen de respaldo del Centro Turístico Mirador Illari"
+                                loading="eager"
+                            >
+
+                        {% endif %}
+
+                    </article>
+
+                {% endfor %}
+
+            {% else %}
+
+                <article
+                    class="hero-slide position-center"
+                    aria-hidden="false"
+                >
+                    <img
+                        class="hero-slide-media"
+                        src="{% static 'img/fondo.jpeg' %}"
+                        alt="Imagen de respaldo del Centro Turístico Mirador Illari"
+                        loading="eager"
+                        fetchpriority="high"
+                    >
+                </article>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content reveal-on-load visible">
+
+        <span class="hero-etiqueta">
+            Centro Turístico Mirador Illari
+        </span>
+
+        <h1>
+            {{ contenido.hero_titulo|default:"Bienvenidos al Centro Turístico Mirador Illari" }}
+        </h1>
+
+        <p>
+            {{ contenido.hero_subtitulo|default:"Naturaleza, aventura y cultura local en un solo lugar." }}
+        </p>
+
+        <div class="hero-botones">
+            <a
+                href="{% url 'servicios' %}"
+                class="btn-hero-secundario"
+            >
+                Ver servicios
+            </a>
+        </div>
+
+    </div>
+
+    {% if carrusel|length > 1 %}
+
+        <button
+            type="button"
+            class="hero-control prev"
+            id="heroPrev"
+            aria-label="Mostrar la imagen anterior"
+        >
+            &#10094;
+        </button>
+
+        <button
+            type="button"
+            class="hero-control next"
+            id="heroNext"
+            aria-label="Mostrar la imagen siguiente"
+        >
+            &#10095;
+        </button>
+
+        <div
+            class="hero-dots"
+            id="heroDots"
+            aria-label="Seleccionar imagen del carrusel"
+        ></div>
+
+    {% endif %}
+
+</section>
+
+<!-- =====================================================
+     NUESTROS ATRACTIVOS
+     ===================================================== -->
+
+<section
+    class="inicio-seccion atractivos-seccion"
+    id="nuestros-atractivos"
+>
+
+    <div class="inicio-contenedor">
+
+        <div class="inicio-encabezado">
+
+            <span class="inicio-subtitulo">
+                Conoce nuestro destino
+            </span>
+
+            <h2>
+                {{ contenido.atractivos_titulo|default:"Nuestros atractivos" }}
+            </h2>
+
+            <div class="inicio-descripcion">
+                {{ contenido.atractivos_descripcion|default:"Explora los lugares y experiencias que hacen único al Mirador Illari."|safe }}
+            </div>
+
+        </div>
+
+        <div class="atractivos inicio-atractivos">
+
+            {% if contenido.atractivo_1_activo %}
+
+                <a
+                    href="{% url 'galeria' %}"
+                    class="atractivo-enlace"
+                    aria-label="Ver galería del Centro Turístico Mirador Illari"
+                >
+                    <article class="atractivo inicio-atractivo-card">
+
+                        <span
+                            class="atractivo-icono"
+                            aria-hidden="true"
+                        >
+                            🌄
+                        </span>
+
+                        <h3>
+                            {{ contenido.atractivo_1_titulo|default:"Paisajes" }}
+                        </h3>
+
+                        <div class="inicio-atractivo-texto">
+                            {{ contenido.atractivo_1_desc|default:"Disfruta de paisajes naturales y una vista privilegiada de la zona."|striptags }}
+                        </div>
+
+                        <span class="atractivo-boton">
+                            Ver galería
+                        </span>
+                    </article>
+                </a>
+
+            {% endif %}
+
+            {% if contenido.atractivo_2_activo %}
+
+                <a
+                    href="{% url 'servicios' %}"
+                    class="atractivo-enlace"
+                    aria-label="Ver servicios turísticos"
+                >
+                    <article class="atractivo inicio-atractivo-card">
+
+                        <span
+                            class="atractivo-icono"
+                            aria-hidden="true"
+                        >
+                            🥾
+                        </span>
+
+                        <h3>
+                            {{ contenido.atractivo_2_titulo|default:"Aventura" }}
+                        </h3>
+
+                        <div class="inicio-atractivo-texto">
+                            {{ contenido.atractivo_2_desc|default:"Vive actividades al aire libre en contacto con la naturaleza."|striptags }}
+                        </div>
+
+                        <span class="atractivo-boton">
+                            Ver servicios
+                        </span>
+                    </article>
+                </a>
+
+            {% endif %}
+
+            {% if contenido.atractivo_3_activo %}
+
+                <a
+                    href="{% url 'eventos' %}"
+                    class="atractivo-enlace"
+                    aria-label="Ver eventos y novedades"
+                >
+                    <article class="atractivo inicio-atractivo-card">
+
+                        <span
+                            class="atractivo-icono"
+                            aria-hidden="true"
+                        >
+                            🌿
+                        </span>
+
+                        <h3>
+                            {{ contenido.atractivo_3_titulo|default:"Cultura local" }}
+                        </h3>
+
+                        <div class="inicio-atractivo-texto">
+                            {{ contenido.atractivo_3_desc|default:"Conoce las costumbres, tradiciones y riqueza cultural de la comunidad."|striptags }}
+                        </div>
+
+                        <span class="atractivo-boton">
+                            Ver eventos
+                        </span>
+                    </article>
+                </a>
+
+            {% endif %}
+
+            {% if contenido.atractivo_4_activo %}
+
+                <a
+                    href="{% url 'contacto' %}"
+                    class="atractivo-enlace"
+                    aria-label="Consultar información de contacto"
+                >
+                    <article class="atractivo inicio-atractivo-card">
+
+                        <span
+                            class="atractivo-icono"
+                            aria-hidden="true"
+                        >
+                            🤝
+                        </span>
+
+                        <h3>
+                            {{ contenido.atractivo_4_titulo|default:"Atención" }}
+                        </h3>
+
+                        <div class="inicio-atractivo-texto">
+                            {{ contenido.atractivo_4_desc|default:"Recibe una atención cercana y disfruta de una experiencia agradable."|striptags }}
+                        </div>
+
+                        <span class="atractivo-boton">
+                            Contactar
+                        </span>
+                    </article>
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =====================================================
+     LLAMADA FINAL
+     ===================================================== -->
+
+<section class="inicio-cta">
+
+    <div class="inicio-contenedor inicio-cta-contenido">
+
+        <div>
+
+            <span class="inicio-subtitulo inicio-subtitulo-claro">
+                Vive una experiencia diferente
+            </span>
+
+            <h2>
+                Visita el Centro Turístico Mirador Illari
+            </h2>
+
+            <p>
+                Disfruta de la naturaleza, la gastronomía,
+                los paisajes y la cultura de la comunidad de Yutzupino.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'contacto' %}"
+            class="inicio-btn-cta"
+        >
+            Planificar mi visita
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,146 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Página no encontrada | Mirador Illari
+    </title>
+
+    <!-- ==================================================
+         ESTILOS GENERALES Y SEPARADOS
+         No cambiar el orden de estos archivos
+    ================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/01_base.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/02_servicios.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/03_eventos.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/04_componentes.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/05_galeria.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/06_tarjetas_compartidas.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/07_inicio.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/08_nosotros.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/09_contacto.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/10_footer.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/11_chatbot.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/12_error_404.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/13_paginacion.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/14_imagenes_adaptables.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/15_redes_sociales.css' %}?v=20260816-mobile-final"
+    >
+</head>
+
+<body>
+
+    <main class="error-404">
+
+        <div class="error-404-contenido">
+
+            <div class="error-404-numero">
+                404
+            </div>
+
+            <span class="error-404-etiqueta">
+                Página no encontrada
+            </span>
+
+            <h1>
+                No encontramos la página que buscas
+            </h1>
+
+            <p>
+                La dirección ingresada no existe, fue modificada
+                o ya no se encuentra disponible.
+            </p>
+
+            <div class="error-404-botones">
+
+                <a
+                    href="{% url 'inicio' %}"
+                    class="error-404-principal"
+                >
+                    Volver al inicio
+                </a>
+
+                <a
+                    href="{% url 'servicios' %}"
+                    class="error-404-secundario"
+                >
+                    Ver servicios
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

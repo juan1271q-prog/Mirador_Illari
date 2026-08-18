@@ -1,0 +1,175 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<section class="seccion">
+    <div class="container">
+
+        <nav class="migas-pan">
+            <a href="{% url 'inicio' %}">Inicio</a>
+            <span>›</span>
+            <a href="{% url 'servicios' %}">Servicios</a>
+            <span>›</span>
+            <span>{{ servicio.nombre }}</span>
+        </nav>
+
+        <article class="detalle-modulo">
+
+            <div class="detalle-imagen detalle-servicio-imagen">
+
+                {% if servicio.imagen_principal %}
+                    <img
+                        src="{{ servicio.imagen_principal.url }}"
+                        alt="{{ servicio.nombre }}"
+                    >
+                {% endif %}
+
+            </div>
+
+            <div class="detalle-contenido">
+
+                <span class="etiqueta-tipo">
+                    {{ servicio.tipo }}
+                </span>
+
+                <h1>{{ servicio.nombre }}</h1>
+
+                <div class="detalle-texto">
+                    {{ servicio.descripcion|safe }}
+                </div>
+
+                <div class="caja-informacion">
+
+                    <h2>Información del servicio</h2>
+
+                    {% if servicio.precio_texto %}
+                        <div class="fila-informacion">
+                            <span>Información del precio</span>
+                            <strong>{{ servicio.precio_texto }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.precio_desde is not None %}
+                        <div class="fila-informacion">
+                            <span>Precio desde</span>
+                            <strong>${{ servicio.precio_desde|floatformat:2 }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.precio_adulto is not None %}
+                        <div class="fila-informacion">
+                            <span>Precio adulto</span>
+                            <strong>${{ servicio.precio_adulto|floatformat:2 }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.precio_niño is not None %}
+                        <div class="fila-informacion">
+                            <span>Precio niño</span>
+                            <strong>${{ servicio.precio_niño|floatformat:2 }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.precio_tercera_edad is not None %}
+                        <div class="fila-informacion">
+                            <span>Precio tercera edad</span>
+                            <strong>${{ servicio.precio_tercera_edad|floatformat:2 }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if not servicio.precio_texto and servicio.precio_desde is None and servicio.precio_adulto is None and servicio.precio_niño is None and servicio.precio_tercera_edad is None %}
+                        <div class="fila-informacion">
+                            <span>Precio</span>
+                            <strong>Consultar precio</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.disponibilidad %}
+                        <div class="fila-informacion">
+                            <span>Disponibilidad</span>
+                            <strong>{{ servicio.disponibilidad }}</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.requiere_reserva %}
+                        <div class="fila-informacion">
+                            <span>Reserva previa</span>
+                            <strong>Sí</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.capacidad %}
+                        <div class="fila-informacion">
+                            <span>Capacidad máxima</span>
+                            <strong>{{ servicio.capacidad }} personas</strong>
+                        </div>
+                    {% endif %}
+
+                    {% if servicio.incluye %}
+                        <div class="detalle-incluye">
+                            <h3>Incluye</h3>
+                            <div>
+                                {{ servicio.incluye|safe }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="detalle-botones">
+
+                    {% if contact_site and contact_site.whatsapp %}
+                        <a
+                            href="https://wa.me/{{ contact_site.whatsapp|cut:'+'|cut:' '|cut:'-' }}?text=Hola,%20deseo%20información%20sobre%20{{ servicio.nombre|urlencode }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn-whatsapp"
+                        >
+                            Consultar por WhatsApp
+                        </a>
+                    {% endif %}
+
+                    <button
+                        type="button"
+                        class="btn-compartir-whatsapp"
+                        data-compartir="whatsapp"
+                        aria-label="Compartir en WhatsApp"
+                    >
+                        📱 Compartir en WhatsApp
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-compartir-facebook"
+                        data-compartir="facebook"
+                        aria-label="Compartir en Facebook"
+                    >
+                        👍 Compartir en Facebook
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-copiar-enlace"
+                        data-compartir="copiar"
+                        aria-label="Copiar enlace"
+                    >
+                        🔗 Copiar enlace
+                    </button>
+
+                    <a
+                        href="{% url 'servicios' %}"
+                        class="btn-secundario"
+                    >
+                        ← Volver a servicios
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </div>
+</section>
+
+{% endblock %}

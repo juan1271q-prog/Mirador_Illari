@@ -1,0 +1,52 @@
+# Variables privadas
+.env
+
+# Entornos virtuales
+env/
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Django
+*.log
+db.sqlite3
+
+# Archivos generados
+staticfiles/
+
+# Respaldos de PostgreSQL
+*.sql
+*.backup
+
+# VS Code
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos auxiliares de análisis y depuración
+.terminal_history.json
+analyze_conflicts.py
+analyze_conflicts_detailed.py
+analyze_sources.py
+check_finders.py
+check_jazzmin.py
+check_line_endings.py
+css_section_mapper.py
+debug_contacto.py
+detailed_conflict_analysis.py
+final_source_analysis.py
+inspect_genai.py
+inspect_genai_response.py
+split_css_debug.py
+verificar_css_modular.py
+
+# Imágenes utilizadas únicamente para pruebas
+media/eventos/evento-prueba*
+media/eventos/test_evento*
+media/servicios/servicio-prueba*
+media/servicios/test_servicio*

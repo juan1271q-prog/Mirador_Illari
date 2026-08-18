@@ -1,0 +1,60 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<div class="chat-contenedor">
+
+    <div class="chat-header">
+        {{ info_site.chatbot_titulo|default:"Chatbot Mirador Illari" }}
+    </div>
+
+    {% if info_site.chatbot_intro %}
+        <div class="chat-subtitulo">
+            {{ info_site.chatbot_intro }}
+        </div>
+    {% endif %}
+
+    <div class="chat-body">
+        {% if historial %}
+            {% for item in historial %}
+                <div class="mensaje {{ item.tipo }}">
+                    <div class="burbuja">
+                        {{ item.texto }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="mensaje bot">
+                <div class="burbuja">
+                    {{ info_site.chatbot_intro|default:"Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?" }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="opciones">
+        <div class="opciones-titulo">
+            {{ info_site.chatbot_opciones_etiqueta|default:"Opciones rápidas" }}
+        </div>
+
+        {% for pregunta in preguntas %}
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" name="opcion" value="{{ pregunta.pregunta }}" class="btn-opcion">
+                    {{ pregunta.pregunta }}
+                </button>
+            </form>
+        {% empty %}
+            <p>No hay opciones disponibles por ahora.</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="chat-input">
+        {% csrf_token %}
+        <input type="text" name="mensaje" placeholder="{{ info_site.chatbot_placeholder|default:'Escribe tu mensaje...' }}" required>
+        <button type="submit">{{ info_site.chatbot_enviar_texto|default:"Enviar" }}</button>
+    </form>
+
+</div>
+
+{% endblock %}

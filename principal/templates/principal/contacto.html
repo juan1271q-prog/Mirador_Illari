@@ -1,0 +1,370 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<section class="contacto-portada">
+
+    <div class="container contacto-portada-contenido">
+
+        <span class="contacto-etiqueta">
+            Estamos para ayudarte
+        </span>
+
+        <h1>
+            {{ info_site.contacto_titulo|default:"Contacto" }}
+        </h1>
+
+        <p>
+            Comunícate con nosotros para obtener información sobre
+            nuestros servicios, horarios, ubicación y actividades.
+            ¡Estamos felices de atenderte!
+        </p>
+
+    </div>
+
+</section>
+
+<section class="contacto-seccion">
+
+    <div class="container">
+
+        {% if contacto %}
+
+            <div class="contacto-grid">
+
+                <article class="contacto-tarjeta contacto-informacion-card">
+
+                    <header class="contacto-tarjeta-encabezado">
+
+                        <h2>Información de contacto</h2>
+
+                        <p>
+                            Estamos disponibles para resolver tus dudas
+                            y ayudarte a planificar tu próxima visita.
+                        </p>
+
+                    </header>
+
+                    <div class="contacto-lista">
+
+                        {% if contacto.direccion %}
+
+                            <div class="contacto-item">
+
+                                <span
+                                    class="contacto-item-icono"
+                                    aria-hidden="true"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2a7 7 0 0 0-7 7c0 5.1 7 13 7 13s7-7.9 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"
+                                        />
+                                    </svg>
+                                </span>
+
+                                <div class="contacto-item-contenido">
+                                    <h3>Dirección</h3>
+                                    <p>{{ contacto.direccion }}</p>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                        {% if contacto.telefono %}
+
+                            <div class="contacto-item">
+
+                                <span
+                                    class="contacto-item-icono"
+                                    aria-hidden="true"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M6.6 2.8 9.5 7a2 2 0 0 1-.3 2.5l-1.4 1.4a15.5 15.5 0 0 0 5.3 5.3l1.4-1.4a2 2 0 0 1 2.5-.3l4.2 2.9a2 2 0 0 1 .8 2.2A3.2 3.2 0 0 1 18.9 22C9.6 22 2 14.4 2 5.1A3.2 3.2 0 0 1 4.4 2a2 2 0 0 1 2.2.8Z"
+                                        />
+                                    </svg>
+                                </span>
+
+                                <div class="contacto-item-contenido">
+                                    <h3>Teléfono</h3>
+
+                                    <a href="tel:{{ contacto.telefono }}">
+                                        {{ contacto.telefono }}
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                        {% if contacto.whatsapp %}
+
+                            <div class="contacto-item">
+
+                                <span
+                                    class="contacto-item-icono"
+                                    aria-hidden="true"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2a9.7 9.7 0 0 0-8.4 14.6L2.2 22l5.6-1.4A10 10 0 1 0 12 2Zm0 17.8a7.8 7.8 0 0 1-4-1.1l-.3-.2-3.3.9.9-3.2-.2-.3A7.8 7.8 0 1 1 12 19.8Zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.4 6.4 0 0 1-3.2-2.8c-.2-.3 0-.4.1-.5l.5-.6c.1-.2.2-.3.2-.5l-.7-1.7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 5 4.2.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"
+                                        />
+                                    </svg>
+                                </span>
+
+                                <div class="contacto-item-contenido">
+                                    <h3>WhatsApp</h3>
+
+                                    <a
+                                        href="https://wa.me/{{ contacto.whatsapp|cut:'+'|cut:' '|cut:'-' }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {{ contacto.whatsapp }}
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                        {% if contacto.correo %}
+
+                            <div class="contacto-item">
+
+                                <span
+                                    class="contacto-item-icono"
+                                    aria-hidden="true"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm9 7 8-5H4l8 5Zm0 2.3L3 8.7V17h18V8.7l-9 5.6Z"
+                                        />
+                                    </svg>
+                                </span>
+
+                                <div class="contacto-item-contenido">
+                                    <h3>Correo electrónico</h3>
+
+                                    <a href="mailto:{{ contacto.correo }}">
+                                        {{ contacto.correo }}
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                        {% if contacto.horarios_atencion %}
+
+                            <div class="contacto-item">
+
+                                <span
+                                    class="contacto-item-icono"
+                                    aria-hidden="true"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 10.4 4 2.3-1 1.7-5-2.9V7h2v5.4Z"
+                                        />
+                                    </svg>
+                                </span>
+
+                                <div class="contacto-item-contenido">
+                                    <h3>Horarios de atención</h3>
+                                    <p>{{ contacto.horarios_atencion }}</p>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="contacto-acciones">
+
+                        {% if contacto.whatsapp %}
+
+                            <a
+                                href="https://wa.me/{{ contacto.whatsapp|cut:'+'|cut:' '|cut:'-' }}?text=Hola,%20deseo%20información%20sobre%20el%20Centro%20Turístico%20Mirador%20Illari"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="contacto-btn-whatsapp"
+                            >
+                                <span aria-hidden="true">◉</span>
+                                Escribir por WhatsApp
+                            </a>
+
+                        {% endif %}
+
+                        {% if map_link %}
+
+                            <a
+                                href="{{ map_link }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="contacto-btn-mapa"
+                            >
+                                <span aria-hidden="true">📍</span>
+                                Ver ubicación
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                    {% if contacto.facebook_url or contacto.instagram_url or contacto.tiktok_url or contacto.youtube_url %}
+
+                        <div class="contacto-redes">
+
+                            <h3>Síguenos en redes sociales</h3>
+
+                            <div class="contacto-redes-enlaces">
+
+                                {% if contacto.facebook_url %}
+                                    <a
+                                        href="{{ contacto.facebook_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Visitar Facebook"
+                                    >
+                                        {% include 'principal/parciales/icono_red_social.html' with red='facebook' etiqueta='Facebook' %}
+                                    </a>
+                                {% endif %}
+
+                                {% if contacto.instagram_url %}
+                                    <a
+                                        href="{{ contacto.instagram_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Visitar Instagram"
+                                    >
+                                        {% include 'principal/parciales/icono_red_social.html' with red='instagram' etiqueta='Instagram' %}
+                                    </a>
+                                {% endif %}
+
+                                {% if contacto.tiktok_url %}
+                                    <a
+                                        href="{{ contacto.tiktok_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Visitar TikTok"
+                                    >
+                                        {% include 'principal/parciales/icono_red_social.html' with red='tiktok' etiqueta='TikTok' %}
+                                    </a>
+                                {% endif %}
+
+                                {% if contacto.youtube_url %}
+                                    <a
+                                        href="{{ contacto.youtube_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Visitar YouTube"
+                                    >
+                                        {% include 'principal/parciales/icono_red_social.html' with red='youtube' etiqueta='YouTube' %}
+                                    </a>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </article>
+
+                <article class="contacto-tarjeta contacto-ubicacion-card">
+
+                    <header class="contacto-tarjeta-encabezado">
+
+                        <h2>Ubicación</h2>
+
+                        <p>
+                            {% if contacto.direccion %}
+                                Encuéntranos en {{ contacto.direccion }}.
+                            {% else %}
+                                Encuéntranos en Puerto Napo, Tena – Napo.
+                            {% endif %}
+                        </p>
+
+                    </header>
+
+                    {% if map_embed_url %}
+
+                        <div class="contacto-mapa">
+
+                            <iframe
+                                src="{{ map_embed_url }}"
+                                loading="lazy"
+                                allowfullscreen
+                                referrerpolicy="no-referrer-when-cross-origin"
+                                title="Ubicación del Centro Turístico Mirador Illari"
+                            ></iframe>
+
+                        </div>
+
+                    {% elif map_link %}
+
+                        <div class="contacto-mapa-alternativo">
+
+                            <span aria-hidden="true">🗺️</span>
+
+                            <h3>Ubicación disponible</h3>
+
+                            <p>
+                                Abre el enlace para visualizar nuestra
+                                ubicación en Google Maps.
+                            </p>
+
+                            <a
+                                href="{{ map_link }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Ver en Google Maps
+                            </a>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="contacto-mapa-alternativo">
+
+                            <span aria-hidden="true">📍</span>
+
+                            <h3>Mapa no disponible</h3>
+
+                            <p>
+                                Comunícate por WhatsApp para solicitar
+                                indicaciones sobre cómo llegar.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </article>
+
+            </div>
+
+        {% else %}
+
+            <div class="contacto-sin-datos">
+
+                <h2>Información no disponible</h2>
+
+                <p>
+                    La información de contacto todavía no ha sido
+                    registrada por el administrador.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

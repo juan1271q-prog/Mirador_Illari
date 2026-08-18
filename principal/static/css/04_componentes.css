@@ -1,0 +1,499 @@
+/* BUSCADOR Y FILTROS */
+
+.barra-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 25px 0 32px;
+}
+
+.campo-busqueda,
+.campo-filtro {
+    min-height: 45px;
+    padding: 10px 14px;
+    border: 1px solid #bfd4c9;
+    border-radius: 9px;
+    font: inherit;
+}
+
+.campo-busqueda {
+    flex: 1;
+    min-width: 220px;
+}
+
+.btn-buscar,
+.btn-limpiar,
+.filtro-enlace {
+    min-height: 45px;
+    padding: 11px 18px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-buscar {
+    border: none;
+    background: #0b513d;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-limpiar {
+    border: 1px solid #0b513d;
+    color: #0b513d;
+}
+
+.filtros-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 25px 0 32px;
+}
+
+.filtro-enlace {
+    border: 1px solid #0b513d;
+    color: #0b513d;
+}
+
+.filtro-enlace.activo,
+.filtro-enlace:hover {
+    background: #0b513d;
+    color: white;
+}
+
+
+/* SERVICIOS Y EVENTOS */
+
+.servicios-grid,
+.eventos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.servicio-card,
+.evento-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(12, 70, 52, 0.12);
+}
+
+.servicio-imagen,
+.evento-imagen {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.servicio-contenido,
+.evento-contenido {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 22px;
+}
+
+.etiqueta-tipo,
+.evento-tipo {
+    display: inline-block;
+    width: fit-content;
+    padding: 6px 12px;
+    margin-bottom: 10px;
+    background: #e4f1ea;
+    color: #0b513d;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.btn-ver-detalles {
+    display: inline-flex;
+    justify-content: center;
+    margin-top: auto;
+    padding: 12px 18px;
+    background: #0b513d;
+    color: white;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.evento-imagen-contenedor {
+    position: relative;
+}
+
+.evento-imagen-contenedor .evento-tipo {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(11, 81, 61, 0.92);
+    color: white;
+}
+
+.evento-fecha {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 9px 13px;
+    background: white;
+    color: #0b513d;
+    border-radius: 10px;
+}
+
+.evento-fecha strong {
+    font-size: 23px;
+}
+
+.estado-evento {
+    display: inline-block;
+    width: fit-content;
+    margin-bottom: 15px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.estado-evento.proximo {
+    background: #e8f5ed;
+    color: #147444;
+}
+
+.estado-evento.finalizado {
+    background: #eeeeee;
+    color: #666666;
+}
+
+.estado-evento.hoy {
+    background: #fff2c8;
+    color: #8a6200;
+}
+
+.estado-evento.novedad {
+    background: #e5eefb;
+    color: #285b99;
+}
+
+
+/* DETALLES */
+
+.migas-pan {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 25px;
+}
+
+.migas-pan a {
+    color: #0b513d;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.detalle-modulo {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 38px;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(12, 70, 52, 0.12);
+}
+
+.detalle-imagen img {
+    width: 100%;
+    max-height: 550px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.detalle-contenido h1 {
+    color: #0b513d;
+}
+
+.detalle-texto {
+    line-height: 1.7;
+}
+
+.caja-informacion {
+    margin: 22px 0;
+    padding: 20px;
+    background: #f2f8f4;
+    border-radius: 13px;
+}
+
+.fila-informacion {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 11px 0;
+    border-bottom: 1px solid #d8e5de;
+}
+
+.detalle-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-whatsapp,
+.btn-secundario,
+.btn-compartir-whatsapp,
+.btn-compartir-facebook,
+.btn-copiar-enlace {
+    padding: 12px 18px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.btn-whatsapp {
+    background: #128c4a;
+    color: white;
+}
+
+.btn-whatsapp:hover {
+    background: #0d6b33;
+}
+
+.btn-compartir-whatsapp {
+    background: #25d366;
+    color: white;
+}
+
+.btn-compartir-whatsapp:hover {
+    background: #1fa85c;
+}
+
+.btn-compartir-facebook {
+    background: #1877f2;
+    color: white;
+}
+
+.btn-compartir-facebook:hover {
+    background: #1267d6;
+}
+
+.btn-copiar-enlace {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-copiar-enlace:hover {
+    background: #5a6268;
+}
+
+.btn-secundario {
+    border: 1px solid #0b513d;
+    color: #0b513d;
+}
+
+.btn-secundario:hover {
+    background: #f0f0f0;
+}
+
+.msg-copia-exitosa {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+    animation: slideIn 0.3s ease;
+    z-index: 9999;
+}
+
+.msg-copia-exitosa.visible {
+    display: block;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+/* CONTACTO */
+
+.contacto-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 30px;
+}
+
+.contacto-datos,
+.contacto-mapa {
+    padding: 25px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(12, 70, 52, 0.1);
+}
+
+.contacto-mapa iframe {
+    width: 100%;
+    min-height: 420px;
+}
+
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+    .servicios-grid,
+    .eventos-grid,
+    .galeria-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detalle-modulo,
+    .contacto-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .servicios-grid,
+    .eventos-grid,
+    .galeria-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-modulo {
+        padding: 18px;
+    }
+
+    .fila-informacion {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .detalle-botones {
+        flex-direction: column;
+    }
+
+    .btn-whatsapp,
+    .btn-secundario {
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   FILTROS Y DETALLES EN CELULAR
+========================================================= */
+@media (max-width: 600px) {
+    .barra-filtros {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin: 18px 0 25px;
+    }
+
+    .campo-busqueda,
+    .campo-filtro,
+    .btn-buscar,
+    .btn-limpiar {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 48px;
+    }
+
+    .btn-buscar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .detalle-modulo {
+        width: 100%;
+        padding: 16px !important;
+        gap: 20px;
+        border-radius: 16px;
+    }
+
+    .caja-informacion {
+        width: 100%;
+        margin: 10px 0;
+        padding: 16px;
+    }
+
+    .fila-informacion {
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .detalle-botones {
+        width: 100%;
+    }
+
+    .detalle-botones a,
+    .detalle-botones button {
+        width: 100%;
+        min-height: 48px;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+
+/* ==================================================
+   MEJORAS POSTERIORES - DETALLE DE SERVICIOS
+================================================== */
+
+
+
+/* ==================================================
+   MEJORAS POSTERIORES - DETALLE DE SERVICIOS
+================================================== */
+
+.caja-informacion h2 {
+    margin: 0 0 10px;
+    color: #0b513d;
+    font-size: 1.15rem;
+}
+
+.detalle-incluye {
+    margin: 18px 0 0;
+    padding: 18px;
+    background: #e5f2eb;
+    border: 1px solid rgba(11, 81, 61, 0.14);
+    border-radius: 14px;
+}
+
+.detalle-incluye h3 {
+    margin: 0 0 12px;
+    color: #0b513d;
+    font-size: 1rem;
+}
+
+.detalle-incluye div,
+.detalle-incluye p {
+    margin: 0 0 10px;
+    color: #3d5a4d;
+    line-height: 1.65;
+}
+
+

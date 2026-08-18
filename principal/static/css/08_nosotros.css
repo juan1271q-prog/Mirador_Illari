@@ -1,0 +1,477 @@
+/* ==================================================
+   PÁGINA NOSOTROS
+================================================== */
+
+/* ==================================================
+   PORTADA
+================================================== */
+
+.nosotros-portada {
+    width: 100%;
+    padding: 30px 20px 34px;
+    color: #0b513d;
+    background: #ecf6ef;
+}
+
+.nosotros-portada-contenido {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.nosotros-portada-texto {
+    width: 100%;
+}
+
+.nosotros-portada-etiqueta {
+    display: block;
+    margin: 0 0 10px;
+    color: #0b513d;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.nosotros-portada h1 {
+    max-width: 720px;
+    margin: 0 auto 14px;
+    color: #0b513d;
+    font-size: clamp(2rem, 4vw, 2.55rem);
+    line-height: 1.14;
+}
+
+.nosotros-portada-eslogan {
+    max-width: 640px;
+    margin: 0 auto;
+    color: #4c5f52;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+/* ==================================================
+   HISTORIA Y LOGO
+================================================== */
+
+.nosotros-presentacion {
+    padding: 36px 20px;
+    background: #eef7ef;
+    text-align: left;
+}
+
+.nosotros-grid {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        260px;
+    align-items: start;
+    gap: 28px;
+}
+
+.nosotros-texto {
+    width: 100%;
+    max-width: 880px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    background: transparent;
+    border-left: 6px solid #b9d9c2;
+    border-radius: 20px;
+    padding: 22px 24px 22px 24px;
+}
+
+.nosotros-subtitulo {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2d7154;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.nosotros-texto h2 {
+    margin: 0 0 20px;
+    color: #0b513d;
+    font-size: clamp(2rem, 4vw, 2.35rem);
+    line-height: 1.2;
+}
+
+.nosotros-texto h3 {
+    margin: 22px 0 12px;
+    color: #0b513d;
+    font-size: 1.45rem;
+    line-height: 1.3;
+}
+
+.nosotros-parrafos {
+    color: #525252;
+    font-size: 1.04rem;
+    line-height: 1.8;
+}
+
+.nosotros-parrafos p {
+    margin: 0 0 18px;
+}
+
+.nosotros-parrafos p:last-child {
+    margin-bottom: 0;
+}
+
+.nosotros-logo-contenedor {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-self: start;
+    justify-content: center;
+}
+
+.nosotros-logo {
+    display: block;
+    width: 220px;
+    height: 220px;
+    margin: 0;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid #d7e6de;
+}
+
+/* ==================================================
+   PROPÓSITO, MISIÓN Y VISIÓN
+================================================== */
+
+.nosotros-proposito-seccion {
+    padding: 42px 20px;
+    background: #eef7ef;
+}
+
+.nosotros-encabezado {
+    max-width: 720px;
+    margin: 0 auto 26px;
+    padding: 0 16px;
+    text-align: center;
+}
+
+.nosotros-encabezado h2 {
+    margin: 0 0 12px;
+    color: #0b513d;
+    font-size: clamp(2rem, 4vw, 2.35rem);
+    line-height: 1.2;
+}
+
+.nosotros-encabezado p {
+    margin: 0;
+    color: #555555;
+    font-size: 1.06rem;
+    line-height: 1.65;
+}
+
+.nosotros-proposito-grupo {
+    display: grid;
+    gap: 20px;
+}
+
+.nosotros-mision-vision-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.nosotros-tarjeta {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 18px;
+    background: #f8fbf8;
+    border: 1px solid #dce9e2;
+    border-radius: 18px;
+    padding: 28px 24px;
+    text-align: left;
+    box-shadow: none;
+}
+
+.nosotros-tarjeta:hover {
+    transform: none;
+    box-shadow: 0 6px 18px rgba(11, 81, 61, 0.05);
+}
+
+.nosotros-proposito-card {
+    grid-column: 1 / -1;
+}
+
+.nosotros-icono {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1.9rem;
+}
+
+.nosotros-tarjeta h3 {
+    margin: 0 0 12px;
+    color: #0b513d;
+    font-size: 1.35rem;
+}
+
+.nosotros-tarjeta div {
+    color: #525252;
+    line-height: 1.75;
+}
+
+.nosotros-tarjeta p {
+    margin: 0 0 10px;
+}
+
+.nosotros-tarjeta p:last-child {
+    margin-bottom: 0;
+}
+
+/* ==================================================
+   VALORES
+================================================== */
+
+.nosotros-valores-seccion {
+    padding: 42px 20px;
+    background: #f3f8f5;
+}
+
+.nosotros-valores-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.nosotros-valor-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 18px 16px;
+    text-align: center;
+    background: #f8fbf8;
+    border: 1px solid #dce9e2;
+    border-radius: 16px;
+    box-shadow: none;
+}
+
+.nosotros-valor-card:hover {
+    transform: none;
+    box-shadow: 0 8px 20px rgba(11, 81, 61, 0.06);
+}
+
+.nosotros-valor-icono {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.9rem;
+}
+
+.nosotros-valor-card h3 {
+    margin: 0 0 10px;
+    color: #0b513d;
+    font-size: 1.2rem;
+}
+
+.nosotros-valor-descripcion {
+    color: #525252;
+    line-height: 1.6;
+}
+
+.nosotros-valor-descripcion p {
+    margin: 0;
+}
+
+/* ==================================================
+   LLAMADA A LA ACCIÓN
+================================================== */
+
+.nosotros-cta {
+    padding: 55px 20px;
+    color: #ffffff;
+    background: linear-gradient(
+        120deg,
+        #063f30,
+        #0f7452
+    );
+}
+
+.nosotros-cta-contenido {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 35px;
+}
+
+.nosotros-cta-etiqueta {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #d4f5e8;
+    font-size: 0.87rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.nosotros-cta h2 {
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-size: clamp(1.8rem, 4vw, 2rem);
+}
+
+.nosotros-cta p {
+    max-width: 700px;
+    margin: 0;
+    color: #eefaf5;
+    line-height: 1.6;
+}
+
+.nosotros-cta-botones {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.nosotros-btn-principal,
+.nosotros-btn-secundario {
+    min-height: 47px;
+    padding: 12px 21px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 800;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.nosotros-btn-principal {
+    color: #0b513d;
+    background: #ffffff;
+}
+
+.nosotros-btn-secundario {
+    color: #ffffff;
+    background: transparent;
+    border: 1px solid #ffffff;
+}
+
+.nosotros-btn-principal:hover,
+.nosotros-btn-secundario:hover {
+    transform: translateY(-2px);
+}
+
+.nosotros-btn-secundario:hover {
+    color: #0b513d;
+    background: #ffffff;
+}
+
+.nosotros-btn-principal:focus-visible,
+.nosotros-btn-secundario:focus-visible {
+    outline: 3px solid #f4c542;
+    outline-offset: 3px;
+}
+
+/* ==================================================
+   TABLETAS
+================================================== */
+
+@media (max-width: 950px) {
+    .nosotros-grid {
+        grid-template-columns:
+            minmax(0, 1fr)
+            220px;
+        gap: 36px;
+    }
+
+    .nosotros-logo {
+        width: 210px;
+        height: 210px;
+    }
+
+    .nosotros-mision-vision-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nosotros-valores-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .nosotros-cta-contenido {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ==================================================
+   TELÉFONOS
+================================================== */
+
+@media (max-width: 700px) {
+    .nosotros-portada {
+        padding: 28px 16px 31px;
+    }
+
+    .nosotros-portada h1 {
+        font-size: 1.95rem;
+    }
+
+    .nosotros-portada-eslogan {
+        font-size: 0.98rem;
+    }
+
+    .nosotros-presentacion,
+    .nosotros-proposito-seccion,
+    .nosotros-valores-seccion {
+        padding: 42px 16px;
+    }
+
+    .nosotros-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .nosotros-logo-contenedor {
+        justify-content: center;
+    }
+
+    .nosotros-logo {
+        width: 190px;
+        height: 190px;
+    }
+
+    .nosotros-texto h2,
+    .nosotros-encabezado h2 {
+        font-size: 1.8rem;
+    }
+
+    .nosotros-parrafos {
+        font-size: 1rem;
+    }
+
+    .nosotros-valores-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nosotros-cta {
+        padding: 45px 16px;
+    }
+
+    .nosotros-cta-botones {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .nosotros-btn-principal,
+    .nosotros-btn-secundario {
+        width: 100%;
+    }
+}
+

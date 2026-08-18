@@ -1,0 +1,591 @@
+/* =========================================================
+   EVENTOS Y NOVEDADES
+   ========================================================= */
+
+.eventos-seccion {
+    background: #eef5ef;
+}
+
+.eventos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+.evento-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 430px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #dce9e2;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(11, 81, 61, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.evento-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(11, 81, 61, 0.1);
+}
+
+.evento-imagen-contenedor {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #e9f4ea;
+}
+
+.eventos-grid .evento-imagen-contenedor.imagen-adaptable {
+    height: 200px;
+    background: #e9f4ea;
+}
+
+.eventos-seccion .eventos-grid .evento-imagen-contenedor.imagen-adaptable > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.evento-tipo {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 6px 12px;
+    background: rgba(11, 81, 61, 0.08);
+    color: #0b513d;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.evento-fecha {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #0b513d;
+    border-radius: 14px;
+    border: 1px solid rgba(11, 81, 61, 0.12);
+    box-shadow: 0 4px 14px rgba(11, 81, 61, 0.08);
+}
+
+.evento-dia {
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.evento-mes {
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.evento-contenido {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px;
+}
+
+.evento-contenido h3 {
+    margin: 0 0 10px;
+    color: #0b513d;
+    font-size: 1.2rem;
+    line-height: 1.3;
+}
+
+.evento-descripcion {
+    min-height: 72px;
+    margin: 0 0 14px;
+    color: #444444;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.evento-fecha-texto {
+    margin: 0 0 14px;
+    color: #556b55;
+    font-size: 0.95rem;
+}
+
+.estado-evento {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.estado-evento.novedad {
+    color: #2d6f42;
+    background: #e9f5ea;
+}
+
+.estado-evento.proximo {
+    color: #245e4b;
+    background: #eef7f0;
+}
+
+.estado-evento.hoy {
+    color: #3f5c43;
+    background: #f5f8f3;
+}
+
+.estado-evento.finalizado {
+    color: #5c4c36;
+    background: #f3eee7;
+}
+
+.btn-ver-evento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: auto;
+    padding: 12px 18px;
+    background: #0b513d;
+    color: #ffffff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.btn-ver-evento:hover {
+    background: #0a432f;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.sin-eventos {
+    grid-column: 1 / -1;
+    padding: 30px;
+    text-align: center;
+    background: #f7faf7;
+    border-radius: 14px;
+}
+
+.detalle-evento-seccion {
+    background: #eef5ef;
+}
+
+.detalle-evento {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    gap: 34px;
+    align-items: start;
+    padding: 26px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #d8e5dc;
+    box-shadow: 0 8px 22px rgba(11, 81, 61, 0.08);
+}
+
+.detalle-evento-imagen img {
+    width: 100%;
+    min-height: 260px;
+    max-height: 420px;
+    object-fit: cover;
+    display: block;
+    border-radius: 18px;
+}
+
+.detalle-evento-tipo {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #eef7ef;
+    color: #0b513d;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detalle-evento-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.detalle-evento h1,
+.detalle-evento-contenido h1 {
+    margin: 8px 0 18px;
+    color: #0b513d;
+    font-size: 2.1rem;
+    line-height: 1.15;
+}
+
+.detalle-evento-fechas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.evento-dato {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    background: #f6faf5;
+    border: 1px solid #dce9e2;
+    border-radius: 14px;
+}
+
+.evento-dato-titulo {
+    color: #6b7b6c;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.evento-dato strong {
+    color: #0b513d;
+}
+
+.detalle-evento-texto {
+    color: #3f3f3f;
+    line-height: 1.75;
+}
+
+.detalle-evento-texto p {
+    margin-bottom: 14px;
+}
+
+.detalle-evento-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.btn-evento-whatsapp,
+.btn-volver-eventos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.btn-evento-whatsapp {
+    background: #128c4a;
+    color: #ffffff;
+}
+
+.btn-evento-whatsapp:hover {
+    background: #0e6e3c;
+    transform: translateY(-1px);
+}
+
+.btn-volver-eventos {
+    border: 1px solid #0b513d;
+    background: #ffffff;
+    color: #0b513d;
+}
+
+.btn-volver-eventos:hover {
+    background: #ecf7ef;
+    transform: translateY(-1px);
+}
+
+
+.evento-dia {
+    font-size: 25px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.evento-mes {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.evento-contenido {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 22px;
+}
+
+.evento-contenido h3 {
+    margin: 0 0 12px;
+    color: #0b513d;
+    font-size: 1.15rem;
+    line-height: 1.3;
+}
+
+.evento-descripcion {
+    min-height: 72px;
+    margin: 0 0 14px;
+    color: #444444;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.evento-fecha-texto {
+    margin: 0 0 18px;
+    color: #555555;
+}
+
+.btn-ver-evento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: auto;
+    padding: 13px 18px;
+    background: #0b513d;
+    color: #ffffff;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.btn-ver-evento:hover {
+    background: #073d2e;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.sin-eventos {
+    grid-column: 1 / -1;
+    padding: 35px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 14px;
+}
+
+
+/* =========================================================
+   DETALLE DEL EVENTO
+   ========================================================= */
+
+.detalle-evento-seccion {
+    background: #f4f8f5;
+}
+
+.evento-migas {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 26px;
+    color: #666666;
+    font-size: 15px;
+}
+
+.evento-migas a {
+    color: #0b513d;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.evento-migas a:hover {
+    text-decoration: underline;
+}
+
+.detalle-evento {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    gap: 38px;
+    align-items: start;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(20, 60, 45, 0.12);
+}
+
+.detalle-evento-imagen img {
+    width: 100%;
+    min-height: 430px;
+    max-height: 560px;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px;
+}
+
+.detalle-evento-tipo {
+    display: inline-block;
+    padding: 7px 13px;
+    background: #e7f2ec;
+    color: #0b513d;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detalle-evento-contenido h1 {
+    margin: 10px 0 22px;
+    color: #0b513d;
+    font-size: 34px;
+    line-height: 1.2;
+}
+
+.detalle-evento-fechas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.evento-dato {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 16px;
+    background: #f3f8f5;
+    border: 1px solid #cbded4;
+    border-radius: 12px;
+}
+
+.evento-dato-titulo {
+    color: #666666;
+    font-size: 13px;
+}
+
+.evento-dato strong {
+    color: #0b513d;
+}
+
+.detalle-evento-texto {
+    color: #3f3f3f;
+    line-height: 1.75;
+}
+
+.detalle-evento-texto p {
+    margin-bottom: 14px;
+}
+
+.detalle-evento-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn-evento-whatsapp,
+.btn-volver-eventos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.btn-evento-whatsapp {
+    background: #128c4a;
+    color: #ffffff;
+}
+
+.btn-evento-whatsapp:hover {
+    background: #0d703b;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.btn-volver-eventos {
+    border: 1px solid #0b513d;
+    background: #ffffff;
+    color: #0b513d;
+}
+
+.btn-volver-eventos:hover {
+    background: #edf6f1;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   EVENTOS RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .eventos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detalle-evento {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-evento-imagen img {
+        min-height: 350px;
+    }
+}
+
+@media (max-width: 650px) {
+    .eventos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .evento-imagen-contenedor {
+        height: 210px;
+    }
+
+    .detalle-evento {
+        padding: 18px;
+        gap: 25px;
+    }
+
+    .detalle-evento-imagen img {
+        min-height: 250px;
+        max-height: 350px;
+    }
+
+    .detalle-evento-contenido h1 {
+        font-size: 28px;
+    }
+
+    .detalle-evento-fechas {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-evento-acciones {
+        flex-direction: column;
+    }
+
+    .btn-evento-whatsapp,
+    .btn-volver-eventos {
+        width: 100%;
+    }
+}
+

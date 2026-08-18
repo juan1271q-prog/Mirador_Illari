@@ -1,0 +1,252 @@
+{% extends 'principal/base.html' %}
+{% load static %}
+
+{% block contenido %}
+
+<section class="nosotros-portada">
+    <div class="container nosotros-portada-contenido">
+
+        <div class="nosotros-portada-texto">
+            <span class="nosotros-portada-etiqueta">
+                {{ informacion.nosotros_eyebrow|default:"Quiénes somos" }}
+            </span>
+
+            <h1>
+                {{ informacion.titulo|default:"Centro Turístico Mirador Illari" }}
+            </h1>
+
+            <p class="nosotros-portada-eslogan">
+                {{ informacion.eslogan|default:"Naturaleza, cultura y aventura" }}
+            </p>
+        </div>
+
+    </div>
+</section>
+
+
+<section class="seccion nosotros-presentacion">
+
+    <div class="nosotros-grid">
+
+        <div class="nosotros-texto">
+
+            <span class="nosotros-subtitulo">
+                Conoce nuestra historia
+            </span>
+
+            <h2>
+                Sobre el Centro Turístico Mirador Illari
+            </h2>
+
+            {% if informacion.descripcion %}
+                <div class="nosotros-parrafos">
+                    {{ informacion.descripcion|safe }}
+                </div>
+            {% endif %}
+
+            {% if informacion.historia %}
+                <h3>Historia</h3>
+
+                <div class="nosotros-parrafos">
+                    {{ informacion.historia|safe }}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <div class="nosotros-logo-contenedor">
+
+            {% if info_site_logo_url %}
+                <img
+                    src="{{ info_site_logo_url }}"
+                    alt="Logo del Centro Turístico Mirador Illari"
+                    class="nosotros-logo"
+                >
+            {% else %}
+                <img
+                    src="{% static 'img/logo.jpeg' %}"
+                    alt="Logo del Centro Turístico Mirador Illari"
+                    class="nosotros-logo"
+                >
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="seccion nosotros-proposito-seccion">
+
+    <div class="container">
+
+        <div class="nosotros-encabezado">
+
+            <span class="nosotros-subtitulo">
+                Identidad institucional
+            </span>
+
+            <h2>
+                {{ informacion.proposito_titulo|default:'Nuestro propósito' }}
+            </h2>
+
+        </div>
+
+        <div class="nosotros-proposito-grupo">
+
+            {% if informacion.proposito %}
+                <article class="nosotros-tarjeta nosotros-proposito-card">
+
+                    <span class="nosotros-icono">🎯</span>
+
+                    <h3>Propósito</h3>
+
+                    <div>
+                        {{ informacion.proposito|safe }}
+                    </div>
+
+                </article>
+            {% endif %}
+
+            <div class="nosotros-mision-vision-grid">
+
+                {% if informacion.mision %}
+                    <article class="nosotros-tarjeta">
+
+                        <span class="nosotros-icono">🌱</span>
+
+                        <h3>Misión</h3>
+
+                        <div>
+                            {{ informacion.mision|safe }}
+                        </div>
+
+                    </article>
+                {% endif %}
+
+                {% if informacion.vision %}
+                    <article class="nosotros-tarjeta">
+
+                        <span class="nosotros-icono">👁️</span>
+
+                        <h3>Visión</h3>
+
+                        <div>
+                            {{ informacion.vision|safe }}
+                        </div>
+
+                    </article>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+{% if valores %}
+
+<section class="seccion nosotros-valores-seccion">
+
+    <div class="container">
+
+        <div class="nosotros-encabezado">
+
+            <span class="nosotros-subtitulo">
+                Lo que nos representa
+            </span>
+
+            <h2>
+                {{ informacion.valores_titulo|default:'Nuestros valores' }}
+            </h2>
+
+            <p>
+                Principios que orientan la atención y las actividades
+                del Centro Turístico Mirador Illari.
+            </p>
+
+        </div>
+
+        <div class="nosotros-valores-grid">
+
+            {% for valor in valores %}
+
+                <article class="nosotros-valor-card">
+
+                    {% if valor.icono_emoji %}
+                        <span class="nosotros-valor-icono">
+                            {{ valor.icono_emoji }}
+                        </span>
+                    {% else %}
+                        <span class="nosotros-valor-icono">
+                            🌿
+                        </span>
+                    {% endif %}
+
+                    <h3>{{ valor.titulo }}</h3>
+
+                    <div class="nosotros-valor-descripcion">
+                        {{ valor.descripcion|safe }}
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<section class="nosotros-cta">
+
+    <div class="container nosotros-cta-contenido">
+
+        <div>
+
+            <span class="nosotros-cta-etiqueta">
+                Visítanos
+            </span>
+
+            <h2>
+                Conoce nuestros servicios turísticos
+            </h2>
+
+            <p>
+                Descubre las actividades, espacios y experiencias
+                disponibles en el Centro Turístico Mirador Illari.
+            </p>
+
+        </div>
+
+        <div class="nosotros-cta-botones">
+
+            <a
+                href="{% url 'servicios' %}"
+                class="nosotros-btn-principal"
+            >
+                Ver servicios
+            </a>
+
+            <a
+                href="{% url 'contacto' %}"
+                class="nosotros-btn-secundario"
+            >
+                Contactarnos
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<section class="seccion eventos-seccion">
+    <div class="container">
+
+        <h1 class="titulo-pagina">
+            {{ info_site.eventos_titulo|default:'Eventos y Novedades' }}
+        </h1>
+
+        <form method="get" id="formEventos" class="barra-filtros">
+
+            <input
+                type="search"
+                id="buscarEvento"
+                name="buscar"
+                value="{{ buscar }}"
+                placeholder="Buscar un evento..."
+                class="campo-busqueda"
+                autocomplete="off"
+            >
+
+            <select name="tipo" id="tipoEvento" class="campo-filtro">
+                <option value="">Todos los tipos</option>
+
+                {% for tipo in tipos %}
+                    <option
+                        value="{{ tipo }}"
+                        {% if tipo_seleccionado|lower == tipo|lower %}selected{% endif %}
+                    >
+                        {{ tipo }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-buscar">
+                Buscar
+            </button>
+
+        </form>
+
+        <div id="cargandoEventos" class="cargando-eventos" hidden>
+            Cargando eventos...
+        </div>
+
+        <div id="resultadosEventos">
+            {% include 'principal/parciales/eventos_resultados.html' %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

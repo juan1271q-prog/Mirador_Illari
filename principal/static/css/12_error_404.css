@@ -1,0 +1,157 @@
+/* =========================================================
+   PÁGINA DE ERROR 404
+   ========================================================= */
+
+.error-404 {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            rgba(4, 60, 43, 0.88),
+            rgba(8, 97, 67, 0.9)
+        );
+}
+
+.error-404-contenido {
+    width: min(720px, 100%);
+
+    padding: 50px 35px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 18px 50px rgba(0, 0, 0, 0.26);
+}
+
+.error-404-numero {
+    color: #0b513d;
+
+    font-size: 110px;
+    line-height: 1;
+
+    font-weight: 900;
+}
+
+.error-404-etiqueta {
+    display: inline-block;
+
+    margin: 15px 0 10px;
+
+    padding: 7px 13px;
+
+    color: #0b513d;
+    background: #e7f2ec;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.error-404 h1 {
+    margin: 0 0 15px;
+
+    color: #0b513d;
+
+    font-size: 34px;
+    line-height: 1.2;
+}
+
+.error-404 p {
+    max-width: 560px;
+
+    margin: 0 auto 28px;
+
+    color: #555555;
+
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.error-404-botones {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+.error-404-principal,
+.error-404-secundario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 47px;
+
+    padding: 12px 21px;
+
+    border-radius: 9px;
+
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.error-404-principal {
+    color: #ffffff;
+    background: #0b513d;
+}
+
+.error-404-principal:hover {
+    background: #073d2e;
+}
+
+.error-404-secundario {
+    color: #0b513d;
+    background: #ffffff;
+
+    border: 1px solid #0b513d;
+}
+
+.error-404-secundario:hover {
+    color: #ffffff;
+    background: #0b513d;
+}
+
+@media (max-width: 600px) {
+
+    .error-404 {
+        padding: 15px;
+    }
+
+    .error-404-contenido {
+        padding: 38px 20px;
+    }
+
+    .error-404-numero {
+        font-size: 80px;
+    }
+
+    .error-404 h1 {
+        font-size: 27px;
+    }
+
+    .error-404-botones {
+        flex-direction: column;
+    }
+
+    .error-404-principal,
+    .error-404-secundario {
+        width: 100%;
+    }
+
+}
+

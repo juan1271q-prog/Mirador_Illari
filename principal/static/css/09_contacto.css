@@ -1,0 +1,604 @@
+/* ==================================================
+   PÁGINA CONTACTO
+================================================== */
+
+/* ==================================================
+   PORTADA DE CONTACTO
+   Mismos colores de las demás pantallas
+================================================== */
+
+.contacto-portada {
+    width: 100%;
+    padding: 25px 20px 29px;
+    color: #ffffff;
+    background: linear-gradient(
+        135deg,
+        #145844 0%,
+        #287e66 100%
+    );
+}
+
+.contacto-portada-contenido {
+    width: min(760px, 100%);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.contacto-etiqueta {
+    display: inline-block;
+    margin: 0 0 5px;
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.contacto-portada h1 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: clamp(2rem, 4vw, 2.65rem);
+    line-height: 1.1;
+}
+
+.contacto-portada p {
+    max-width: 680px;
+    margin: 0 auto;
+    color: #ffffff;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* ==================================================
+   CONTENIDO
+================================================== */
+
+.contacto-seccion {
+    padding: 28px 0 38px;
+    background: #f5f7f6;
+}
+
+.contacto-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(330px, 0.9fr)
+        minmax(0, 1.25fr);
+    align-items: stretch;
+    gap: 22px;
+}
+
+.contacto-tarjeta {
+    padding: 25px;
+    background: #ffffff;
+    border: 1px solid #e1e9e5;
+    border-radius: 16px;
+    box-shadow: 0 8px 26px rgba(8, 70, 52, 0.10);
+}
+
+.contacto-tarjeta-encabezado {
+    margin-bottom: 15px;
+}
+
+.contacto-tarjeta-encabezado h2 {
+    margin: 0 0 4px;
+    color: #0b513d;
+    font-size: 1.65rem;
+    line-height: 1.2;
+}
+
+.contacto-tarjeta-encabezado p {
+    margin: 0;
+    color: #5b6964;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* ==================================================
+   LISTA DE CONTACTO
+================================================== */
+
+.contacto-lista {
+    display: grid;
+}
+
+.contacto-item {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5ece8;
+}
+
+.contacto-item:last-child {
+    border-bottom: none;
+}
+
+.contacto-item-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    color: #168257;
+    background: #eaf5ec;
+    border-radius: 50%;
+}
+
+.contacto-item-icono svg {
+    display: block;
+    width: 21px;
+    height: 21px;
+    fill: currentColor;
+}
+
+.contacto-item-contenido {
+    min-width: 0;
+}
+
+.contacto-item h3 {
+    margin: 0 0 2px;
+    color: #164c3c;
+    font-size: 0.95rem;
+}
+
+.contacto-item p,
+.contacto-item a {
+    margin: 0;
+    color: #596560;
+    font-size: 0.91rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.contacto-item a {
+    color: #176b4e;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.contacto-item a:hover {
+    text-decoration: underline;
+}
+
+/* ==================================================
+   BOTONES
+================================================== */
+
+.contacto-acciones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 17px;
+}
+
+.contacto-btn-whatsapp,
+.contacto-btn-mapa {
+    min-height: 44px;
+    padding: 10px 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 800;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.contacto-btn-whatsapp {
+    color: #ffffff;
+    background: #159447;
+    border: 1px solid #159447;
+}
+
+.contacto-btn-whatsapp:hover {
+    color: #ffffff;
+    background: #0d7838;
+    transform: translateY(-2px);
+}
+
+.contacto-btn-mapa {
+    color: #13764e;
+    background: #ffffff;
+    border: 1px solid #168257;
+}
+
+.contacto-btn-mapa:hover {
+    color: #ffffff;
+    background: #168257;
+    transform: translateY(-2px);
+}
+
+/* ==================================================
+   REDES SOCIALES
+================================================== */
+
+.contacto-redes {
+    margin-top: 20px;
+    padding-top: 17px;
+    border-top: 1px solid #e0e9e4;
+    text-align: center;
+}
+
+.contacto-redes h3 {
+    margin: 0 0 12px;
+    color: #154b3a;
+    font-size: 1rem;
+}
+
+.contacto-redes-enlaces {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.contacto-redes-enlaces a {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.contacto-redes-enlaces a:hover {
+    background: transparent;
+    transform: translateY(-3px);
+}
+
+.contacto-redes-enlaces .red-social-icono {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+}
+
+.contacto-redes-enlaces .red-social-icono svg {
+    width: 22px;
+    height: 22px;
+}
+
+.contacto-redes-enlaces .red-social-texto {
+    display: none;
+}
+
+/* ==================================================
+   MAPA
+================================================== */
+
+.contacto-ubicacion-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.contacto-mapa {
+    flex: 1;
+    min-height: 420px;
+    overflow: hidden;
+    background: #eaf3ee;
+    border: 1px solid #d5e4dc;
+    border-radius: 13px;
+}
+
+.contacto-mapa iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
+}
+
+.contacto-mapa-alternativo {
+    min-height: 420px;
+    padding: 35px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #eef6f1;
+    border: 1px solid #d8e7df;
+    border-radius: 13px;
+}
+
+.contacto-mapa-alternativo > span {
+    font-size: 3rem;
+}
+
+.contacto-mapa-alternativo h3 {
+    margin: 13px 0 7px;
+    color: #0b513d;
+}
+
+.contacto-mapa-alternativo p {
+    max-width: 420px;
+    margin: 0 0 17px;
+    color: #5c6964;
+    line-height: 1.6;
+}
+
+.contacto-mapa-alternativo a {
+    padding: 10px 17px;
+    color: #ffffff;
+    background: #0b513d;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+/* ==================================================
+   SIN INFORMACIÓN
+================================================== */
+
+.contacto-sin-datos {
+    padding: 42px 25px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(11, 81, 61, 0.09);
+}
+
+.contacto-sin-datos h2 {
+    margin-top: 0;
+    color: #0b513d;
+}
+
+/* ==================================================
+   TABLETAS
+================================================== */
+
+@media (max-width: 900px) {
+    .contacto-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contacto-mapa,
+    .contacto-mapa iframe,
+    .contacto-mapa-alternativo {
+        min-height: 380px;
+    }
+}
+
+/* ==================================================
+   TELÉFONOS
+================================================== */
+
+@media (max-width: 600px) {
+    .contacto-portada {
+        padding: 23px 16px 26px;
+    }
+
+    .contacto-portada h1 {
+        font-size: 1.9rem;
+    }
+
+    .contacto-portada p {
+        font-size: 0.94rem;
+    }
+
+    .contacto-seccion {
+        padding: 22px 0 32px;
+    }
+
+    .contacto-tarjeta {
+        padding: 20px;
+        border-radius: 13px;
+    }
+
+}
+
+/* ==================================================
+   CONSISTENCIA TIPOGRÁFICA DE CONTACTO
+   No modifica colores ni distribución
+================================================== */
+
+.contacto-portada,
+.contacto-seccion,
+.contacto-tarjeta,
+.contacto-item,
+.contacto-acciones,
+.contacto-redes {
+    font-family: inherit;
+}
+
+/* ETIQUETA SUPERIOR */
+
+.contacto-etiqueta {
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+/* TÍTULO PRINCIPAL */
+
+.contacto-portada h1 {
+    margin: 0 0 10px;
+    font-size: clamp(2rem, 4vw, 2.65rem);
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+/* DESCRIPCIÓN DE LA PORTADA */
+
+.contacto-portada p {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.55;
+}
+
+/* TÍTULOS DE LAS TARJETAS */
+
+.contacto-tarjeta-encabezado h2,
+.contacto-panel h2,
+.contacto-mapa-panel h2 {
+    margin: 0 0 7px;
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+/* TEXTO INTRODUCTORIO */
+
+.contacto-tarjeta-encabezado p,
+.contacto-introduccion {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* NOMBRES DE LOS DATOS */
+
+.contacto-item h3,
+.contacto-subtitulo {
+    margin: 0 0 3px;
+    font-size: 0.96rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+/* INFORMACIÓN DE CONTACTO */
+
+.contacto-item p,
+.contacto-item a {
+    margin: 0;
+    font-size: 0.93rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.contacto-item a {
+    font-weight: 600;
+}
+
+/* BOTONES */
+
+.contacto-btn-whatsapp,
+.contacto-btn-mapa {
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+/* REDES SOCIALES */
+
+.contacto-redes h3 {
+    margin: 0 0 12px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.contacto-redes-enlaces a {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+/* MENSAJES DEL MAPA */
+
+.contacto-mapa-alternativo h3,
+.contacto-sin-datos h2 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.contacto-mapa-alternativo p,
+.contacto-sin-datos p {
+    font-size: 0.96rem;
+    line-height: 1.6;
+}
+
+/* TELÉFONOS */
+
+@media (max-width: 600px) {
+    .contacto-portada h1 {
+        font-size: 1.95rem;
+    }
+
+    .contacto-portada p {
+        font-size: 0.95rem;
+    }
+
+    .contacto-tarjeta-encabezado h2,
+    .contacto-panel h2,
+    .contacto-mapa-panel h2 {
+        font-size: 1.45rem;
+    }
+
+    .contacto-item h3,
+    .contacto-subtitulo {
+        font-size: 0.94rem;
+    }
+
+    .contacto-item p,
+    .contacto-item a {
+        font-size: 0.91rem;
+    }
+}
+
+/* TÍTULO DEL DATO */
+
+.contacto-item h3,
+.contacto-subtitulo {
+    color: #0b513d;
+    font-weight: 800;
+}
+
+/* TELÉFONO, WHATSAPP, CORREO Y HORARIO */
+
+.contacto-item p,
+.contacto-item a {
+    color: #555555;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* CAMBIO AL PASAR EL CURSOR */
+
+.contacto-item a:hover {
+    color: #087558;
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .contacto-tarjeta-encabezado h2 {
+        font-size: 1.45rem;
+    }
+
+    .contacto-acciones {
+        grid-template-columns: 1fr;
+    }
+
+    .contacto-btn-whatsapp,
+    .contacto-btn-mapa {
+        width: 100%;
+    }
+
+    .contacto-mapa,
+    .contacto-mapa iframe,
+    .contacto-mapa-alternativo {
+        min-height: 320px;
+    }
+}
+

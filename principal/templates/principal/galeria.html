@@ -1,0 +1,179 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<section class="galeria-portada">
+
+    <div class="container galeria-portada-contenido">
+
+        <span class="galeria-etiqueta">
+            Nuestros recuerdos
+        </span>
+
+        <h1>Galería Multimedia</h1>
+
+        <p>
+            Explora imágenes y momentos especiales del
+            Centro Turístico Mirador Illari.
+        </p>
+
+    </div>
+
+</section>
+
+<section class="galeria-seccion">
+
+    <div class="container">
+
+        {% if galeria %}
+
+            <div class="galeria-grid">
+
+                {% for item in galeria %}
+
+                    <article class="galeria-card">
+
+                        <button
+                            type="button"
+                            class="galeria-item galeria-imagen-contenedor imagen-adaptable"
+                            style="--imagen-fondo: url('{{ item.imagen.url }}');"
+                            data-imagen="{{ item.imagen.url }}"
+                            data-titulo="{{ item.titulo|default:'Galería multimedia'|escape }}"
+                            data-descripcion="{{ item.descripcion|striptags|escape }}"
+                            aria-label="Ver imagen: {{ item.titulo|default:'Galería multimedia' }}"
+                        >
+
+                            <img
+                                src="{{ item.imagen.url }}"
+                                alt="{{ item.titulo|default:'Imagen del Centro Turístico Mirador Illari' }}"
+                                class="galeria-imagen"
+                                loading="lazy"
+                            >
+
+                            <span class="galeria-ver-imagen">
+                                Ver imagen
+                            </span>
+
+                        </button>
+
+                        <div class="galeria-card-contenido">
+
+                            <h3>
+                                {{ item.titulo|default:"Galería multimedia" }}
+                            </h3>
+
+                            {% if item.descripcion %}
+                                <p>
+                                    {{ item.descripcion|striptags|truncatewords:16 }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="galeria-sin-datos">
+
+                <h2>Galería no disponible</h2>
+
+                <p>
+                    Todavía no existen imágenes registradas
+                    por el administrador.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        {% if galeria.has_other_pages %}
+
+            <nav class="paginacion" aria-label="Paginación de galería">
+
+                {% if galeria.has_previous %}
+                    <a
+                        href="?page={{ galeria.previous_page_number }}"
+                        class="paginacion-boton"
+                    >
+                        ← Anterior
+                    </a>
+                {% endif %}
+
+                <div class="paginacion-numeros">
+                    {% for numero in galeria.paginator.page_range %}
+                        {% if galeria.number == numero %}
+                            <span class="paginacion-numero activo">
+                                {{ numero }}
+                            </span>
+                        {% else %}
+                            <a
+                                href="?page={{ numero }}"
+                                class="paginacion-numero"
+                            >
+                                {{ numero }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if galeria.has_next %}
+                    <a
+                        href="?page={{ galeria.next_page_number }}"
+                        class="paginacion-boton"
+                    >
+                        Siguiente →
+                    </a>
+                {% endif %}
+
+            </nav>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+<div
+    id="modalGaleria"
+    class="modal-galeria"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitulo"
+    hidden
+>
+
+    <div class="modal-galeria-contenido">
+
+        <button
+            type="button"
+            id="cerrarModalGaleria"
+            class="modal-galeria-cerrar"
+            aria-label="Cerrar imagen"
+        >
+            ×
+        </button>
+
+        <img
+            id="modalImagen"
+            src=""
+            alt=""
+        >
+
+        <div class="modal-galeria-informacion">
+
+            <h2 id="modalTitulo"></h2>
+
+            <p id="modalDescripcion"></p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

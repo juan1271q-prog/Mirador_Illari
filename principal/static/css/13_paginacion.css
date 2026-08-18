@@ -1,0 +1,92 @@
+/* =========================================================
+   PAGINACIÓN
+   ========================================================= */
+
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+.paginacion-numeros {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+}
+
+.paginacion-boton,
+.paginacion-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+
+    padding: 9px 14px;
+
+    color: #0b513d;
+    background: #ffffff;
+
+    border: 1px solid #cfe0d7;
+    border-radius: 9px;
+
+    text-decoration: none;
+    font-weight: 700;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.paginacion-numero {
+    min-width: 42px;
+    padding: 9px;
+}
+
+.paginacion-boton:hover,
+.paginacion-numero:hover {
+    color: #ffffff;
+    background: #0b513d;
+
+    transform: translateY(-2px);
+}
+
+.paginacion-numero.activo {
+    color: #ffffff;
+    background: #0b513d;
+    border-color: #0b513d;
+
+    cursor: default;
+}
+
+
+/* PAGINACIÓN EN CELULAR */
+
+@media (max-width: 600px) {
+
+    .paginacion {
+        gap: 8px;
+    }
+
+    .paginacion-boton {
+        padding: 9px 11px;
+        font-size: 13px;
+    }
+
+    .paginacion-numero {
+        min-width: 38px;
+        min-height: 38px;
+    }
+
+}
+
+

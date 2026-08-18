@@ -1,0 +1,54 @@
+{% extends 'principal/base.html' %}
+
+{% block contenido %}
+
+<section class="seccion">
+    <div class="container">
+
+        <h1 class="titulo-pagina">
+            {{ info_site.servicios_titulo|default:'Servicios Turísticos' }}
+        </h1>
+
+        <form method="get" id="formServicios" class="barra-filtros">
+
+            <input
+                type="search"
+                id="buscarServicio"
+                name="buscar"
+                value="{{ buscar }}"
+                placeholder="Buscar un servicio..."
+                class="campo-busqueda"
+                autocomplete="off"
+            >
+
+            <select name="tipo" id="tipoServicio" class="campo-filtro">
+                <option value="">Todos los tipos</option>
+
+                {% for tipo in tipos %}
+                    <option
+                        value="{{ tipo }}"
+                        {% if tipo_seleccionado == tipo %}selected{% endif %}
+                    >
+                        {{ tipo }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-buscar">
+                Buscar
+            </button>
+
+        </form>
+
+        <div id="cargandoServicios" class="cargando-servicios" hidden>
+            Cargando servicios...
+        </div>
+
+        <div id="resultadosServicios">
+            {% include 'principal/parciales/servicios_resultados.html' %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

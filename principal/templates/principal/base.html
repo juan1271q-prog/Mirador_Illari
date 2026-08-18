@@ -1,0 +1,637 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token }}"
+    >
+
+    <title>
+        {{ info_site.titulo|default:'Mirador Illari' }}
+    </title>
+
+    <meta
+        name="description"
+        content="{{ info_site.eslogan|default:'Centro Turístico Mirador Illari' }}"
+    >
+
+    <!-- ==================================================
+         ESTILOS GENERALES Y SEPARADOS
+         No cambiar el orden de estos archivos
+    ================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/01_base.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/02_servicios.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/03_eventos.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/04_componentes.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/05_galeria.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/06_tarjetas_compartidas.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/07_inicio.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/08_nosotros.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/09_contacto.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/10_footer.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/11_chatbot.css' %}?v=20260817-chatbot-mobile-fix-1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/12_error_404.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/13_paginacion.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/14_imagenes_adaptables.css' %}?v=20260816-mobile-final"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/15_redes_sociales.css' %}?v=20260816-mobile-final"
+    >
+
+    {% if info_site_logo_url %}
+        <link
+            rel="icon"
+            href="{{ info_site_logo_url }}"
+        >
+    {% else %}
+        <link
+            rel="icon"
+            href="{% static 'img/logo.jpeg' %}"
+        >
+    {% endif %}
+</head>
+<body>
+
+<header class="header">
+    <nav class="navbar">
+        <button
+            type="button"
+            class="menu-toggle"
+            id="menuToggle"
+            aria-label="Abrir menú"
+            aria-expanded="false"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="logo" id="brandLogo">
+            {% if info_site_logo_url %}
+                <img src="{{ info_site_logo_url }}" alt="Logo" onerror="this.onerror=null;this.src='{% static 'img/logo.jpeg' %}';">
+            {% else %}
+                <img src="{% static 'img/logo.jpeg' %}" alt="Logo">
+            {% endif %}
+            <div>
+                <span>{{ info_site.titulo|default:'Mirador Illari' }}</span>
+                <div class="logo-subtitle">{{ info_site.eslogan|default:'Centro Turístico' }}</div>
+            </div>
+        </div>
+
+        {% with ruta=request.resolver_match.url_name %}
+        <ul class="menu" id="mainMenu">
+            <li>
+                <a href="{% url 'inicio' %}" class="{% if ruta == 'inicio' %}active{% endif %}" {% if ruta == 'inicio' %}aria-current="page"{% endif %}>Inicio</a>
+            </li>
+            <li>
+                <a href="{% url 'nosotros' %}" class="{% if ruta == 'nosotros' %}active{% endif %}" {% if ruta == 'nosotros' %}aria-current="page"{% endif %}>Nosotros</a>
+            </li>
+            <li>
+                <a href="{% url 'servicios' %}" class="{% if ruta == 'servicios' or ruta == 'detalle_servicio' %}active{% endif %}" {% if ruta == 'servicios' or ruta == 'detalle_servicio' %}aria-current="page"{% endif %}>Servicios</a>
+            </li>
+            <li>
+                <a href="{% url 'eventos' %}" class="{% if ruta == 'eventos' or ruta == 'detalle_evento' %}active{% endif %}" {% if ruta == 'eventos' or ruta == 'detalle_evento' %}aria-current="page"{% endif %}>Eventos y Novedades</a>
+            </li>
+            <li>
+                <a href="{% url 'galeria' %}" class="{% if ruta == 'galeria' %}active{% endif %}" {% if ruta == 'galeria' %}aria-current="page"{% endif %}>Galería</a>
+            </li>
+            <li>
+                <a href="{% url 'contacto' %}" class="{% if ruta == 'contacto' %}active{% endif %}" {% if ruta == 'contacto' %}aria-current="page"{% endif %}>Contacto</a>
+            </li>
+        </ul>
+        {% endwith %}
+    </nav>
+</header>
+
+<main>
+    {% block contenido %}
+    {% endblock %}
+</main>
+
+<footer class="footer-principal">
+
+    <div class="footer-contenedor">
+
+        <div class="footer-columna footer-identidad">
+
+            {% if info_site_logo_url %}
+
+                <img
+                    src="{{ info_site_logo_url }}"
+                    alt="{{ info_site.titulo|default:'Centro Turístico Mirador Illari' }}"
+                    class="footer-logo"
+                >
+
+            {% else %}
+
+                <img
+                    src="{% static 'img/logo.jpeg' %}"
+                    alt="Centro Turístico Mirador Illari"
+                    class="footer-logo"
+                >
+
+            {% endif %}
+
+            <h2>
+                {{ info_site.titulo|default:'Centro Turístico Mirador Illari' }}
+            </h2>
+
+            {% if info_site.eslogan %}
+                <p>
+                    {{ info_site.eslogan }}
+                </p>
+            {% else %}
+                <p>
+                    Naturaleza, cultura y aventura en la comunidad
+                    de Yutzupino.
+                </p>
+            {% endif %}
+
+        </div>
+
+
+        <div class="footer-columna">
+
+            <h3>Enlaces rápidos</h3>
+
+            <nav class="footer-enlaces">
+
+                <a href="{% url 'inicio' %}">
+                    Inicio
+                </a>
+
+                <a href="{% url 'nosotros' %}">
+                    Nosotros
+                </a>
+
+                <a href="{% url 'servicios' %}">
+                    Servicios
+                </a>
+
+                <a href="{% url 'eventos' %}">
+                    Eventos
+                </a>
+
+                <a href="{% url 'galeria' %}">
+                    Galería
+                </a>
+
+                <a href="{% url 'contacto' %}">
+                    Contacto
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <div class="footer-columna">
+
+            <h3>Contacto</h3>
+
+            {% if contact_site %}
+
+                <div class="footer-contacto">
+
+                    {% if contact_site.direccion %}
+                        <p>
+                            <strong>Dirección:</strong><br>
+                            {{ contact_site.direccion }}
+                        </p>
+                    {% endif %}
+
+                    {% if contact_site.horarios_atencion %}
+                        <p>
+                            <strong>Horario:</strong><br>
+                            {{ contact_site.horarios_atencion }}
+                        </p>
+                    {% endif %}
+
+                    {% if contact_site.whatsapp %}
+                        <p>
+                            <strong>WhatsApp:</strong><br>
+
+                            <a
+                                href="https://wa.me/{{ contact_site.whatsapp|cut:'+'|cut:' '|cut:'-' }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {{ contact_site.whatsapp }}
+                            </a>
+                        </p>
+                    {% endif %}
+
+                    {% if contact_site.correo %}
+                        <p>
+                            <strong>Correo:</strong><br>
+
+                            <a href="mailto:{{ contact_site.correo }}">
+                                {{ contact_site.correo }}
+                            </a>
+                        </p>
+                    {% endif %}
+
+                </div>
+
+            {% else %}
+
+                <p>
+                    Información de contacto no disponible.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="footer-columna">
+
+            <h3>Redes sociales</h3>
+
+            {% if contact_site %}
+
+                <div class="footer-redes">
+
+                    {% if contact_site.facebook_url %}
+                        <a
+                            href="{{ contact_site.facebook_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visitar Facebook"
+                        >
+                            {% include 'principal/parciales/icono_red_social.html' with red='facebook' etiqueta='Facebook' %}
+                        </a>
+                    {% endif %}
+
+                    {% if contact_site.instagram_url %}
+                        <a
+                            href="{{ contact_site.instagram_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visitar Instagram"
+                        >
+                            {% include 'principal/parciales/icono_red_social.html' with red='instagram' etiqueta='Instagram' %}
+                        </a>
+                    {% endif %}
+
+                    {% if contact_site.tiktok_url %}
+                        <a
+                            href="{{ contact_site.tiktok_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visitar TikTok"
+                        >
+                            {% include 'principal/parciales/icono_red_social.html' with red='tiktok' etiqueta='TikTok' %}
+                        </a>
+                    {% endif %}
+
+                    {% if contact_site.youtube_url %}
+                        <a
+                            href="{{ contact_site.youtube_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Visitar YouTube"
+                        >
+                            {% include 'principal/parciales/icono_red_social.html' with red='youtube' etiqueta='YouTube' %}
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-inferior">
+
+        <p>
+            &copy; {% now "Y" %}
+            Centro Turístico Mirador Illari.
+            Todos los derechos reservados.
+        </p>
+
+        <p>
+            Página web desarrollada como Trabajo de Integración Curricular.
+        </p>
+
+    </div>
+
+</footer>
+
+<!-- =====================================================
+     CHATBOT MIRADOR ILLARI
+     ===================================================== -->
+
+<div
+    class="chatbot-widget"
+    data-chatbot-api-url="{% url 'api_chatbot' %}"
+    data-preguntas-api-url="{% url 'api_preguntas' %}"
+    data-chatbot-title="{{ info_site.chatbot_titulo|default:'Chatbot Mirador Illari' }}"
+    data-chatbot-intro="{{ info_site.chatbot_intro|default:'Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?'|striptags }}"
+    data-chatbot-placeholder="{{ info_site.chatbot_placeholder|default:'Escribe tu mensaje...' }}"
+    data-chatbot-send-label="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
+    data-chatbot-options-label="{{ info_site.chatbot_opciones_etiqueta|default:'Opciones rápidas' }}"
+>
+    <button
+        type="button"
+        id="chatbotBtn"
+        class="chatbot-btn chatbot-launcher"
+        aria-label="Abrir asistente virtual"
+        title="Abrir chatbot"
+        aria-expanded="false"
+        aria-controls="chatbotBox"
+    >
+        <span class="chatbot-launcher-avatar" aria-hidden="true">
+            <svg
+                class="chatbot-launcher-icono"
+                viewBox="0 0 64 64"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <line
+                    x1="32"
+                    y1="12"
+                    x2="32"
+                    y2="18"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                />
+
+                <circle
+                    cx="32"
+                    cy="9"
+                    r="4"
+                    fill="currentColor"
+                />
+
+                <rect
+                    x="13"
+                    y="18"
+                    width="38"
+                    height="30"
+                    rx="10"
+                    fill="currentColor"
+                />
+
+                <rect
+                    x="18"
+                    y="23"
+                    width="28"
+                    height="20"
+                    rx="7"
+                    fill="#159447"
+                />
+
+                <circle
+                    cx="26"
+                    cy="32"
+                    r="3"
+                    fill="currentColor"
+                />
+
+                <circle
+                    cx="38"
+                    cy="32"
+                    r="3"
+                    fill="currentColor"
+                />
+
+                <path
+                    d="M25 38c4 3 10 3 14 0"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                />
+
+                <line
+                    x1="13"
+                    y1="29"
+                    x2="8"
+                    y2="29"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                />
+
+                <line
+                    x1="51"
+                    y1="29"
+                    x2="56"
+                    y2="29"
+                    stroke="currentColor"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                />
+            </svg>
+
+            <span class="chatbot-launcher-estado" aria-hidden="true"></span>
+        </span>
+
+        <span class="chatbot-launcher-texto">
+            ¿Necesitas ayuda?
+        </span>
+    </button>
+
+    <section
+        class="chatbot-box"
+        id="chatbotBox"
+        data-chatbot-url="{% url 'api_chatbot' %}"
+        role="dialog"
+        aria-label="Chatbot Mirador Illari"
+        aria-hidden="true"
+    >
+        <header class="chatbot-header">
+            <div class="chatbot-title">
+                {% if info_site_logo_url %}
+                    <img
+                        src="{{ info_site_logo_url }}"
+                        alt="Logo del Mirador Illari"
+                        class="chatbot-logo"
+                        onerror="this.onerror=null;this.src='{% static 'img/logo.jpeg' %}';"
+                    >
+                {% else %}
+                    <img
+                        src="{% static 'img/logo.jpeg' %}"
+                        alt="Logo del Mirador Illari"
+                        class="chatbot-logo"
+                    >
+                {% endif %}
+
+                <div>
+                    <strong>{{ info_site.chatbot_titulo|default:'Chatbot Mirador Illari' }}</strong>
+                    <span>{{ info_site.chatbot_opciones_etiqueta|default:'Opciones rápidas' }}</span>
+                </div>
+            </div>
+
+            <div class="chatbot-controls">
+                <button
+                    type="button"
+                    id="minimizarChat"
+                    aria-label="Minimizar chatbot"
+                    title="Minimizar"
+                >
+                    —
+                </button>
+
+                <button
+                    type="button"
+                    id="cerrarChat"
+                    aria-label="Cerrar chatbot"
+                    title="Cerrar"
+                >
+                    ✕
+                </button>
+            </div>
+        </header>
+
+        <div class="chatbot-body" id="chatbotBody">
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="message bot">
+                    {% if info_site_logo_url %}
+                        <img
+                            class="avatar"
+                            src="{{ info_site_logo_url }}"
+                            alt="Logo"
+                            onerror="this.onerror=null;this.src='{% static 'img/logo.jpeg' %}';"
+                        >
+                    {% else %}
+                        <img
+                            class="avatar"
+                            src="{% static 'img/logo.jpeg' %}"
+                            alt="Logo"
+                        >
+                    {% endif %}
+
+                    <div class="bubble">
+                        <div class="bubble-text">
+                            {{ info_site.chatbot_intro|default:'Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?'|striptags }}
+                        </div>
+                        <div class="bubble-time" id="initialTime"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-chips" id="quickChips">
+                <button type="button" class="quick-chip">🕒 Horarios de atención</button>
+                <button type="button" class="quick-chip">📍 Ubicación</button>
+                <button type="button" class="quick-chip">🌿 Servicios turísticos</button>
+                <button type="button" class="quick-chip">📅 Eventos y novedades</button>
+                <button type="button" class="quick-chip">💬 Contacto por WhatsApp</button>
+            </div>
+
+            <button
+                type="button"
+                class="quick-chips-toggle"
+                id="quickChipsToggle"
+                hidden
+            >
+                Ver opciones sugeridas
+            </button>
+        </div>
+
+        <div class="chat-input-area">
+            <input
+                type="text"
+                id="chatInput"
+                placeholder="{{ info_site.chatbot_placeholder|default:'Escribe tu mensaje...' }}"
+                aria-label="{{ info_site.chatbot_placeholder|default:'Escribe tu mensaje...' }}"
+                maxlength="180"
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                id="sendBtn"
+                title="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
+                aria-label="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
+            >
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#ffffff"/>
+                </svg>
+            </button>
+        </div>
+    </section>
+</div>
+
+<div id="mensajeCopiaExitosa" class="msg-copia-exitosa"></div>
+
+<script src="{% static 'js/main.js' %}?v=20260816-chatbot-mobile-3"></script>
+</body>
+</html>

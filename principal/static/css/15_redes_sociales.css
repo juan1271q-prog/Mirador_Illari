@@ -1,0 +1,82 @@
+/* 15_redes_sociales.css
+   Estilos para enlaces y botones de redes sociales.
+*/
+
+/* ==================================================
+   ICONOS DE REDES SOCIALES
+================================================== */
+
+.footer-redes a,
+.contacto-redes-enlaces a {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.red-social-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    flex: 0 0 25px;
+    color: #ffffff;
+    border-radius: 50%;
+}
+
+.red-social-icono svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+}
+
+.red-social-icono--facebook {
+    background: #1877f2;
+}
+
+.red-social-icono--instagram {
+    background:
+        radial-gradient(
+            circle at 30% 107%,
+            #fdf497 0%,
+            #fdf497 5%,
+            #fd5949 45%,
+            #d6249f 60%,
+            #285aeb 90%
+        );
+}
+
+.red-social-icono--tiktok {
+    background: #111111;
+}
+
+.red-social-icono--youtube {
+    background: #ff0000;
+}
+
+.red-social-texto {
+    line-height: 1;
+}
+
+.footer-redes a:hover .red-social-icono {
+    transform: scale(1.08);
+}
+
+.contacto-redes-enlaces a:hover .red-social-icono {
+    transform: scale(1.08);
+}
+
+.red-social-icono {
+    transition: transform 0.2s ease;
+}
+
+@media (max-width: 600px) {
+    .contacto-redes-enlaces {
+        align-items: stretch;
+    }
+
+    .contacto-redes-enlaces a {
+        justify-content: center;
+        min-width: 135px;
+    }
+}

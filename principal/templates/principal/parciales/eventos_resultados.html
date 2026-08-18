@@ -1,0 +1,163 @@
+<div class="resultados-eventos">
+
+    <div class="eventos-grid">
+
+        {% for evento in eventos %}
+
+            <article class="evento-card">
+
+                <div
+                    class="evento-imagen-contenedor imagen-adaptable"
+                    {% if evento.imagen %}
+                        style="--imagen-fondo: url('{{ evento.imagen.url }}'); --imagen-proporcion: 16 / 10;"
+                    {% endif %}
+                >
+
+                    {% if evento.imagen %}
+                        <img
+                            src="{{ evento.imagen.url }}"
+                            alt="Imagen de {{ evento.titulo }}"
+                            loading="lazy"
+                        >
+                    {% endif %}
+
+                    {% if evento.tipo|lower != 'novedad' %}
+                        <span class="evento-tipo">
+                            {{ evento.tipo }}
+                        </span>
+                    {% endif %}
+
+                    {% if evento.tipo|lower == 'evento' and evento.fecha_evento %}
+                        <div class="evento-fecha">
+                            <strong class="evento-dia">
+                                {{ evento.fecha_evento|date:"d" }}
+                            </strong>
+                            <span class="evento-mes">
+                                {{ evento.fecha_evento|date:"M" }}
+                            </span>
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="evento-contenido">
+
+                    <h3>{{ evento.titulo }}</h3>
+
+                    <p class="evento-descripcion">
+                        {{ evento.contenido|striptags|truncatewords:20 }}
+                    </p>
+
+                    {% if evento.tipo == 'Evento' and evento.fecha_evento %}
+                        <p class="evento-fecha-texto">
+                            <strong>Fecha:</strong>
+                            {{ evento.fecha_evento|date:"d/m/Y" }}
+                        </p>
+
+                        {% if evento.fecha_evento < hoy %}
+                            <span class="estado-evento finalizado">
+                                Finalizado
+                            </span>
+                        {% elif evento.fecha_evento == hoy %}
+                            <span class="estado-evento hoy">
+                                Hoy
+                            </span>
+                        {% else %}
+                            <span class="estado-evento proximo">
+                                Próximamente
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <span class="estado-evento novedad">
+                            Novedad
+                        </span>
+                    {% endif %}
+
+                    {% if evento.precio_texto %}
+                        <p>
+                            <strong>Precio:</strong>
+                            {{ evento.precio_texto }}
+                        </p>
+                    {% endif %}
+
+                    <a
+                        href="{% url 'detalle_evento' evento.id %}"
+                        class="btn-ver-evento"
+                    >
+                        Ver detalles →
+                    </a>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <div class="sin-eventos">
+                <h2>No hay eventos disponibles</h2>
+                <p>
+                    Revisa más tarde o ajusta tus filtros para ver más
+                    novedades y eventos.
+                </p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% if eventos.has_other_pages %}
+
+        <nav class="paginacion" aria-label="Paginación de eventos">
+
+            {% if eventos.has_previous %}
+
+                <a
+                    href="?page={{ eventos.previous_page_number }}&tipo={{ tipo_seleccionado|urlencode }}&buscar={{ buscar|urlencode }}"
+                    class="paginacion-boton"
+                >
+                    ← Anterior
+                </a>
+
+            {% endif %}
+
+            <div class="paginacion-numeros">
+
+                {% for numero in eventos.paginator.page_range %}
+
+                    {% if eventos.number == numero %}
+
+                        <span class="paginacion-numero activo">
+                            {{ numero }}
+                        </span>
+
+                    {% else %}
+
+                        <a
+                            href="?page={{ numero }}&tipo={{ tipo_seleccionado|urlencode }}&buscar={{ buscar|urlencode }}"
+                            class="paginacion-numero"
+                        >
+                            {{ numero }}
+                        </a>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            {% if eventos.has_next %}
+
+                <a
+                    href="?page={{ eventos.next_page_number }}&tipo={{ tipo_seleccionado|urlencode }}&buscar={{ buscar|urlencode }}"
+                    class="paginacion-boton"
+                >
+                    Siguiente →
+                </a>
+
+            {% endif %}
+
+        </nav>
+
+    {% endif %}
+
+</div>

@@ -1,0 +1,182 @@
+﻿/* ==========================================
+   1. LOGO DEL LOGIN
+   ========================================== */
+
+/* Ocultar el texto repetido ubicado sobre el formulario */
+.login-page .login-logo a,
+.login-page .login-logo b,
+.login-page .login-logo span {
+    font-size: 0 !important;
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
+/* Logo principal del login */
+.login-page .login-logo img {
+    width: 145px !important;
+    max-width: 145px !important;
+    height: 145px !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 auto 15px auto !important;
+    border-radius: 50% !important;
+}
+
+/* Evitar un segundo logo, en caso de que se duplique */
+.login-page .login-logo img:nth-of-type(n+2),
+.login-page .login-logo a:nth-of-type(n+2) {
+    display: none !important;
+}
+
+/* Centrar el cuadro del login */
+.login-page .login-box {
+    width: 360px !important;
+}
+
+/* ==========================================
+   2. LOGO DEL MENÃš LATERAL
+   ========================================== */
+
+.brand-link {
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 10px !important;
+    padding-right: 8px !important;
+}
+
+/* Mover el logo un poco hacia la izquierda */
+.brand-link .brand-image {
+    width: 38px !important;
+    height: 38px !important;
+    max-height: 38px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+
+    margin-left: -90px !important;
+    margin-right: 9px !important;
+}
+
+/* Texto Mirador Illari */
+.brand-link .brand-text {
+    margin-left: 0 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+}
+/* Fondo del login */
+
+.login-page {
+    background-image: url("/static/img/fondo.jpeg") !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-color: transparent !important;
+    min-height: 100vh !important;
+}
+
+/* ==================================================
+   MODAL DE VISTA PREVIA EN DJANGO ADMIN
+================================================== */
+
+.image-preview-modal {
+    position: fixed;
+    z-index: 999999;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.image-preview-modal.open {
+    display: flex;
+}
+
+.image-preview-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+}
+
+.image-preview-content {
+    position: relative;
+    z-index: 2;
+    width: min(650px, 100%);
+    max-height: 88vh;
+    padding: 55px 18px 18px;
+    overflow: auto;
+    background: #ffffff;
+    border-radius: 15px;
+}
+
+.image-preview-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 68vh;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.image-preview-close {
+    position: absolute;
+    z-index: 3;
+    top: 9px;
+    right: 10px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #b42318;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    font-size: 29px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.image-preview-title {
+    position: absolute;
+    top: 18px;
+    left: 20px;
+    right: 70px;
+    margin: 0;
+    color: #0b513d;
+    font-size: 1rem;
+}
+
+body.image-preview-open {
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .image-preview-modal {
+        padding: 12px;
+    }
+
+    .image-preview-content {
+        width: 100%;
+        padding: 55px 12px 12px;
+    }
+
+    .image-preview-img {
+        max-width: 100%;
+        max-height: 72vh;
+    }
+
+    .image-preview-admin-button {
+        width: 130px;
+        max-width: 130px;
+    }
+
+    .image-preview-admin-thumb {
+        width: 112px;
+        height: 82px;
+    }
+}
+
+

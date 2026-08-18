@@ -1,0 +1,137 @@
+<div class="resultados-servicios">
+
+    <div class="servicios-grid">
+
+        {% for servicio in servicios %}
+
+            <article class="servicio-card">
+
+                {% if servicio.imagen_principal %}
+
+                    <div
+                        class="imagen-adaptable servicio-imagen-contenedor"
+                        style="--imagen-fondo: url('{{ servicio.imagen_principal.url }}'); --imagen-proporcion: 16 / 10;"
+                    >
+
+                        <img
+                            src="{{ servicio.imagen_principal.url }}"
+                            alt="Imagen del servicio {{ servicio.nombre }}"
+                            loading="lazy"
+                        >
+
+                    </div>
+
+                {% endif %}
+
+                <div class="servicio-contenido">
+
+                    <span class="etiqueta-tipo">
+                        {{ servicio.tipo }}
+                    </span>
+
+                    <h2>{{ servicio.nombre }}</h2>
+
+                    <p>
+                        {{ servicio.descripcion|striptags|truncatewords:18 }}
+                    </p>
+
+                    <div class="precio-desde">
+                        {% if servicio.precio_texto %}
+                            <strong>{{ servicio.precio_texto }}</strong>
+                        {% elif servicio.precio_desde is not None %}
+                            Desde: <strong>${{ servicio.precio_desde|floatformat:2 }}</strong>
+                        {% elif servicio.precio_adulto is not None %}
+                            Desde: <strong>${{ servicio.precio_adulto|floatformat:2 }}</strong>
+                        {% else %}
+                            <strong>Consultar precio</strong>
+                        {% endif %}
+                    </div>
+
+                    {% if servicio.capacidad %}
+                        <p>
+                            <strong>Capacidad:</strong>
+                            {{ servicio.capacidad }} personas
+                        </p>
+                    {% endif %}
+
+                    <a
+                        href="{% url 'detalle_servicio' servicio.id %}"
+                        class="btn-ver-detalles"
+                    >
+                        Ver detalles →
+                    </a>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <div class="sin-resultados">
+                <h2>No se encontraron resultados</h2>
+                <p>
+                    Intenta con otra búsqueda o selecciona un tipo diferente
+                    de servicio.
+                </p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% if servicios.has_other_pages %}
+
+        <nav class="paginacion" aria-label="Paginación de servicios">
+
+            {% if servicios.has_previous %}
+
+                <a
+                    href="?page={{ servicios.previous_page_number }}&buscar={{ buscar|urlencode }}&tipo={{ tipo_seleccionado|urlencode }}"
+                    class="paginacion-boton"
+                >
+                    ← Anterior
+                </a>
+
+            {% endif %}
+
+            <div class="paginacion-numeros">
+
+                {% for numero in servicios.paginator.page_range %}
+
+                    {% if servicios.number == numero %}
+
+                        <span class="paginacion-numero activo">
+                            {{ numero }}
+                        </span>
+
+                    {% else %}
+
+                        <a
+                            href="?page={{ numero }}&buscar={{ buscar|urlencode }}&tipo={{ tipo_seleccionado|urlencode }}"
+                            class="paginacion-numero"
+                        >
+                            {{ numero }}
+                        </a>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            {% if servicios.has_next %}
+
+                <a
+                    href="?page={{ servicios.next_page_number }}&buscar={{ buscar|urlencode }}&tipo={{ tipo_seleccionado|urlencode }}"
+                    class="paginacion-boton"
+                >
+                    Siguiente →
+                </a>
+
+            {% endif %}
+
+        </nav>
+
+    {% endif %}
+
+</div>
