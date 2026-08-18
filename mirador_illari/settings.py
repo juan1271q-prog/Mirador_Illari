@@ -207,6 +207,9 @@ GEMINI_MODEL_NAME = os.getenv(
 )
 GEMINI_API_ENDPOINT = os.getenv("GEMINI_API_ENDPOINT", "")
 
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -214,3 +217,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+    CSRF_TRUSTED_ORIGINS = [
+    "https://miradorillari-production.up.railway.app",
+]
