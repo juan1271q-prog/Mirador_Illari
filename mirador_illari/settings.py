@@ -177,6 +177,49 @@ JAZZMIN_SETTINGS = {
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
+# Almacenamiento de archivos multimedia
+USE_RAILWAY_BUCKET = all(
+    os.getenv(variable)
+    for variable in (
+        "BUCKET",
+        "ACCESS_KEY_ID",
+        "SECRET_ACCESS_KEY",
+        "REGION",
+        "ENDPOINT",
+    )
+)
+
+if USE_RAILWAY_BUCKET:
+    # Producción: Railway Storage Bucket
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "bucket_name": os.getenv("BUCKET"),
+                "access_key": os.getenv("ACCESS_KEY_ID"),
+                "secret_key": os.getenv("SECRET_ACCESS_KEY"),
+                "region_name": os.getenv("REGION"),
+                "endpoint_url": os.getenv("ENDPOINT"),
+                "addressing_style": "virtual",
+                "querystring_auth": True,
+                "querystring_expire": 3600,
+                "file_overwrite": False,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    # Desarrollo local: carpeta media/
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 CKEDITOR_5_CONFIGS = {
     "default": {
