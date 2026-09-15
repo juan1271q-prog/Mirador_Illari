@@ -6,24 +6,38 @@
 
     <div class="container galeria-portada-contenido">
 
-        <span class="galeria-etiqueta">
-            Nuestros recuerdos
+        <span class="galeria-portada-etiqueta">
+            Galería multimedia
         </span>
 
-        <h1>Galería Multimedia</h1>
+        <h1>Descubre la belleza del lugar</h1>
 
         <p>
-            Explora imágenes y momentos especiales del
-            Centro Turístico Mirador Illari.
+            Explora fotos y momentos especiales de cada visita.
         </p>
 
     </div>
 
 </section>
 
-<section class="galeria-seccion">
+<section class="galeria-seccion galeria-contenido">
 
-    <div class="container">
+    <div class="container galeria-contenido-interior">
+
+        <div class="galeria-encabezado">
+
+            <span class="galeria-subtitulo">
+                Momentos que inspiran
+            </span>
+
+            <h2>Galería multimedia</h2>
+
+            <p>
+                Revive paisajes, cultura y experiencias a través de imágenes
+                de cada recorrido.
+            </p>
+
+        </div>
 
         {% if galeria %}
 
@@ -80,11 +94,10 @@
 
             <div class="galeria-sin-datos">
 
-                <h2>Galería no disponible</h2>
+                <h2>Aún no hay contenido multimedia disponible</h2>
 
                 <p>
-                    Todavía no existen imágenes registradas
-                    por el administrador.
+                    Pronto podrás ver fotos y videos del lugar.
                 </p>
 
             </div>
@@ -133,6 +146,30 @@
             </nav>
 
         {% endif %}
+
+    </div>
+
+</section>
+
+
+<section class="galeria-cta">
+
+    <div class="container galeria-cta-contenido">
+
+        <div>
+            <span class="galeria-cta-etiqueta">Planifica tu visita</span>
+
+            <h2>Vive tu propia experiencia</h2>
+
+            <p>
+                Conecta con la naturaleza, la cultura y los mejores momentos
+                del lugar.
+            </p>
+        </div>
+
+        <a href="{% url 'contacto' %}" class="galeria-btn-cta">
+            Contáctanos
+        </a>
 
     </div>
 

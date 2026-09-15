@@ -38,7 +38,7 @@
 .contacto-portada h1 {
     margin: 0 0 8px;
     color: #ffffff;
-    font-size: clamp(2rem, 4vw, 2.65rem);
+    font-size: 2.65rem;
     line-height: 1.1;
 }
 
@@ -361,6 +361,8 @@
 ================================================== */
 
 @media (max-width: 900px) {
+    .contacto-portada h1 { font-size: 2.15rem; }
+
     .contacto-grid {
         grid-template-columns: 1fr;
     }
@@ -382,7 +384,7 @@
     }
 
     .contacto-portada h1 {
-        font-size: 1.9rem;
+        font-size: 1.85rem;
     }
 
     .contacto-portada p {
@@ -398,6 +400,358 @@
         border-radius: 13px;
     }
 
+}
+
+/* ==================================================
+   REDISEÑO DEL MÓDULO DE CONTACTO
+================================================== */
+
+.contacto-portada {
+    position: relative;
+    min-height: 200px;
+    padding: 22px 5% 26px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--verde-bosque);
+}
+
+.contacto-portada::before,
+.contacto-portada::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.contacto-portada::before {
+    z-index: -3;
+    background: url("../img/fondo.jpeg") center center / cover no-repeat;
+    filter: saturate(0.94) brightness(0.86);
+    transform: scale(1.01);
+}
+
+.contacto-portada::after {
+    z-index: -2;
+    background: linear-gradient(
+        90deg,
+        rgba(4, 42, 31, 0.94) 0%,
+        rgba(5, 58, 43, 0.84) 42%,
+        rgba(4, 42, 31, 0.34) 100%
+    );
+}
+
+.contacto-portada-contenido {
+    position: relative;
+    z-index: 1;
+    width: min(760px, 100%);
+    margin: 0 auto 0 0;
+    text-align: left;
+}
+
+.contacto-portada-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    padding: 7px 14px;
+    color: var(--crema);
+    background: rgba(5, 58, 43, 0.72);
+    border: 1px solid rgba(213, 173, 69, 0.85);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.contacto-portada h1 {
+    max-width: 540px;
+    margin: 0 0 8px;
+    color: #fffaf0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 0;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.28);
+}
+
+.contacto-portada p {
+    max-width: 520px;
+    margin: 0;
+    color: rgba(255, 250, 240, 0.92);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.contacto-contenido {
+    position: relative;
+    z-index: 2;
+    padding: 42px 5% 68px;
+    overflow-x: clip;
+    overflow-y: visible;
+    background: var(--crema);
+}
+
+.contacto-contenido::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -34px;
+    z-index: 0;
+    width: 138%;
+    height: 68px;
+    background: var(--crema);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.contacto-contenido > .container {
+    position: relative;
+    z-index: 1;
+}
+
+.contacto-encabezado {
+    max-width: 760px;
+    margin: 0 auto 34px;
+    text-align: center;
+}
+
+.contacto-subtitulo,
+.contacto-cta-etiqueta {
+    color: var(--verde-secundario);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.contacto-encabezado h2 {
+    margin: 12px 0;
+    color: var(--verde-bosque);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.5rem;
+    line-height: 1.08;
+}
+
+.contacto-encabezado p {
+    max-width: 620px;
+    margin: 0 auto;
+    color: var(--texto-secundario);
+    line-height: 1.6;
+}
+
+.contacto-grid {
+    width: min(1180px, 100%);
+    margin: 0 auto 32px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.4fr);
+    gap: 24px;
+}
+
+.contacto-tarjeta {
+    padding: 26px;
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-radius: 18px;
+    box-shadow: var(--sombra-suave);
+}
+
+.contacto-informacion-card {
+    background: rgba(250, 249, 245, 0.92);
+}
+
+.contacto-ubicacion-card {
+    background: rgba(221, 233, 225, 0.42);
+}
+
+.contacto-tarjeta-encabezado h2 {
+    color: var(--verde-bosque);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.8rem;
+}
+
+.contacto-mapa,
+.contacto-mapa-alternativo {
+    min-height: 360px;
+    border-radius: 14px;
+}
+
+.contacto-beneficios {
+    width: min(1180px, 100%);
+    margin: 0 auto 32px;
+}
+
+.contacto-beneficios-grid {
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    border-radius: 18px;
+    color: var(--crema);
+    background:
+        radial-gradient(circle at 92% 15%, rgba(213, 173, 69, 0.12), transparent 30%),
+        linear-gradient(120deg, var(--verde-bosque), var(--verde-principal));
+    box-shadow: var(--sombra-media);
+}
+
+.contacto-beneficio {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+}
+
+.contacto-beneficio-icono {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    color: var(--dorado);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    font-size: 1.35rem;
+}
+
+.contacto-beneficio h3 {
+    margin: 3px 0 5px;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.contacto-beneficio p {
+    margin: 0;
+    color: rgba(250, 249, 245, 0.82);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.contacto-cta {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+}
+
+.contacto-cta-contenido {
+    padding: 34px 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    border-radius: 18px;
+    color: var(--crema);
+    background:
+        radial-gradient(circle at 92% 15%, rgba(213, 173, 69, 0.12), transparent 32%),
+        linear-gradient(120deg, var(--verde-bosque), var(--verde-principal));
+    box-shadow: var(--sombra-media);
+}
+
+.contacto-cta-etiqueta {
+    color: rgba(250, 249, 245, 0.82);
+}
+
+.contacto-cta h2 {
+    margin: 10px 0 8px;
+    color: #ffffff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.15rem;
+    line-height: 1.12;
+}
+
+.contacto-cta p {
+    max-width: 620px;
+    margin: 0;
+    color: rgba(250, 249, 245, 0.88);
+    line-height: 1.6;
+}
+
+.contacto-btn-cta {
+    min-height: 48px;
+    padding: 0 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    color: var(--verde-bosque);
+    background: var(--crema);
+    border: 1px solid rgba(213, 173, 69, 0.45);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.contacto-btn-cta:hover {
+    color: var(--verde-bosque);
+    background: var(--superficie);
+    transform: translateY(-2px);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 980px) {
+    .contacto-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contacto-beneficios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contacto-cta-contenido {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 620px) {
+    .contacto-portada {
+        min-height: auto;
+        padding: 20px 18px 24px;
+    }
+
+    .contacto-portada h1 {
+        font-size: 1.85rem;
+    }
+
+    .contacto-contenido {
+        padding: 34px 18px 56px;
+    }
+
+    .contacto-contenido::before {
+        top: -25px;
+        width: 155%;
+        height: 52px;
+    }
+
+    .contacto-encabezado h2 {
+        font-size: 1.8rem;
+    }
+
+    .contacto-beneficios-grid,
+    .contacto-cta-contenido {
+        padding: 22px 18px;
+    }
+
+    .contacto-cta h2 {
+        font-size: 1.8rem;
+    }
+
+    .contacto-btn-cta {
+        width: 100%;
+    }
 }
 
 /* ==================================================
@@ -429,7 +783,7 @@
 
 .contacto-portada h1 {
     margin: 0 0 10px;
-    font-size: clamp(2rem, 4vw, 2.65rem);
+    font-size: 2.65rem;
     font-weight: 800;
     line-height: 1.15;
 }
@@ -533,7 +887,7 @@
 
 @media (max-width: 600px) {
     .contacto-portada h1 {
-        font-size: 1.95rem;
+        font-size: 1.85rem;
     }
 
     .contacto-portada p {

@@ -199,18 +199,42 @@ class ContenidoInicio(models.Model):
     atractivo_1_activo = models.BooleanField(default=True, verbose_name="Mostrar tarjeta Paisajes")
     atractivo_1_titulo = models.CharField(max_length=100, blank=True, verbose_name="Título Tarjeta 1")
     atractivo_1_desc = CKEditor5Field('Descripción Tarjeta 1', config_name='default', blank=True)
+    atractivo_1_imagen = models.ImageField(
+        upload_to="inicio/atractivos/",
+        blank=True,
+        null=True,
+        verbose_name="Imagen de Paisajes",
+    )
     
     atractivo_2_activo = models.BooleanField(default=True, verbose_name="Mostrar tarjeta Aventura")
     atractivo_2_titulo = models.CharField(max_length=100, blank=True, verbose_name="Título Tarjeta 2")
     atractivo_2_desc = CKEditor5Field('Descripción Tarjeta 2', config_name='default', blank=True)
+    atractivo_2_imagen = models.ImageField(
+        upload_to="inicio/atractivos/",
+        blank=True,
+        null=True,
+        verbose_name="Imagen de Aventura",
+    )
     
     atractivo_3_activo = models.BooleanField(default=True, verbose_name="Mostrar tarjeta Cultura local")
     atractivo_3_titulo = models.CharField(max_length=100, blank=True, verbose_name="Título Tarjeta 3")
     atractivo_3_desc = CKEditor5Field('Descripción Tarjeta 3', config_name='default', blank=True)
+    atractivo_3_imagen = models.ImageField(
+        upload_to="inicio/atractivos/",
+        blank=True,
+        null=True,
+        verbose_name="Imagen de Cultura local",
+    )
     
     atractivo_4_activo = models.BooleanField(default=True, verbose_name="Mostrar tarjeta Atención")
     atractivo_4_titulo = models.CharField(max_length=100, blank=True, verbose_name="Título Tarjeta 4")
     atractivo_4_desc = CKEditor5Field('Descripción Tarjeta 4', config_name='default', blank=True)
+    atractivo_4_imagen = models.ImageField(
+        upload_to="inicio/atractivos/",
+        blank=True,
+        null=True,
+        verbose_name="Imagen de Atención",
+    )
 
     class Meta:
         verbose_name = "Texto de Inicio"

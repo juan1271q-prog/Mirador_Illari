@@ -39,6 +39,17 @@ function textoPlano(valor) {
         .trim();
 }
 
+function limpiarTextoParaChat(texto) {
+    if (!texto) {
+        return "";
+    }
+
+    return textoPlano(texto)
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .trim();
+}
+
 function obtenerTokenCsrf() {
     const tokenCookie = obtenerCookie("csrftoken");
 
@@ -735,6 +746,12 @@ function iniciarChatbot() {
     const botonEnviar =
         document.getElementById("sendBtn");
 
+    const botonMicrofono =
+        document.getElementById("chatbotMicBtn");
+
+    const botonVoz =
+        document.getElementById("chatbotVoiceBtn");
+
     function ajustarChatbotTeclado() {
         if (!window.visualViewport) {
             document.documentElement.style.setProperty(
@@ -807,6 +824,7 @@ function iniciarChatbot() {
     botonEnviar.setAttribute("aria-label", textoEnviar);
 
     let enviando = false;
+    let vozActivada = true;
 
     if (horaInicial) {
         horaInicial.textContent = obtenerHoraActual();
@@ -1063,6 +1081,259 @@ function iniciarChatbot() {
         return mensaje;
     }
 
+    function normalizarTextoVoz(texto) {
+        return String(texto || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[¿?¡!.,;:]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function normalizarComando(texto) {
+        return normalizarTextoVoz(texto);
+    }
+
+    function detectarComandoNavegacion(texto) {
+        const destinosDirectos = [
+            "inicio",
+            "pagina principal",
+            "servicios",
+            "galeria",
+            "eventos",
+            "contacto",
+            "nosotros"
+        ];
+
+        if (destinosDirectos.includes(texto)) {
+            return texto === "pagina principal"
+                ? "inicio"
+                : texto;
+        }
+
+        const acciones = [
+            "ir",
+            "ve",
+            "vete",
+            "ver",
+            "dirigete",
+            "llevame",
+            "abre",
+            "abrir",
+            "muestrame",
+            "mostrar",
+            "navega",
+            "regresa",
+            "regresar",
+            "volver",
+            "quiero ir",
+            "quiero ver"
+        ];
+
+        const tieneAccion = acciones.some(function (accion) {
+            return new RegExp(`(^|\\s)${accion}(\\s|$)`).test(texto);
+        });
+
+        const contieneDestino = function (destinos) {
+            return destinos.some(function (destino) {
+                return new RegExp(`(^|\\s)${destino}(\\s|$)`).test(texto);
+            });
+        };
+
+        if (
+            tieneAccion &&
+            contieneDestino(["inicio", "pagina principal"])
+        ) {
+            return "inicio";
+        }
+
+        if (tieneAccion && contieneDestino(["servicio", "servicios"])) {
+            return "servicios";
+        }
+
+        if (
+            tieneAccion &&
+            contieneDestino([
+                "galeria",
+                "foto",
+                "fotos",
+                "imagen",
+                "imagenes"
+            ])
+        ) {
+            return "galeria";
+        }
+
+        if (
+            tieneAccion &&
+            contieneDestino(["evento", "eventos", "novedad", "novedades"])
+        ) {
+            return "eventos";
+        }
+
+        if (tieneAccion && contieneDestino(["contacto"])) {
+            return "contacto";
+        }
+
+        if (tieneAccion && contieneDestino(["nosotros"])) {
+            return "nosotros";
+        }
+
+        return null;
+    }
+
+    function hablar(texto) {
+        if (!vozActivada || !("speechSynthesis" in window)) {
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const mensaje = new SpeechSynthesisUtterance(
+            texto
+        );
+
+        mensaje.lang = "es-EC";
+        mensaje.rate = 1;
+        mensaje.pitch = 1;
+        window.speechSynthesis.speak(mensaje);
+    }
+
+    function responderConVoz(texto, datos = null) {
+        const textoLimpio = limpiarTextoParaChat(texto);
+
+        if (!textoLimpio) {
+            return;
+        }
+
+        crearMensaje(textoLimpio, "bot", datos);
+        hablar(textoLimpio);
+    }
+
+    function programarNavegacion(texto, url) {
+        responderConVoz(texto);
+        window.setTimeout(function () {
+            window.location.href = url;
+        }, 900);
+    }
+
+    const rutasChatbot = {
+        inicio: widget.dataset.inicio || widget.dataset.urlInicio,
+        nosotros: widget.dataset.nosotros || widget.dataset.urlNosotros,
+        servicios: widget.dataset.servicios || widget.dataset.urlServicios,
+        eventos: widget.dataset.eventos || widget.dataset.urlEventos,
+        galeria: widget.dataset.galeria || widget.dataset.urlGaleria,
+        contacto: widget.dataset.contacto || widget.dataset.urlContacto
+    };
+
+    function ejecutarNavegacion(destino) {
+        const url = rutasChatbot[destino];
+
+        if (!url) {
+            console.error("No existe URL para:", destino);
+            return false;
+        }
+
+        const mensajes = {
+            inicio: "Claro, te llevaré al inicio.",
+            nosotros: "Claro, te llevaré a la sección Nosotros.",
+            servicios: "Claro, te llevaré a la sección Servicios.",
+            eventos: "Claro, te llevaré a Eventos y Novedades.",
+            galeria: "Claro, te llevaré a la Galería.",
+            contacto: "Claro, te llevaré a la sección Contacto."
+        };
+
+        programarNavegacion(mensajes[destino], url);
+        return true;
+    }
+
+    function procesarComandoVoz(textoOriginal) {
+        const normalizado = normalizarComando(textoOriginal);
+
+        if (/^(ir al principio|ir arriba de todo)$/.test(normalizado)) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            responderConVoz("Claro, te llevaré al principio.");
+            return true;
+        }
+
+        if (normalizado === "ir al final") {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth"
+            });
+            responderConVoz("Claro, te llevaré al final.");
+            return true;
+        }
+
+        if (/^(subir|sube|arriba|ir arriba)$/.test(normalizado)) {
+            window.scrollBy({
+                top: -window.innerHeight * 0.8,
+                behavior: "smooth"
+            });
+            responderConVoz("Claro, subimos un poco.");
+            return true;
+        }
+
+        if (/^(bajar|baja|abajo|seguir abajo)$/.test(normalizado)) {
+            window.scrollBy({
+                top: window.innerHeight * 0.8,
+                behavior: "smooth"
+            });
+            responderConVoz("Claro, bajamos un poco.");
+            return true;
+        }
+
+        if (/^(abre|abrir) (el )?(chatbot|asistente)$/.test(normalizado)) {
+            abrirChatbot();
+            return true;
+        }
+
+        if (/^(minimiza|minimizar) (el )?chatbot$/.test(normalizado)) {
+            minimizarChatbot();
+            return true;
+        }
+
+        if (/^(cierra|cerrar) (el )?chatbot$/.test(normalizado)) {
+            cerrarChatbot();
+            return true;
+        }
+
+        if (/^(que puedo decir|comandos|ayuda de voz|que puedes hacer)$/.test(normalizado)) {
+            responderConVoz(
+                "Puedes pedirme información o decir: ir a servicios, abrir galería, ver eventos, ir a contacto, subir, bajar o volver al inicio."
+            );
+            return true;
+        }
+
+        const destino = detectarComandoNavegacion(normalizado);
+        if (destino) {
+            crearMensaje(textoOriginal, "user");
+            return ejecutarNavegacion(destino);
+        }
+
+        const busqueda = normalizado.match(
+            /^(muestrame|quiero ver|buscar|ver)\s+(.+)$/
+        );
+
+        if (
+            busqueda &&
+            rutasChatbot.servicios &&
+            busqueda[2] &&
+            !normalizado.includes("servicios")
+        ) {
+            const url = new URL(rutasChatbot.servicios, window.location.origin);
+            url.searchParams.set("buscar", busqueda[2]);
+            programarNavegacion(
+                `Claro, buscaré ${busqueda[2]} en nuestros servicios.`,
+                url.href
+            );
+            return true;
+        }
+
+        return false;
+    }
+
     function cambiarEstadoEnvio(estado) {
         enviando = estado;
         botonEnviar.disabled = estado;
@@ -1092,12 +1363,13 @@ function iniciarChatbot() {
                 mensaje
             );
 
-            indicador.remove();
-            crearMensaje(
-                resultado.respuesta,
-                "bot",
-                resultado
+            const respuesta = resultado.respuesta;
+            const respuestaLimpia = limpiarTextoParaChat(
+                respuesta
             );
+
+            indicador.remove();
+            responderConVoz(respuestaLimpia, resultado);
         } catch (error) {
             console.error(
                 "Error al consultar el chatbot:",
@@ -1266,6 +1538,130 @@ function iniciarChatbot() {
             enviarMensajeEntrada();
         }
     );
+
+    if (botonVoz) {
+        botonVoz.addEventListener("click", function () {
+            vozActivada = !vozActivada;
+            botonVoz.textContent = vozActivada ? "🔊" : "🔇";
+            botonVoz.setAttribute("aria-pressed", String(vozActivada));
+            botonVoz.setAttribute(
+                "aria-label",
+                vozActivada
+                    ? "Desactivar lectura de respuestas"
+                    : "Activar lectura de respuestas"
+            );
+            botonVoz.title = vozActivada
+                ? "Desactivar lectura"
+                : "Activar lectura";
+
+            if (!vozActivada && "speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+        });
+    }
+
+    if (botonMicrofono) {
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            botonMicrofono.addEventListener("click", function () {
+                responderConVoz(
+                    "Tu navegador no admite reconocimiento de voz. Puedes continuar utilizando el chat escrito."
+                );
+            });
+        } else {
+            const reconocimiento = new SpeechRecognition();
+            let microfonoActivo = false;
+            reconocimiento.lang = "es-EC";
+            reconocimiento.continuous = false;
+            reconocimiento.interimResults = false;
+
+            reconocimiento.onstart = function () {
+                microfonoActivo = true;
+                botonMicrofono.classList.add(
+                    "microfono-activo"
+                );
+                botonMicrofono.textContent = "🎤";
+                botonMicrofono.title = "Escuchando...";
+                botonMicrofono.setAttribute(
+                    "aria-label",
+                    "Escuchando"
+                );
+            };
+
+            reconocimiento.onspeechstart = function () {
+                botonMicrofono.classList.add("microfono-hablando");
+            };
+
+            reconocimiento.onspeechend = function () {
+                botonMicrofono.classList.remove("microfono-hablando");
+            };
+
+            reconocimiento.onend = function () {
+                microfonoActivo = false;
+                botonMicrofono.classList.remove(
+                    "microfono-activo",
+                    "microfono-hablando"
+                );
+                botonMicrofono.textContent = "🎤";
+                botonMicrofono.title = "Hablar";
+                botonMicrofono.setAttribute(
+                    "aria-label",
+                    "Hablar con el chatbot"
+                );
+            };
+
+            reconocimiento.onerror = function (evento) {
+                microfonoActivo = false;
+                botonMicrofono.classList.remove(
+                    "microfono-activo",
+                    "microfono-hablando"
+                );
+                botonMicrofono.textContent = "🎤";
+                botonMicrofono.title = "Hablar";
+                botonMicrofono.setAttribute(
+                    "aria-label",
+                    "Hablar con el chatbot"
+                );
+
+                if (evento.error === "not-allowed") {
+                    responderConVoz(
+                        "No se pudo acceder al micrófono. Verifica el permiso del navegador."
+                    );
+                } else if (evento.error === "audio-capture") {
+                    responderConVoz(
+                        "No se encontró un micrófono disponible. Puedes continuar utilizando el chat escrito."
+                    );
+                }
+            };
+
+            reconocimiento.onresult = function (evento) {
+                const textoOriginal =
+                    evento.results[evento.results.length - 1][0]
+                        .transcript
+                        .trim();
+                entrada.value = textoOriginal;
+
+                if (procesarComandoVoz(textoOriginal)) {
+                    return;
+                }
+
+                enviarConsulta(textoOriginal);
+            };
+
+            botonMicrofono.addEventListener("click", function () {
+                try {
+                    reconocimiento.start();
+                } catch (error) {
+                    if (error.name !== "InvalidStateError") {
+                        console.error("No fue posible iniciar el micrófono:", error);
+                    }
+                }
+            });
+        }
+    }
 
     entrada.addEventListener(
         "focusin",

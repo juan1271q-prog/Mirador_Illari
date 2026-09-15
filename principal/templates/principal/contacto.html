@@ -6,27 +6,39 @@
 
     <div class="container contacto-portada-contenido">
 
-        <span class="contacto-etiqueta">
-            Estamos para ayudarte
+        <span class="contacto-portada-etiqueta">
+            Contáctanos
         </span>
 
         <h1>
-            {{ info_site.contacto_titulo|default:"Contacto" }}
+            {{ info_site.contacto_titulo|default:"Estamos aquí para ayudarte" }}
         </h1>
 
         <p>
-            Comunícate con nosotros para obtener información sobre
-            nuestros servicios, horarios, ubicación y actividades.
-            ¡Estamos felices de atenderte!
+            Comunícate con nosotros para resolver tus dudas y planificar
+            una visita especial.
         </p>
 
     </div>
 
 </section>
 
-<section class="contacto-seccion">
+<section class="contacto-seccion contacto-contenido">
 
     <div class="container">
+
+        <header class="contacto-encabezado">
+
+            <span class="contacto-subtitulo">Hablemos</span>
+
+            <h2>Contáctanos</h2>
+
+            <p>
+                Estamos listos para ayudarte a organizar una visita clara,
+                cómoda y memorable.
+            </p>
+
+        </header>
 
         {% if contacto %}
 
@@ -347,6 +359,79 @@
                 </article>
 
             </div>
+
+            <section class="contacto-beneficios" aria-labelledby="contacto-beneficios-titulo">
+
+                <h2 id="contacto-beneficios-titulo" class="sr-only">
+                    Beneficios de nuestra atención
+                </h2>
+
+                <div class="contacto-beneficios-grid">
+
+                    <article class="contacto-beneficio">
+                        <span class="contacto-beneficio-icono" aria-hidden="true">↗</span>
+                        <div>
+                            <h3>Respuesta rápida</h3>
+                            <p>Recibe orientación para planificar tu visita.</p>
+                        </div>
+                    </article>
+
+                    <article class="contacto-beneficio">
+                        <span class="contacto-beneficio-icono" aria-hidden="true">♡</span>
+                        <div>
+                            <h3>Atención personalizada</h3>
+                            <p>Resolvemos tus consultas de forma cercana.</p>
+                        </div>
+                    </article>
+
+                    <article class="contacto-beneficio">
+                        <span class="contacto-beneficio-icono" aria-hidden="true">✦</span>
+                        <div>
+                            <h3>Experiencias únicas</h3>
+                            <p>Encuentra el mejor plan para tu recorrido.</p>
+                        </div>
+                    </article>
+
+                </div>
+
+            </section>
+
+            <section class="contacto-cta" aria-labelledby="contacto-cta-titulo">
+
+                <div class="contacto-cta-contenido">
+
+                    <div>
+                        <span class="contacto-cta-etiqueta">Planifica tu visita</span>
+                        <h2 id="contacto-cta-titulo">Tu próxima experiencia empieza aquí</h2>
+                        <p>
+                            Escríbenos y recibe la información que necesitas
+                            para organizar tu recorrido.
+                        </p>
+                    </div>
+
+                    {% if contacto.whatsapp %}
+                        <a
+                            class="contacto-btn-cta"
+                            href="https://wa.me/{{ contacto.whatsapp|cut:'+'|cut:' '|cut:'-' }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Escríbenos
+                        </a>
+                    {% elif map_link %}
+                        <a
+                            class="contacto-btn-cta"
+                            href="{{ map_link }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Ver ubicación
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </section>
 
         {% else %}
 

@@ -35,7 +35,7 @@
             </span>
 
             <h2>
-                Sobre el Centro Turístico Mirador Illari
+                Un destino conectado con la naturaleza
             </h2>
 
             {% if informacion.descripcion %}
@@ -84,7 +84,7 @@
         <div class="nosotros-encabezado">
 
             <span class="nosotros-subtitulo">
-                Identidad institucional
+                Nuestra esencia
             </span>
 
             <h2>
@@ -109,37 +109,33 @@
                 </article>
             {% endif %}
 
-            <div class="nosotros-mision-vision-grid">
+            {% if informacion.mision %}
+                <article class="nosotros-tarjeta">
 
-                {% if informacion.mision %}
-                    <article class="nosotros-tarjeta">
+                    <span class="nosotros-icono">🌱</span>
 
-                        <span class="nosotros-icono">🌱</span>
+                    <h3>Misión</h3>
 
-                        <h3>Misión</h3>
+                    <div>
+                        {{ informacion.mision|safe }}
+                    </div>
 
-                        <div>
-                            {{ informacion.mision|safe }}
-                        </div>
+                </article>
+            {% endif %}
 
-                    </article>
-                {% endif %}
+            {% if informacion.vision %}
+                <article class="nosotros-tarjeta">
 
-                {% if informacion.vision %}
-                    <article class="nosotros-tarjeta">
+                    <span class="nosotros-icono">👁️</span>
 
-                        <span class="nosotros-icono">👁️</span>
+                    <h3>Visión</h3>
 
-                        <h3>Visión</h3>
+                    <div>
+                        {{ informacion.vision|safe }}
+                    </div>
 
-                        <div>
-                            {{ informacion.vision|safe }}
-                        </div>
-
-                    </article>
-                {% endif %}
-
-            </div>
+                </article>
+            {% endif %}
 
         </div>
 
@@ -166,7 +162,7 @@
 
             <p>
                 Principios que orientan la atención y las actividades
-                del Centro Turístico Mirador Illari.
+                del lugar.
             </p>
 
         </div>
@@ -213,16 +209,15 @@
         <div>
 
             <span class="nosotros-cta-etiqueta">
-                Visítanos
+                Vive una experiencia diferente
             </span>
 
             <h2>
-                Conoce nuestros servicios turísticos
+                Descubre un lugar para conectar con la naturaleza
             </h2>
 
             <p>
-                Descubre las actividades, espacios y experiencias
-                disponibles en el Centro Turístico Mirador Illari.
+                Naturaleza, cultura y aventura te esperan en Puerto Napo.
             </p>
 
         </div>

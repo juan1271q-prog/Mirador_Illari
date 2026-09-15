@@ -3,6 +3,7 @@
 
 # Entornos virtuales
 env/
+env_viejo/
 venv/
 .venv/
 
@@ -14,12 +15,18 @@ __pycache__/
 *.log
 db.sqlite3
 
+# Archivos subidos por Django
+media/
+
 # Archivos generados
 staticfiles/
 
 # Respaldos de PostgreSQL
 *.sql
 *.backup
+
+# Copias ZIP locales
+media_ANTES_AMPLIACION_2026-08-18.zip
 
 # VS Code
 .vscode/
@@ -45,8 +52,5 @@ inspect_genai_response.py
 split_css_debug.py
 verificar_css_modular.py
 
-# Imágenes utilizadas únicamente para pruebas
-media/eventos/evento-prueba*
-media/eventos/test_evento*
-media/servicios/servicio-prueba*
-media/servicios/test_servicio*
+# Configuración local de Railway CLI
+.railway/

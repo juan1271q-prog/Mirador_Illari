@@ -31,77 +31,77 @@
 
     <link
         rel="stylesheet"
-        href="{% static 'css/01_base.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/01_base.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/02_servicios.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/02_servicios.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/03_eventos.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/03_eventos.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/04_componentes.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/04_componentes.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/05_galeria.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/05_galeria.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/06_tarjetas_compartidas.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/06_tarjetas_compartidas.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/07_inicio.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/07_inicio.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/08_nosotros.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/08_nosotros.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/09_contacto.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/09_contacto.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/10_footer.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/10_footer.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/11_chatbot.css' %}?v=20260817-chatbot-mobile-fix-1"
+        href="{% static 'css/11_chatbot.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/12_error_404.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/12_error_404.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/13_paginacion.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/13_paginacion.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/14_imagenes_adaptables.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/14_imagenes_adaptables.css' %}?v=20260822-shell"
     >
 
     <link
         rel="stylesheet"
-        href="{% static 'css/15_redes_sociales.css' %}?v=20260816-mobile-final"
+        href="{% static 'css/15_redes_sociales.css' %}?v=20260822-shell"
     >
 
     {% if info_site_logo_url %}
@@ -117,6 +117,8 @@
     {% endif %}
 </head>
 <body>
+
+<div class="site-shell">
 
 <header class="header">
     <nav class="navbar">
@@ -169,7 +171,7 @@
     </nav>
 </header>
 
-<main>
+<main class="site-main">
     {% block contenido %}
     {% endblock %}
 </main>
@@ -387,6 +389,8 @@
 
 </footer>
 
+</div>
+
 <!-- =====================================================
      CHATBOT MIRADOR ILLARI
      ===================================================== -->
@@ -400,6 +404,18 @@
     data-chatbot-placeholder="{{ info_site.chatbot_placeholder|default:'Escribe tu mensaje...' }}"
     data-chatbot-send-label="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
     data-chatbot-options-label="{{ info_site.chatbot_opciones_etiqueta|default:'Opciones rápidas' }}"
+    data-url-inicio="{% url 'inicio' %}"
+    data-url-nosotros="{% url 'nosotros' %}"
+    data-nosotros="{% url 'nosotros' %}"
+    data-inicio="{% url 'inicio' %}"
+    data-url-servicios="{% url 'servicios' %}"
+    data-servicios="{% url 'servicios' %}"
+    data-url-eventos="{% url 'eventos' %}"
+    data-eventos="{% url 'eventos' %}"
+    data-url-galeria="{% url 'galeria' %}"
+    data-galeria="{% url 'galeria' %}"
+    data-url-contacto="{% url 'contacto' %}"
+    data-contacto="{% url 'contacto' %}"
 >
     <button
         type="button"
@@ -574,7 +590,7 @@
 
                     <div class="bubble">
                         <div class="bubble-text">
-                            {{ info_site.chatbot_intro|default:'Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?'|striptags }}
+                            {{ info_site.chatbot_intro|default:'Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?'|striptags|cut:'**' }}
                         </div>
                         <div class="bubble-time" id="initialTime"></div>
                     </div>
@@ -611,6 +627,23 @@
 
             <button
                 type="button"
+                id="chatbotMicBtn"
+                class="chatbot-voice-button"
+                aria-label="Hablar con el chatbot"
+                title="Hablar"
+            >🎤</button>
+
+            <button
+                type="button"
+                id="chatbotVoiceBtn"
+                class="chatbot-voice-button"
+                aria-label="Desactivar lectura de respuestas"
+                title="Desactivar lectura"
+                aria-pressed="true"
+            >🔊</button>
+
+            <button
+                type="button"
                 id="sendBtn"
                 title="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
                 aria-label="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
@@ -632,6 +665,6 @@
 
 <div id="mensajeCopiaExitosa" class="msg-copia-exitosa"></div>
 
-<script src="{% static 'js/main.js' %}?v=20260816-chatbot-mobile-3"></script>
+<script src="{% static 'js/main.js' %}?v=20260820-chatbot-voz-5"></script>
 </body>
 </html>

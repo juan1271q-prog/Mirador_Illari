@@ -2,6 +2,208 @@
    SERVICIOS - LISTA DE TARJETAS
    ========================================================= */
 
+.servicios-portada {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    min-height: 200px;
+    padding: 22px 5% 26px;
+    display: flex;
+    align-items: center;
+    color: var(--crema);
+    background: var(--verde-bosque);
+}
+
+.servicios-portada::before,
+.servicios-portada::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.servicios-portada::before {
+    z-index: -3;
+    background: url("../img/fondo.jpeg") center center / cover no-repeat;
+    filter: saturate(0.92);
+    opacity: 0.95;
+}
+
+.servicios-portada::after {
+    z-index: -2;
+    background: linear-gradient(
+        90deg,
+        rgba(4, 42, 31, 0.92) 0%,
+        rgba(6, 64, 48, 0.78) 42%,
+        rgba(4, 42, 31, 0.36) 100%
+    );
+}
+
+.servicios-portada-contenido {
+    position: relative;
+    z-index: 2;
+    width: min(540px, 100%);
+    margin: 0 auto 0 0;
+}
+
+.servicios-portada-etiqueta,
+.servicios-seccion-etiqueta,
+.servicios-cta-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.servicios-portada-etiqueta {
+    margin-bottom: 8px;
+    color: var(--crema);
+    background: rgba(5, 58, 43, 0.72);
+    border: 1px solid rgba(213, 173, 69, 0.85);
+}
+
+.servicios-portada h1 {
+    margin: 0 0 8px;
+    color: #fffaf0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.28);
+}
+
+.servicios-portada p {
+    max-width: 520px;
+    margin: 0;
+    color: rgba(255, 250, 240, 0.92);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.servicios-seccion {
+    position: relative;
+    z-index: 2;
+    margin-top: 0;
+    padding: 24px 5% 68px;
+    overflow-x: clip;
+    overflow-y: visible;
+    background: var(--crema);
+}
+
+.servicios-seccion::before {
+    content: "";
+    position: absolute;
+    top: -34px;
+    left: 50%;
+    z-index: 0;
+    width: 138%;
+    height: 68px;
+    background: var(--crema);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.servicios-seccion-contenido {
+    position: relative;
+    z-index: 1;
+}
+
+.servicios-seccion > * {
+    position: relative;
+    z-index: 1;
+}
+
+.servicios-encabezado {
+    max-width: 760px;
+    margin: 0 auto 26px;
+    text-align: center;
+}
+
+.servicios-seccion-etiqueta,
+.servicios-cta-etiqueta {
+    color: var(--verde-secundario);
+    background: rgba(221, 233, 225, 0.7);
+}
+
+.servicios-encabezado .servicios-seccion-etiqueta {
+    margin-bottom: 12px;
+}
+
+.servicios-encabezado h2 {
+    margin: 0 0 12px;
+    color: var(--verde-bosque);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.5rem;
+    line-height: 1.1;
+}
+
+.servicios-encabezado p {
+    max-width: 620px;
+    margin: 0 auto;
+    color: var(--texto-secundario);
+    line-height: 1.6;
+}
+
+.servicios-seccion .titulo-pagina {
+    display: none;
+}
+
+.barra-filtros {
+    width: min(780px, 100%);
+    margin: 0 auto 32px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-radius: 14px;
+    box-shadow: var(--sombra-suave);
+}
+
+.campo-busqueda,
+.campo-filtro {
+    min-height: 44px;
+    padding: 0 13px;
+    color: var(--texto-principal);
+    background: var(--crema);
+    border: 1px solid var(--borde-suave);
+    border-radius: 9px;
+    font: inherit;
+}
+
+.campo-busqueda {
+    min-width: 0;
+    flex: 1 1 260px;
+}
+
+.campo-filtro {
+    flex: 0 1 190px;
+}
+
+.btn-buscar {
+    min-height: 44px;
+    padding: 0 19px;
+    color: var(--crema);
+    background: var(--verde-bosque);
+    border: 1px solid var(--verde-bosque);
+    border-radius: 9px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 750;
+}
+
+.btn-buscar:hover {
+    background: var(--verde-principal);
+}
+
 .resultados-servicios .servicios-grid {
     width: min(1180px, 100%);
     margin: 0 auto;
@@ -16,30 +218,31 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: #ffffff;
-    border: 1px solid rgba(11, 81, 61, 0.08);
-    border-radius: 18px;
-    box-shadow: 0 8px 18px rgba(11, 81, 61, 0.08);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    background: var(--superficie);
+    border: 1px solid var(--borde-suave);
+    border-radius: 16px;
+    box-shadow: var(--sombra-suave);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
 }
 
 .resultados-servicios .servicio-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(11, 81, 61, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 34px rgba(11, 61, 46, 0.13);
+    border-color: rgba(8, 117, 88, 0.28);
 }
 
 .resultados-servicios .imagen-adaptable.servicio-imagen-contenedor {
     width: 100%;
-    height: 210px;
-    background-color: #f3f7f4;
+    height: 180px;
+    background-color: var(--verde-salvia);
     overflow: hidden;
-    border-radius: 18px;
+    border-radius: 16px 16px 0 0;
 }
 
 .resultados-servicios .imagen-adaptable.servicio-imagen-contenedor img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     display: block;
 }
@@ -49,19 +252,33 @@
     flex-direction: column;
     flex: 1;
     gap: 10px;
-    padding: 16px 16px 18px;
+    padding: 22px 20px 20px;
+}
+
+.resultados-servicios .etiqueta-tipo {
+    width: fit-content;
+    padding: 6px 10px;
+    color: var(--verde-bosque);
+    background: rgba(221, 233, 225, 0.72);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .resultados-servicios .servicio-contenido h2 {
     margin: 0 0 10px;
-    color: #0b513d;
-    font-size: 1.15rem;
+    color: var(--verde-bosque);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.25rem;
+    font-weight: 700;
     line-height: 1.3;
 }
 
 .resultados-servicios .servicio-contenido p {
     margin: 0 0 10px;
-    color: #4b4b4b;
+    color: var(--texto-secundario);
     font-size: 0.93rem;
     line-height: 1.4;
     display: -webkit-box;
@@ -72,12 +289,12 @@
 
 .resultados-servicios .servicio-contenido .precio-desde {
     margin: 0 0 12px;
-    color: #0b513d;
+    color: var(--verde-bosque);
     font-weight: 700;
 }
 
 .resultados-servicios .servicio-contenido .precio-desde strong {
-    color: #0b513d;
+    color: var(--verde-bosque);
     font-weight: 800;
 }
 
@@ -88,8 +305,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    background: #0b513d;
+    color: var(--crema);
+    background: var(--verde-bosque);
     border-radius: 10px;
     text-decoration: none;
     font-weight: 800;
@@ -97,7 +314,7 @@
 }
 
 .resultados-servicios .servicio-contenido .btn-ver-detalles:hover {
-    background: #087558;
+    background: var(--verde-principal);
     transform: translateY(-1px);
 }
 
@@ -387,6 +604,147 @@
     .migas-pan {
         margin-bottom: 18px;
         font-size: 14px;
+    }
+}
+
+/* =========================================================
+   CTA DE SERVICIOS
+   ========================================================= */
+
+.servicios-cta {
+    padding: 0 5% 70px;
+    background: var(--crema);
+}
+
+.servicios-cta-contenido {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 34px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    overflow: hidden;
+    border-radius: 18px;
+    background:
+        radial-gradient(
+            circle at 92% 15%,
+            rgba(213, 173, 69, 0.12),
+            transparent 32%
+        ),
+        linear-gradient(
+            120deg,
+            var(--verde-bosque),
+            var(--verde-principal)
+        );
+    color: var(--crema);
+    box-shadow: var(--sombra-media);
+}
+
+.servicios-cta-etiqueta {
+    color: var(--crema);
+    background: rgba(5, 58, 43, 0.72);
+    border: 1px solid rgba(213, 173, 69, 0.7);
+}
+
+.servicios-cta h2 {
+    margin: 12px 0 8px;
+    color: var(--crema);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.45rem;
+    line-height: 1.1;
+}
+
+.servicios-cta p {
+    margin: 0;
+    color: rgba(255, 250, 240, 0.9);
+    line-height: 1.6;
+}
+
+.servicios-btn-cta {
+    min-height: 50px;
+    padding: 0 27px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--verde-bosque);
+    background: var(--crema);
+    border: 1px solid rgba(213, 173, 69, 0.5);
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 800;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.servicios-btn-cta:hover {
+    background: var(--superficie);
+    box-shadow: var(--sombra-suave);
+    transform: translateY(-2px);
+}
+
+.servicios-btn-cta:focus-visible,
+.btn-buscar:focus-visible {
+    outline: 3px solid var(--dorado);
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .servicios-portada h1 { font-size: 2.15rem; }
+    .servicios-encabezado h2 { font-size: 2.15rem; }
+
+    .servicios-portada {
+        min-height: 190px;
+        padding: 20px 5% 24px;
+    }
+
+    .servicios-cta-contenido {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .servicios-portada h1,
+    .servicios-encabezado h2 { font-size: 1.8rem; }
+
+    .servicios-portada {
+        min-height: 180px;
+        padding: 20px 18px 24px;
+    }
+
+    .servicios-seccion {
+        padding: 20px 18px 58px;
+    }
+
+    .servicios-seccion::before {
+        top: -24px;
+        width: 155%;
+        height: 52px;
+    }
+
+    .barra-filtros {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .campo-busqueda,
+    .campo-filtro,
+    .btn-buscar {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .servicios-cta {
+        padding: 0 18px 52px;
+    }
+
+    .servicios-cta-contenido {
+        padding: 28px 24px;
+    }
+
+    .servicios-btn-cta {
+        width: 100%;
     }
 }
 

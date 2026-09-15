@@ -87,7 +87,7 @@
     <div class="hero-content reveal-on-load visible">
 
         <span class="hero-etiqueta">
-            Centro Turístico Mirador Illari
+            Naturaleza · Cultura · Aventura
         </span>
 
         <h1>
@@ -161,7 +161,7 @@
             </h2>
 
             <div class="inicio-descripcion">
-                {{ contenido.atractivos_descripcion|default:"Explora los lugares y experiencias que hacen único al Mirador Illari."|safe }}
+                {{ contenido.atractivos_descripcion|default:"Explora espacios y experiencias que harán especial tu visita."|safe }}
             </div>
 
         </div>
@@ -177,19 +177,38 @@
                 >
                     <article class="atractivo inicio-atractivo-card">
 
+                        <div class="atractivo-imagen">
+                            {% if contenido.atractivo_1_imagen %}
+                                <img
+                                    src="{{ contenido.atractivo_1_imagen.url }}"
+                                    alt="Paisajes y miradores del Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <img
+                                    src="{% static 'img/inicio/paisajes.jpg' %}"
+                                    alt="Paisajes y miradores del Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% endif %}
+                        </div>
+
                         <span
                             class="atractivo-icono"
                             aria-hidden="true"
                         >
-                            🌄
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 19L9.2 10L13.4 16L15.5 13L21 19H3Z"></path>
+                                <circle cx="17.5" cy="6.5" r="2.5"></circle>
+                            </svg>
                         </span>
 
                         <h3>
-                            {{ contenido.atractivo_1_titulo|default:"Paisajes" }}
+                            {{ contenido.atractivo_1_titulo|default:"Paisajes"|cut:"🌄" }}
                         </h3>
 
                         <div class="inicio-atractivo-texto">
-                            {{ contenido.atractivo_1_desc|default:"Disfruta de paisajes naturales y una vista privilegiada de la zona."|striptags }}
+                            {{ contenido.atractivo_1_desc|default:"Disfruta de paisajes naturales, miradores y espacios ideales para fotografías y descanso."|striptags }}
                         </div>
 
                         <span class="atractivo-boton">
@@ -209,19 +228,38 @@
                 >
                     <article class="atractivo inicio-atractivo-card">
 
+                        <div class="atractivo-imagen">
+                            {% if contenido.atractivo_2_imagen %}
+                                <img
+                                    src="{{ contenido.atractivo_2_imagen.url }}"
+                                    alt="Actividades de aventura en el Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <img
+                                    src="{% static 'img/inicio/aventura.jpg' %}"
+                                    alt="Actividades de aventura en el Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% endif %}
+                        </div>
+
                         <span
                             class="atractivo-icono"
                             aria-hidden="true"
                         >
-                            🥾
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="8"></circle>
+                                <path d="M15.5 8.5L13 14L7.5 16.5L10 11L15.5 8.5Z"></path>
+                            </svg>
                         </span>
 
                         <h3>
-                            {{ contenido.atractivo_2_titulo|default:"Aventura" }}
+                            {{ contenido.atractivo_2_titulo|default:"Aventura"|cut:"🥾" }}
                         </h3>
 
                         <div class="inicio-atractivo-texto">
-                            {{ contenido.atractivo_2_desc|default:"Vive actividades al aire libre en contacto con la naturaleza."|striptags }}
+                            {{ contenido.atractivo_2_desc|default:"Vive actividades al aire libre y momentos diferentes en contacto con la naturaleza."|striptags }}
                         </div>
 
                         <span class="atractivo-boton">
@@ -241,19 +279,43 @@
                 >
                     <article class="atractivo inicio-atractivo-card">
 
+                        <div class="atractivo-imagen">
+                            {% if contenido.atractivo_3_imagen %}
+                                <img
+                                    src="{{ contenido.atractivo_3_imagen.url }}"
+                                    alt="Cultura local del Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <img
+                                    src="{% static 'img/inicio/cultura.jpg' %}"
+                                    alt="Cultura local del Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% endif %}
+                        </div>
+
                         <span
                             class="atractivo-icono"
                             aria-hidden="true"
                         >
-                            🌿
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 8H21"></path>
+                                <path d="M5 19H19"></path>
+                                <path d="M6 8V17"></path>
+                                <path d="M10 8V17"></path>
+                                <path d="M14 8V17"></path>
+                                <path d="M18 8V17"></path>
+                                <path d="M4 6L12 3L20 6H4Z"></path>
+                            </svg>
                         </span>
 
                         <h3>
-                            {{ contenido.atractivo_3_titulo|default:"Cultura local" }}
+                            {{ contenido.atractivo_3_titulo|default:"Cultura local"|cut:"🌿" }}
                         </h3>
 
                         <div class="inicio-atractivo-texto">
-                            {{ contenido.atractivo_3_desc|default:"Conoce las costumbres, tradiciones y riqueza cultural de la comunidad."|striptags }}
+                            {{ contenido.atractivo_3_desc|default:"Conoce costumbres, tradiciones y experiencias vinculadas con la comunidad local."|striptags }}
                         </div>
 
                         <span class="atractivo-boton">
@@ -273,19 +335,37 @@
                 >
                     <article class="atractivo inicio-atractivo-card">
 
+                        <div class="atractivo-imagen">
+                            {% if contenido.atractivo_4_imagen %}
+                                <img
+                                    src="{{ contenido.atractivo_4_imagen.url }}"
+                                    alt="Atención y espacios del Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <img
+                                    src="{% static 'img/inicio/atencion.jpg' %}"
+                                    alt="Atención y espacios del Centro Turístico Mirador Illari"
+                                    loading="lazy"
+                                >
+                            {% endif %}
+                        </div>
+
                         <span
                             class="atractivo-icono"
                             aria-hidden="true"
                         >
-                            🤝
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 20S5 15.6 5 10A4 4 0 0 1 12 7.6A4 4 0 0 1 19 10C19 15.6 12 20 12 20Z"></path>
+                            </svg>
                         </span>
 
                         <h3>
-                            {{ contenido.atractivo_4_titulo|default:"Atención" }}
+                            {{ contenido.atractivo_4_titulo|default:"Atención"|cut:"🤝" }}
                         </h3>
 
                         <div class="inicio-atractivo-texto">
-                            {{ contenido.atractivo_4_desc|default:"Recibe una atención cercana y disfruta de una experiencia agradable."|striptags }}
+                            {{ contenido.atractivo_4_desc|default:"Encuentra información y orientación para planificar mejor tu visita."|striptags }}
                         </div>
 
                         <span class="atractivo-boton">
@@ -306,7 +386,7 @@
      LLAMADA FINAL
      ===================================================== -->
 
-<section class="inicio-cta">
+<section class="inicio-cta reveal-on-scroll">
 
     <div class="inicio-contenedor inicio-cta-contenido">
 
@@ -317,12 +397,11 @@
             </span>
 
             <h2>
-                Visita el Centro Turístico Mirador Illari
+                Tu próxima aventura te espera
             </h2>
 
             <p>
-                Disfruta de la naturaleza, la gastronomía,
-                los paisajes y la cultura de la comunidad de Yutzupino.
+                Naturaleza, cultura y experiencias para disfrutar en Puerto Napo.
             </p>
 
         </div>

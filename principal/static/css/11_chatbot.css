@@ -206,8 +206,8 @@
 
 @media (max-width: 500px) {
 
-    .chatbot-contenedor {
-        right: 12px;
+        right: 16px !important;
+        bottom: 16px !important;
         bottom: 15px;
     }
 
@@ -237,7 +237,7 @@
 
 .chatbot-widget {
     position: fixed !important;
-    right: 0px !important;
+    right: max(16px, calc((100vw - var(--site-max-width)) / 2 + 16px)) !important;
     bottom: calc(28px + var(--chatbot-keyboard-offset, 0px)) !important;
     z-index: 10000 !important;
     display: flex !important;
@@ -277,7 +277,7 @@
     display: none !important;
     flex-direction: column !important;
     width: 380px !important;
-    max-width: calc(100vw - 30px) !important;
+    max-width: min(380px, calc(100% - 30px)) !important;
     height: min(560px, calc(100dvh - 60px)) !important;
     min-height: 0 !important;
     max-height: min(560px, calc(100dvh - 60px)) !important;
@@ -592,6 +592,62 @@
     box-shadow: 0 3px 8px rgba(11, 81, 61, 0.25) !important;
 }
 
+.chatbot-voice-button {
+    flex: 0 0 43px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 43px !important;
+    height: 43px !important;
+    padding: 0 !important;
+    border: 1px solid #cbdad3 !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    cursor: pointer !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+}
+
+.chatbot-voice-button:hover,
+.chatbot-voice-button:focus-visible {
+    border-color: #0b513d !important;
+    background: #edf6f1 !important;
+}
+
+#chatbotMicBtn.microfono-activo {
+    transform: scale(1.08) !important;
+    border-color: #087558 !important;
+    background: #e5f4ed !important;
+    box-shadow: 0 0 0 4px rgba(0, 120, 90, 0.18) !important;
+}
+
+#chatbotMicBtn.microfono-hablando {
+    animation: pulsoMicrofono 0.8s ease-in-out infinite;
+}
+
+@keyframes pulsoMicrofono {
+    0%,
+    100% {
+        transform: scale(1.08);
+    }
+
+    50% {
+        transform: scale(1.14);
+    }
+}
+
+#chatbotMicBtn.chatbot-microfono--escuchando {
+    border-color: #c44536 !important;
+    background: #fff0ed !important;
+    animation: chatbot-microfono-pulso 1.2s ease-in-out infinite;
+}
+
+@keyframes chatbot-microfono-pulso {
+    50% {
+        box-shadow: 0 0 0 5px rgba(196, 69, 54, 0.15);
+    }
+}
+
 #sendBtn:hover {
     transform: scale(1.05) !important;
     background: #073d2e !important;
@@ -616,22 +672,22 @@
         display: flex !important;
         justify-content: center !important;
         align-items: flex-end !important;
-        width: 100vw !important;
+        width: 100% !important;
         pointer-events: none;
     }
 
     .chatbot-box {
-        width: calc(100vw - 18px) !important;
+        width: calc(100% - 18px) !important;
         max-width: 360px !important;
         margin: 0 auto !important;
-        height: min(72dvh, 520px) !important;
+        height: auto !important;
         max-height: min(72dvh, 520px) !important;
         margin-bottom: 0 !important;
     }
 
     @supports not (height: 1dvh) {
         .chatbot-box {
-            height: min(72vh, 520px) !important;
+            height: auto !important;
             max-height: min(72vh, 520px) !important;
         }
     }
@@ -647,16 +703,16 @@
     }
 
     .chatbot-body {
-        flex: 1 1 auto !important;
+        flex: 0 1 auto !important;
         min-height: 0 !important;
         padding: 12px !important;
         overflow: hidden !important;
     }
 
     .chatbot-messages {
-        flex: 1 1 auto !important;
+        flex: 0 1 auto !important;
         min-height: 0 !important;
-        max-height: 100% !important;
+        max-height: min(360px, 42dvh) !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         -webkit-overflow-scrolling: touch !important;
@@ -664,8 +720,15 @@
 
     .chat-input-area {
         flex: 0 0 auto !important;
-        min-height: 58px !important;
-        padding: 8px 10px !important;
+        min-height: 0 !important;
+        padding: 8px 10px 12px !important;
+    }
+
+    .chatbot-voice-button {
+        flex-basis: 40px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
     }
 
     #chatInput {
@@ -874,7 +937,7 @@
 
 @media (max-width: 500px) {
     .chat-contenedor {
-        width: calc(100vw - 24px);
+        width: calc(100% - 24px);
         margin: 20px auto;
     }
 
@@ -1476,8 +1539,8 @@ button#chatbotBtn.chatbot-btn {
 button#chatbotBtn.chatbot-launcher {
     position: fixed !important;
     z-index: 10001 !important;
-    right: -4px !important;
-    bottom: 28px !important;
+    right: max(16px, calc((100vw - var(--site-max-width)) / 2 + 16px)) !important;
+    bottom: 16px !important;
 
     display: inline-flex !important;
     align-items: center !important;
@@ -1506,9 +1569,9 @@ button#chatbotBtn.chatbot-launcher .chatbot-launcher-avatar {
     position: relative;
     z-index: 1;
 
-    width: 62px;
-    height: 62px;
-    flex: 0 0 62px;
+    width: 60px;
+    height: 60px;
+    flex: 0 0 60px;
 
     display: inline-flex;
     align-items: center;
@@ -1632,7 +1695,7 @@ button#chatbotBtn.chatbot-launcher:focus-visible .chatbot-launcher-avatar {
         0 7px 20px rgba(7, 71, 54, 0.22) !important;
 
     font-family: inherit !important;
-    font-size: 0.96rem !important;
+    font-size: 0.88rem !important;
     font-weight: 800 !important;
     line-height: 1.2 !important;
     text-shadow: none !important;
@@ -1735,7 +1798,7 @@ button#chatbotBtn.chatbot-launcher:focus-visible .chatbot-launcher-avatar {
    ========================================================= */
 @media (max-width: 600px) {
     #chatbotBox.chatbot-box {
-        width: calc(100vw - 18px) !important;
+        width: calc(100% - 18px) !important;
         max-width: 360px !important;
         height: min(72dvh, 520px) !important;
         max-height: min(72dvh, 520px) !important;
@@ -1746,9 +1809,84 @@ button#chatbotBtn.chatbot-launcher:focus-visible .chatbot-launcher-avatar {
 
 @media (min-width: 601px) {
     #chatbotBox.chatbot-box {
-        height: min(560px, calc(100dvh - 60px)) !important;
+        height: auto !important;
         max-height: min(560px, calc(100dvh - 60px)) !important;
     }
 }
 
+/* La altura sobrante debe pertenecer a los mensajes, no al pie. */
+#chatbotBox.chatbot-box {
+    height: auto !important;
+}
+
+#chatbotBox.chatbot-box .chatbot-body {
+    flex: 0 1 auto !important;
+}
+
+#chatbotBox.chatbot-box .chatbot-messages {
+    flex: 0 1 auto !important;
+    max-height: min(360px, calc(100dvh - 230px)) !important;
+    min-height: 120px !important;
+}
+
+#chatbotBox.chatbot-box .chat-input-area {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    padding-bottom: 12px !important;
+}
+
 /* FIN DEL ARCHIVO */
+
+/* Ajustes responsive del launcher y la ventana */
+@media (max-width: 900px) {
+    #chatbotBtn.chatbot-launcher .chatbot-launcher-avatar {
+        width: 56px;
+        height: 56px;
+        flex-basis: 56px;
+    }
+
+    #chatbotBtn.chatbot-launcher .chatbot-launcher-texto {
+        font-size: 0.88rem !important;
+        padding: 8px 14px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #chatbotBtn.chatbot-launcher {
+        right: 16px !important;
+        bottom: 16px !important;
+    }
+
+    #chatbotBtn.chatbot-launcher .chatbot-launcher-texto {
+        display: none !important;
+    }
+
+    #chatbotBtn.chatbot-launcher .chatbot-launcher-avatar {
+        width: 56px !important;
+        height: 56px !important;
+        flex-basis: 56px !important;
+    }
+
+    #chatbotBtn.chatbot-launcher .chatbot-launcher-icono {
+        width: 43px !important;
+        height: 43px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    #chatbotBtn.chatbot-launcher .chatbot-launcher-avatar {
+        width: 52px !important;
+        height: 52px !important;
+        flex-basis: 52px !important;
+    }
+
+    #chatbotBox.chatbot-box {
+        position: fixed !important;
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 80px !important;
+        width: auto !important;
+        max-width: none !important;
+        max-height: min(70vh, 520px) !important;
+    }
+}

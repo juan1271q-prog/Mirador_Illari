@@ -2,8 +2,37 @@
 
 {% block contenido %}
 
-<section class="seccion">
-    <div class="container">
+<section class="servicios-portada">
+    <div class="servicios-portada-contenido">
+        <span class="servicios-portada-etiqueta">
+            Nuestros servicios
+        </span>
+
+        <h1>Experiencias que conectan contigo</h1>
+
+        <p>
+            Disfruta de actividades y espacios pensados para tu descanso,
+            aventura y conexión con la naturaleza.
+        </p>
+    </div>
+</section>
+
+
+<section class="seccion servicios-seccion">
+    <div class="container servicios-seccion-contenido">
+
+        <div class="servicios-encabezado">
+            <span class="servicios-seccion-etiqueta">
+                Lo que tenemos para ti
+            </span>
+
+            <h2>Opciones para tu visita</h2>
+
+            <p>
+                Descubre experiencias diseñadas para que disfrutes tu
+                estadía de forma cómoda y auténtica.
+            </p>
+        </div>
 
         <h1 class="titulo-pagina">
             {{ info_site.servicios_titulo|default:'Servicios Turísticos' }}
@@ -48,6 +77,25 @@
             {% include 'principal/parciales/servicios_resultados.html' %}
         </div>
 
+    </div>
+</section>
+
+
+<section class="servicios-cta">
+    <div class="servicios-cta-contenido">
+        <div>
+            <span class="servicios-cta-etiqueta">Planifica tu visita</span>
+
+            <h2>¿Listo para vivir la experiencia?</h2>
+
+            <p>
+                Contáctanos y organiza tu próxima visita de forma sencilla.
+            </p>
+        </div>
+
+        <a href="{% url 'contacto' %}" class="servicios-btn-cta">
+            Contáctanos
+        </a>
     </div>
 </section>
 
