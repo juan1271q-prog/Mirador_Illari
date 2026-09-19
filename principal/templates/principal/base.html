@@ -399,11 +399,11 @@
     class="chatbot-widget"
     data-chatbot-api-url="{% url 'api_chatbot' %}"
     data-preguntas-api-url="{% url 'api_preguntas' %}"
-    data-chatbot-title="{{ info_site.chatbot_titulo|default:'Chatbot Mirador Illari' }}"
-    data-chatbot-intro="{{ info_site.chatbot_intro|default:'Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?'|striptags }}"
+    data-chatbot-title="Illari"
+    data-chatbot-intro="{{ info_site.chatbot_intro|default:'Hola, soy Jeyson, tu guía virtual del Mirador Illari. ¿En qué puedo ayudarte?'|striptags }}"
     data-chatbot-placeholder="{{ info_site.chatbot_placeholder|default:'Escribe tu mensaje...' }}"
     data-chatbot-send-label="{{ info_site.chatbot_enviar_texto|default:'Enviar' }}"
-    data-chatbot-options-label="{{ info_site.chatbot_opciones_etiqueta|default:'Opciones rápidas' }}"
+    data-chatbot-options-label="Asistente turístico"
     data-url-inicio="{% url 'inicio' %}"
     data-url-nosotros="{% url 'nosotros' %}"
     data-nosotros="{% url 'nosotros' %}"
@@ -544,8 +544,8 @@
                 {% endif %}
 
                 <div>
-                    <strong>{{ info_site.chatbot_titulo|default:'Chatbot Mirador Illari' }}</strong>
-                    <span>{{ info_site.chatbot_opciones_etiqueta|default:'Opciones rápidas' }}</span>
+                    <strong>Illari</strong>
+                    <span>Asistente turístico</span>
                 </div>
             </div>
 
@@ -572,38 +572,11 @@
 
         <div class="chatbot-body" id="chatbotBody">
             <div class="chatbot-messages" id="chatbotMessages">
-                <div class="message bot">
-                    {% if info_site_logo_url %}
-                        <img
-                            class="avatar"
-                            src="{{ info_site_logo_url }}"
-                            alt="Logo"
-                            onerror="this.onerror=null;this.src='{% static 'img/logo.jpeg' %}';"
-                        >
-                    {% else %}
-                        <img
-                            class="avatar"
-                            src="{% static 'img/logo.jpeg' %}"
-                            alt="Logo"
-                        >
-                    {% endif %}
-
-                    <div class="bubble">
-                        <div class="bubble-text">
-                            {{ info_site.chatbot_intro|default:'Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?'|striptags|cut:'**' }}
-                        </div>
-                        <div class="bubble-time" id="initialTime"></div>
-                    </div>
-                </div>
             </div>
 
-            <div class="quick-chips" id="quickChips">
-                <button type="button" class="quick-chip">🕒 Horarios de atención</button>
-                <button type="button" class="quick-chip">📍 Ubicación</button>
-                <button type="button" class="quick-chip">🌿 Servicios turísticos</button>
-                <button type="button" class="quick-chip">📅 Eventos y novedades</button>
-                <button type="button" class="quick-chip">💬 Contacto por WhatsApp</button>
-            </div>
+            <div class="quick-chips" id="quickChips"></div>
+
+            <button type="button" id="chatbotNuevaConversacion" class="chatbot-nueva-conversacion">↻ Nueva conversación</button>
 
             <button
                 type="button"
@@ -665,6 +638,6 @@
 
 <div id="mensajeCopiaExitosa" class="msg-copia-exitosa"></div>
 
-<script src="{% static 'js/main.js' %}?v=20260820-chatbot-voz-5"></script>
+<script src="{% static 'js/main.js' %}?v=20260917-chatbot-admin-1"></script>
 </body>
 </html>

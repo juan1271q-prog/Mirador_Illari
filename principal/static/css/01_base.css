@@ -1718,7 +1718,7 @@ body.chatbot-open {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     min-height: 86px;
     overflow: visible;
     padding-right: 6px;
@@ -1792,12 +1792,16 @@ body.chatbot-open {
 }
 
 .message .bubble {
-    max-width: 75%;
+    width: auto;
+    max-width: min(84%, 360px);
     background: #e9f3ee;
     border-radius: 14px;
     padding: 12px 15px;
     position: relative;
     box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    overflow: visible;
 }
 
 .message.bot .bubble { 
@@ -1818,6 +1822,9 @@ body.chatbot-open {
 .bubble-text { 
     font-size: 13px;
     line-height: 1.4;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: pre-line;
 }
 
 .bubble-time { 

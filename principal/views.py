@@ -20,6 +20,16 @@ from django.db.models import Q
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from .gemini_service import obtener_respuesta_gemini
+from .chatbot_engine import (
+    detectar_servicio,
+    sugerencias_por_servicio,
+    construir_respuesta_servicio,
+    crear_contexto_chatbot,
+    obtener_precio_servicio,
+    obtener_capacidad_servicio,
+    obtener_disponibilidad_servicio,
+    obtener_reserva_servicio,
+)
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -244,6 +254,23 @@ def extract_map_search_query(url):
     return None
 
 
+def limpiar_direccion_para_mapa(valor):
+    """Quita enlaces de Google Maps pegados al texto de la dirección."""
+    if not valor:
+        return ""
+
+    texto = (valor or "").strip()
+    texto = re.sub(
+        r"https?://(?:maps\.app\.goo\.gl|goo\.gl|(?:www\.)?maps\.google\.[^\s]+|(?:www\.)?google\.[^\s]+)[^\s]*",
+        "",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = re.sub(r"[,;]\s*$", "", texto)
+    texto = re.sub(r"\s+", " ", texto).strip()
+    return texto
+
+
 def build_map_embed(url, fallback_address=None):
     """
     Recibe un enlace normal copiado desde Google Maps y genera
@@ -255,7 +282,7 @@ def build_map_embed(url, fallback_address=None):
     """
 
     original_url = (url or "").strip()
-    fallback_address = (fallback_address or "").strip()
+    fallback_address = limpiar_direccion_para_mapa(fallback_address)
 
     if not original_url and not fallback_address:
         return None, None
@@ -362,6 +389,7 @@ def get_contenido_activo():
 
 def serialize_pregunta(pregunta):
     return {
+        "id": pregunta.id,
         "pregunta": plain_text(pregunta.pregunta),
     }
 
@@ -694,6 +722,81 @@ def normalize_text(text):
         " ",
         text
     ).strip()
+
+
+def obtener_faq_exacta(pregunta_id, mensaje):
+    """Return the active FAQ only when its ID and question both match."""
+    try:
+        pregunta_id = int(pregunta_id)
+    except (TypeError, ValueError):
+        return None
+
+    pregunta = PreguntaFrecuente.objects.filter(
+        id=pregunta_id,
+        activo=True,
+    ).first()
+
+    if not pregunta:
+        return None
+
+    if normalize_text(pregunta.pregunta) != normalize_text(mensaje):
+        return None
+
+    respuesta = plain_text(pregunta.respuesta)
+    if not respuesta:
+        return None
+
+    return pregunta, respuesta
+
+
+def obtener_faq_por_texto_exacto(mensaje):
+    """Devuelve la FAQ activa cuyo texto exacto coincide con el mensaje."""
+    mensaje_normalizado = normalize_text(mensaje)
+
+    if not mensaje_normalizado:
+        return None
+
+    preguntas = PreguntaFrecuente.objects.filter(
+        activo=True,
+    ).order_by("id")
+
+    for pregunta in preguntas:
+        if normalize_text(pregunta.pregunta) != mensaje_normalizado:
+            continue
+
+        respuesta = plain_text(pregunta.respuesta)
+        if not respuesta:
+            continue
+
+        return pregunta, respuesta
+
+    return None
+
+
+def buscar_faq_por_palabras(claves):
+    """Busca una FAQ conservadora por palabras clave relevantes."""
+    if not claves:
+        return None
+
+    preguntas = PreguntaFrecuente.objects.filter(
+        activo=True,
+    ).order_by("id")
+
+    for pregunta in preguntas:
+        texto = normalize_text(pregunta.pregunta or "")
+        if not texto:
+            continue
+
+        if any(
+            normalize_text(clave) in texto
+            for clave in claves
+            if normalize_text(clave)
+        ):
+            respuesta = plain_text(pregunta.respuesta)
+            if respuesta:
+                return pregunta, respuesta
+
+    return None
 
 # Palabras que no son importantes para reconocer el tema.
 STOPWORDS_CHATBOT = {
@@ -1155,7 +1258,6 @@ REGLAS_TEMAS = {
         "precio",
         "valor",
         "entrada",
-        "pagar",
         "adulto",
         "nino",
         "tercera",
@@ -1170,10 +1272,6 @@ REGLAS_TEMAS = {
         "gatos",
         "animal",
         "animales",
-        "aceptan",
-        "permiten",
-        "llev",
-        "entrar",
     },
 
     "servicios": {
@@ -1182,7 +1280,6 @@ REGLAS_TEMAS = {
         "atracciones",
         "hospedaje",
         "gastronomia",
-        "comida",
         "piscina",
         "cabana",
         "cabanas",
@@ -1197,23 +1294,226 @@ REGLAS_TEMAS = {
         "ofrece",
         "hacer",
         "haceres",
-        "hay",
     },
 }
 
 
 def detectar_tema_por_condiciones(mensaje):
-    """
-    Primera parte del algoritmo:
-    utiliza condiciones if y elif.
-    """
+    """Reconoce intenciones conservadoras, evitando falsos positivos por palabras generales."""
+    if not mensaje:
+        return None
 
     tokens = set(chatbot_tokens(mensaje))
-
-    mensaje_normalizado = normalize_text(mensaje)
-
-    # Detectar alojamiento (glamping, hospedaje, dormir) antes de servicios generales
     texto = normalize_text(mensaje)
+    if not texto:
+        return None
+
+    animal_terms = (
+        "mascota",
+        "mascotas",
+        "perro",
+        "perros",
+        "gato",
+        "gatos",
+        "animal",
+        "animales",
+    )
+
+    frases_alimentos = (
+        "alimento",
+        "alimentos",
+        "comida",
+        "comidas",
+        "llevar comida",
+        "ingresar comida",
+        "entrar con comida",
+        "llevar alimentos",
+        "dejan entrar alimentos",
+        "puedo llevar comida",
+        "puedo ingresar comida",
+        "se puede llevar comida",
+        "quiero llevar comida",
+        "bebidas",
+    )
+    if any(frase in texto for frase in frases_alimentos):
+        return "alimentos"
+
+    frases_mascotas = (
+        "aceptan mascotas",
+        "permiten mascotas",
+        "puedo llevar mi perro",
+        "puedo llevar mi gato",
+        "puedo ingresar con un perro",
+        "puedo ingresar con un gato",
+        "puedo entrar con mi perro",
+        "puedo ir con mi perro",
+        "puedo ir con mi gato",
+        "puedo llevar mascota",
+        "puedo llevar mascotas",
+        "dejan entrar mascotas",
+        "puedo llevar un perro",
+        "puedo llevar un gato",
+        "puedo llevar animales",
+        "puedo entrar con un animal",
+        "aceptan perros",
+        "permiten perros",
+        "aceptan gatos",
+        "permiten gatos",
+    )
+    if any(frase in texto for frase in frases_mascotas) or (
+        any(animal in texto for animal in animal_terms)
+        and any(
+            palabra in texto
+            for palabra in (
+                "llevar",
+                "entrar",
+                "aceptan",
+                "permiten",
+                "ir con",
+                "ingresar con",
+                "llevar mi",
+            )
+        )
+    ):
+        return "mascotas"
+
+    frases_parqueadero = (
+        "parqueadero",
+        "parqueo",
+        "estacionamiento",
+        "estacionar",
+        "dejar el carro",
+        "dejar el auto",
+        "dejar el vehiculo",
+        "dejar el vehículo",
+        "vehiculo",
+        "vehículo",
+    )
+    if any(frase in texto for frase in frases_parqueadero):
+        return "parqueadero"
+
+    frases_pagos = (
+        "metodo de pago",
+        "metodos de pago",
+        "forma de pago",
+        "formas de pago",
+        "como pagar",
+        "como puedo pagar",
+        "puedo pagar por transferencia",
+        "aceptan efectivo",
+        "aceptan tarjeta",
+        "transferencia bancaria",
+        "transferencias bancarias",
+        "pago",
+        "pagos",
+        "pagar",
+        "efectivo",
+        "tarjeta",
+        "transferencia",
+        "transferencias",
+    )
+    if any(frase in texto for frase in frases_pagos):
+        return "pagos"
+
+    frases_reserva_general = (
+        "hay que reservar",
+        "necesito reservar",
+        "se necesita reserva",
+        "requiere reserva",
+        "debo reservar",
+        "tengo que reservar",
+        "reservacion",
+        "reservación",
+    )
+    if any(frase in texto for frase in frases_reserva_general):
+        return "reserva_general"
+
+    consultas_mejor_momento = (
+        "mejor horario",
+        "mejor hora",
+        "hora recomendada",
+        "momento recomendado",
+        "cuando conviene ir",
+        "cuando es mejor ir",
+        "a que hora conviene ir",
+        "a que hora se ve el atardecer",
+        "para ver el atardecer",
+        "ver el atardecer",
+        "hora del atardecer",
+        "mejor momento para visitar",
+    )
+    if any(frase in texto for frase in consultas_mejor_momento):
+        return "mejor_momento"
+
+    frases_contacto = (
+        "como puedo comunicarme",
+        "como puedo contactarlos",
+        "como los contacto",
+        "quiero contactarlos",
+        "quiero comunicarme con ustedes",
+        "como hablo con ustedes",
+        "como puedo hablar con ustedes",
+        "datos de contacto",
+        "numero de contacto",
+        "como contacto",
+        "como me contacto",
+        "como puedo contactarme",
+        "como comunicarme",
+        "como contactar",
+        "whatsapp",
+        "telefono",
+        "celular",
+        "correo",
+    )
+    if any(frase in texto for frase in frases_contacto) or tokens & REGLAS_TEMAS["contacto"]:
+        return "contacto"
+
+    frases_horario = (
+        "horario de atencion",
+        "horario de atención",
+        "cuando abren",
+        "a que hora abren",
+        "cuando cierran",
+        "que hora abren",
+        "a que hora atienden",
+        "horario",
+        "hora",
+    )
+    if any(frase in texto for frase in frases_horario) or (
+        tokens & REGLAS_TEMAS["horario"]
+        or "cuando abre" in texto
+        or "a que hora abre" in texto
+    ):
+        return "horario"
+
+    frases_como_llegar = (
+        "como llegar",
+        "como llego",
+        "como puedo llegar",
+        "como se llega",
+        "que ruta tomo",
+        "indicaciones para llegar",
+        "camino para llegar",
+        "como llegar al lugar",
+        "como llego al lugar",
+    )
+    if any(frase in texto for frase in frases_como_llegar):
+        return "como_llegar"
+
+    frases_mapa = (
+        "mapa",
+        "google maps",
+        "muestreme el mapa",
+        "muestrame el mapa",
+        "quiero ver el mapa",
+        "ver el mapa",
+        "dame la ubicacion",
+        "dame la ubicación",
+        "ubicacion en google maps",
+        "ubicación en google maps",
+    )
+    if any(frase in texto for frase in frases_mapa):
+        return "mapa"
 
     frases_alojamiento = (
         "alojamiento",
@@ -1229,6 +1529,8 @@ def detectar_tema_por_condiciones(mensaje):
         "puedo quedarme",
         "me puedo quedar",
         "quiero quedarme",
+        "me puedo quedar ahi",
+        "puedo quedarme ahi",
         "donde puedo quedarme",
         "lugar para quedarse",
         "lugar para dormir",
@@ -1238,33 +1540,35 @@ def detectar_tema_por_condiciones(mensaje):
         "quedarse a dormir",
         "quedarme a dormir",
         "donde quedarse",
-        "donde puedo quedarme",
         "tienen alojamiento",
         "hay alojamiento",
         "tienen hospedaje",
         "hay hospedaje",
-        "tienen donde dormir",
-        "hay donde dormir",
-        "se puede dormir",
-        "dormir ahi",
-        "dormir en el lugar",
-        "puedo dormir ahi",
-        "me puedo quedar ahi",
-        "quiero pasar la noche",
         "puedo alojarme",
         "puedo hospedarme",
         "glamping",
         "glampin",
         "glampign",
     )
-
-    if any(
-        frase in texto
-        for frase in frases_alojamiento
-    ):
+    if any(frase in texto for frase in frases_alojamiento):
         return "alojamiento"
 
-    # Diferenciar camping tradicional
+    frases_ubicacion = (
+        "donde queda",
+        "donde esta",
+        "donde estan",
+        "donde se encuentra",
+        "donde estan ubicados",
+        "donde quedan",
+        "direccion",
+        "ubicacion",
+        "ubicación",
+        "donde queda el lugar",
+        "donde queda mirador",
+    )
+    if any(frase in texto for frase in frases_ubicacion) or tokens & REGLAS_TEMAS["ubicacion"]:
+        return "ubicacion"
+
     frases_camping = (
         "camping",
         "acampar",
@@ -1273,114 +1577,11 @@ def detectar_tema_por_condiciones(mensaje):
         "poner mi carpa",
         "espacio para carpa",
         "zona de camping",
+        "tienen camping",
+        "hay camping",
     )
-
-    if any(
-        frase in texto
-        for frase in frases_camping
-    ):
+    if any(frase in texto for frase in frases_camping):
         return "camping"
-
-    consultas_mejor_momento = (
-        "mejor horario",
-        "mejor hora",
-        "hora recomendada",
-        "momento recomendado",
-        "ver el atardecer",
-        "para el atardecer",
-    )
-
-    if any(
-        frase in mensaje_normalizado
-        for frase in consultas_mejor_momento
-    ):
-        return None
-
-    # MASCOTAS: detectar antes de ubicación para dar prioridad
-    frases_mascotas = (
-        "mascota",
-        "mascotas",
-        "perro",
-        "perros",
-        "gato",
-        "gatos",
-        "aceptan mascotas",
-        "permiten mascotas",
-        "puedo llevar",
-        "puedo llevar mi",
-        "puedo ir con",
-        "dejan entrar",
-        "aceptan perros",
-    )
-
-    if any(frase in mensaje_normalizado for frase in frases_mascotas):
-        return "mascotas"
-
-    if (
-        tokens & REGLAS_TEMAS["horario"]
-        or "cuando abre" in mensaje_normalizado
-        or "a que hora abre" in mensaje_normalizado
-    ):
-        return "horario"
-
-    # 1. CÓMO LLEGAR: debe revisarse antes de ubicación
-    frases_como_llegar = (
-        "como llegar",
-        "como llego",
-        "como puedo llegar",
-        "como se llega",
-        "que ruta tomo",
-        "indicaciones para llegar",
-        "camino para llegar",
-        "como llegar al lugar",
-        "como llego al lugar",
-    )
-
-    if any(frase in mensaje_normalizado for frase in frases_como_llegar):
-        return "como_llegar"
-
-    # 2. UBICACIÓN GENERAL
-    frases_ubicacion = (
-        "donde queda",
-        "donde esta",
-        "donde estan",
-        "donde se encuentra",
-        "donde estan ubicados",
-        "como llegar",
-        "como llego",
-        "direccion",
-        "ubicacion",
-        "ubicación",
-        "donde estan",
-        "donde queda el lugar",
-        "donde queda mirador",
-    )
-
-    if (
-        tokens & REGLAS_TEMAS["ubicacion"]
-        or any(frase in mensaje_normalizado for frase in frases_ubicacion)
-    ):
-        return "ubicacion"
-
-    frases_contacto = (
-        "como puedo comunicarme",
-        "como contacto",
-        "como me contacto",
-        "como puedo contactarme",
-        "como comunicarme",
-        "como contactar",
-        "numero de contacto",
-        "telefono",
-        "whatsapp",
-        "celular",
-        "correo",
-    )
-
-    if any(frase in mensaje_normalizado for frase in frases_contacto):
-        return "contacto"
-
-    elif tokens & REGLAS_TEMAS["contacto"]:
-        return "contacto"
 
     frases_eventos = (
         "que eventos",
@@ -1389,11 +1590,7 @@ def detectar_tema_por_condiciones(mensaje):
         "programacion",
         "festival",
     )
-
-    if any(frase in mensaje_normalizado for frase in frases_eventos):
-        return "eventos"
-
-    elif tokens & REGLAS_TEMAS["eventos"]:
+    if any(frase in texto for frase in frases_eventos) or tokens & REGLAS_TEMAS["eventos"]:
         return "eventos"
 
     frases_precios = (
@@ -1411,17 +1608,11 @@ def detectar_tema_por_condiciones(mensaje):
         "tarifas",
         "cuanto sale",
     )
-
-    if any(frase in mensaje_normalizado for frase in frases_precios):
-        return "precios"
-
-    elif tokens & REGLAS_TEMAS["precios"]:
+    if any(frase in texto for frase in frases_precios) or tokens & REGLAS_TEMAS["precios"]:
         return "precios"
 
     frases_servicios = (
         "que ofrecen",
-        "que ofrecen",
-        "que hay",
         "que puedo hacer",
         "que actividades tienen",
         "que actividades",
@@ -1434,11 +1625,7 @@ def detectar_tema_por_condiciones(mensaje):
         "ofrecen",
         "ofrece",
     )
-
-    if any(frase in mensaje_normalizado for frase in frases_servicios):
-        return "servicios"
-
-    elif tokens & REGLAS_TEMAS["servicios"]:
+    if any(frase in texto for frase in frases_servicios) or tokens & REGLAS_TEMAS["servicios"]:
         return "servicios"
 
     return None
@@ -1570,301 +1757,181 @@ def respuesta_por_condicion(
     mensaje,
     informacion=None
 ):
-    """
-    Genera la respuesta directa según el tema reconocido.
-    Los datos se obtienen de PostgreSQL.
-    """
+    """Genera la respuesta directa según el tema reconocido usando datos reales del proyecto."""
+    contacto = get_contacto_activo()
 
-    contacto = None
-
-    if tema in {
-        "horario",
-        "ubicacion",
-        "contacto"
-    }:
-        contacto = get_contacto_activo()
-
-    # HORARIOS
     if tema == "horario":
-
-        horario = plain_text(
-            getattr(
-                contacto,
-                "horarios_atencion",
-                ""
-            )
-        )
-
+        horario = plain_text(getattr(contacto, "horarios_atencion", "") or "")
         if horario:
             return (
                 "El Centro Turístico Mirador Illari atiende "
                 f"{horario.rstrip('.')}"
                 "."
             )
+        return "El horario de atención todavía no se encuentra registrado."
 
-        return (
-            "El horario de atención todavía "
-            "no se encuentra registrado."
-        )
-
-    # UBICACIÓN
     elif tema == "ubicacion":
+        faq_ubicacion = buscar_faq_por_palabras(("donde esta", "donde está", "ubicado", "ubicados", "donde queda"))
+        if faq_ubicacion:
+            return faq_ubicacion[1]
 
-        direccion = plain_text(
-            getattr(
-                contacto,
-                "direccion",
-                ""
-            )
-        )
-
+        direccion = plain_text(getattr(contacto, "direccion", "") or "")
+        direccion = limpiar_direccion_para_mapa(direccion)
         if direccion:
+            direccion_limpia = direccion.strip()
+            if normalize_text(direccion_limpia).startswith("en "):
+                return (
+                    "El Centro Turístico Mirador Illari está ubicado "
+                    f"{direccion_limpia.rstrip('.')}."
+                )
             return (
-                "El Centro Turístico Mirador Illari "
-                f"está ubicado en {direccion.rstrip('.')}"
-                "."
+                "El Centro Turístico Mirador Illari está ubicado en "
+                f"{direccion_limpia.rstrip('.')}."
             )
-
-        return (
-            "La ubicación todavía no se encuentra registrada. "
-            "Puedes revisarla en la sección Contacto."
-        )
+        return "La ubicación todavía no se encuentra registrada. Puedes revisarla en la sección Contacto."
 
     elif tema == "como_llegar":
+        faq_llegar = buscar_faq_por_palabras(("como llegar", "como llego", "ruta", "indicaciones para llegar"))
+        if faq_llegar:
+            return faq_llegar[1]
         return (
-            "Puedes llegar en vehículo hasta el parqueadero "
-            "del Centro Turístico Mirador Illari y después "
-            "caminar aproximadamente cinco minutos."
+            "Puedes llegar en vehículo hasta el parqueadero del Centro Turístico Mirador Illari "
+            "y después caminar aproximadamente cinco minutos."
         )
 
-    # ALOJAMIENTO (glamping)
-    if tema == "alojamiento":
-        return (
-            "Sí, el Centro Turístico Mirador Illari ofrece "
-            "alojamiento tipo glamping. El glamping consiste "
-            "en hospedarse en una carpa equipada y cómoda, "
-            "disfrutando de la naturaleza. Para utilizar este "
-            "servicio se recomienda realizar una reserva."
-        )
-
-    # CAMPING (zona para tiendas)
-    if tema == "camping":
-        return (
-            "Sí, el Centro Turístico Mirador Illari dispone "
-            "de espacios para camping. Puedes consultar la "
-            "disponibilidad y las condiciones antes de tu visita."
-        )
-
-    # CONTACTO
-    elif tema == "contacto":
-
-        datos = []
-
-        whatsapp = plain_text(
-            getattr(
-                contacto,
-                "whatsapp",
-                ""
+    elif tema == "mapa":
+        direccion = plain_text(getattr(contacto, "direccion", "") or "")
+        if direccion:
+            return (
+                "Puedes ver la ubicación del Centro Turístico Mirador Illari en Google Maps "
+                f"o consultar la dirección: {direccion.rstrip('.')}."
             )
-        )
+        return "Puedes consultar la ubicación del Centro Turístico Mirador Illari en Google Maps."
 
-        telefono = plain_text(
-            getattr(
-                contacto,
-                "telefono",
-                ""
-            )
-        )
-
-        correo = plain_text(
-            getattr(
-                contacto,
-                "correo",
-                ""
-            )
-        )
-
-        if whatsapp:
-            datos.append(
-                f"WhatsApp: {whatsapp}"
-            )
-
-        if telefono:
-            datos.append(
-                f"Teléfono: {telefono}"
-            )
-
-        if correo:
-            datos.append(
-                f"Correo: {correo}"
-            )
-
-        if datos:
-            return " | ".join(datos)
-
-        return (
-            "Los medios de contacto todavía "
-            "no se encuentran registrados."
-        )
-
-    # SERVICIOS Y PRECIOS
-    elif tema in {"servicios", "precios"}:
-
+    elif tema == "alojamiento":
         servicios = list(
             ServicioTuristico.objects.filter(
-                activo=True
-            ).order_by("nombre")
-        )
-
-        if not servicios:
-            return (
-                "Actualmente no existen servicios "
-                "turísticos activos registrados."
-            )
-
-        servicio_encontrado = buscar_servicio(
-            mensaje,
-            servicios
-        )
-
-        if servicio_encontrado:
-            return formatear_servicio(
-                servicio_encontrado
-            )
-
-        mensaje_normalizado = normalize_text(mensaje)
-
-        servicio_especifico = {
-            "piscina",
-            "restaurante",
-            "caballos",
-            "cancha",
-            "parqueadero",
-            "parqueo",
-            "paseo",
-            "ruta",
-        }
-
-        if any(
-            palabra in mensaje_normalizado
-            for palabra in servicio_especifico
-        ) and any(
-            palabra in mensaje_normalizado
-            for palabra in (
-                "tienen",
-                "tiene",
-                "hay",
-                "existe",
-                "ofrecen",
-                "ofrece",
-                "puedo",
-                "puede",
-                "quiero",
-                "necesito",
-            )
-        ):
-            # Si el usuario pregunta por un servicio específico que no existe
-            # en los servicios activos, permitir fallback a Gemini.
-            return None
-
-        nombres = ", ".join(
-            servicio.nombre
-            for servicio in servicios[:6]
-        )
-
-        if tema == "precios":
-            return (
-                "Los precios dependen del servicio seleccionado. "
-                "Puedes preguntar por uno de estos servicios: "
-                f"{nombres}."
-            )
-
-        return (
-            "Los servicios turísticos disponibles son: "
-            f"{nombres}."
-        )
-
-    # MASCOTAS
-    if tema == "mascotas":
-
-        # Primero buscar una PreguntaFrecuente relacionada con mascotas.
-        preguntas = list(
-            PreguntaFrecuente.objects.filter(
-                activo=True
+                activo=True,
+                tipo="Hospedaje",
             ).order_by("id")
         )
+        if not servicios:
+            servicios = list(
+                ServicioTuristico.objects.filter(
+                    activo=True,
+                ).order_by("id")
+            )
+        for servicio in servicios:
+            nombre = normalize_text(servicio.nombre or "")
+            if "glamping" in nombre or "hospedaje" in nombre or "alojamiento" in nombre:
+                return construir_respuesta_servicio(servicio, mensaje)
+        if servicios:
+            return construir_respuesta_servicio(servicios[0], mensaje)
+        return "No tengo registrado actualmente un servicio de alojamiento."
 
-        keywords = (
-            "mascota",
-            "mascotas",
-            "perro",
-            "perros",
-            "gato",
-            "gatos",
-            "animal",
-            "animales",
-            "aceptan",
-            "permiten",
-            "llevar",
-        )
+    elif tema == "camping":
+        camping = ServicioTuristico.objects.filter(
+            activo=True,
+        ).order_by("id")
+        nombre_relacionado = None
+        for servicio in camping:
+            nombre = normalize_text(servicio.nombre or "")
+            if "camping" in nombre or "carpa" in nombre:
+                nombre_relacionado = servicio
+                break
+        if nombre_relacionado:
+            return construir_respuesta_servicio(nombre_relacionado, mensaje)
+        return "No tengo registrado actualmente un servicio de camping."
 
-        for pregunta in preguntas:
-            texto_p = normalize_text(pregunta.pregunta or "")
-            texto_r = normalize_text(pregunta.respuesta or "")
-            if any(k in texto_p or k in texto_r for k in keywords):
-                return plain_text(pregunta.respuesta)
-
-        # No hay FAQ específica: permitir fallback a Gemini retornando None
+    elif tema == "alimentos":
+        faq = buscar_faq_por_palabras(("alimento", "alimentos", "comida", "ingresar comida", "llevar comida", "bebidas"))
+        if faq:
+            return faq[1]
         return None
 
-    # EVENTOS
-    elif tema == "eventos":
+    elif tema == "mascotas":
+        faq = buscar_faq_por_palabras(("mascota", "mascotas", "perro", "gato", "animal", "animales"))
+        if faq:
+            return faq[1]
+        return None
 
-        eventos = list(
-            EventoNovedad.objects.filter(
-                activo=True
-            ).order_by(
-                "fecha_evento",
-                "-fecha_publicacion"
-            )[:5]
-        )
+    elif tema == "parqueadero":
+        faq = buscar_faq_por_palabras(("parqueadero", "parqueo", "estacionamiento", "estacionar", "dejar el carro", "dejar el auto", "vehiculo", "vehículo"))
+        if faq:
+            return faq[1]
+        return None
 
-        if not eventos:
+    elif tema == "pagos":
+        faq = buscar_faq_por_palabras(("metodo de pago", "metodos de pago", "forma de pago", "formas de pago", "efectivo", "transferencia", "tarjeta"))
+        if faq:
+            return faq[1]
+        return None
+
+    elif tema == "reserva_general":
+        faq = buscar_faq_por_palabras(("necesito reservar", "hay que reservar", "requiere reserva", "reservacion", "reservación"))
+        if faq:
+            return faq[1]
+        return None
+
+    elif tema == "mejor_momento":
+        faq = buscar_faq_por_palabras(("mejor horario", "mejor hora", "atardecer", "mejor momento para visitar"))
+        if faq:
+            return faq[1]
+        return None
+
+    elif tema == "contacto":
+        datos = []
+        whatsapp = plain_text(getattr(contacto, "whatsapp", "") or "")
+        telefono = plain_text(getattr(contacto, "telefono", "") or "")
+        correo = plain_text(getattr(contacto, "correo", "") or "")
+        if whatsapp:
+            datos.append(f"WhatsApp: {whatsapp}")
+        if telefono:
+            datos.append(f"Teléfono: {telefono}")
+        if correo:
+            datos.append(f"Correo: {correo}")
+        if datos:
+            return " | ".join(datos)
+        return "Los medios de contacto todavía no se encuentran registrados."
+
+    elif tema in {"servicios", "precios"}:
+        servicios = list(ServicioTuristico.objects.filter(activo=True).order_by("nombre"))
+        if not servicios:
+            return "Actualmente no existen servicios turísticos activos registrados."
+
+        servicio_encontrado = buscar_servicio(mensaje, servicios)
+        if servicio_encontrado:
+            return formatear_servicio(servicio_encontrado)
+
+        if "que puedes hacer" in normalize_text(mensaje) or "que puedo hacer" in normalize_text(mensaje):
+            nombres = ", ".join(servicio.nombre for servicio in servicios[:6])
             return (
-                "Actualmente no existen eventos "
-                "o novedades activos registrados."
+                "En Mirador Illari puedes disfrutar de "
+                f"{nombres}. Si quieres, te puedo ayudar con horarios, precios o reservas."
             )
 
+        nombres = ", ".join(servicio.nombre for servicio in servicios[:6])
+        if tema == "precios":
+            return (
+                "Los precios dependen del servicio seleccionado. Puedes preguntar por uno de estos servicios: "
+                f"{nombres}."
+            )
+        return "Los servicios turísticos disponibles son: " + nombres + "."
+
+    elif tema == "eventos":
+        eventos = list(EventoNovedad.objects.filter(activo=True).order_by("fecha_evento", "-fecha_publicacion")[:5])
+        if not eventos:
+            return "Actualmente no existen eventos o novedades activos registrados."
         detalles = []
-
         for evento in eventos:
-
             if evento.fecha_evento:
-
-                detalles.append(
-                    f"{evento.titulo} "
-                    f"({evento.fecha_evento.strftime('%d/%m/%Y')})"
-                )
-
+                detalles.append(f"{evento.titulo} ({evento.fecha_evento.strftime('%d/%m/%Y')})")
             else:
-                detalles.append(
-                    evento.titulo
-                )
+                detalles.append(evento.titulo)
+        return "Eventos y novedades disponibles: " + "; ".join(detalles) + "."
 
-        return (
-            "Eventos y novedades disponibles: "
-            + "; ".join(detalles)
-            + "."
-        )
-
-    respuesta_local = generic_response_prompt(
-        informacion
-    )
-
-    respuesta_gemini = obtener_respuesta_gemini(
-        mensaje
-    )
-
+    respuesta_local = generic_response_prompt(informacion)
+    respuesta_gemini = obtener_respuesta_gemini(mensaje)
     if respuesta_gemini:
         return {
             "respuesta": respuesta_gemini,
@@ -1873,7 +1940,6 @@ def respuesta_por_condicion(
             "metodo": "gemini_flash",
             "reconocido": True,
         }
-
     return {
         "respuesta": respuesta_local,
         "tema": "desconocido",
@@ -1881,6 +1947,29 @@ def respuesta_por_condicion(
         "metodo": "TF-IDF + similitud del coseno",
         "reconocido": False,
     }
+
+
+def debe_adjuntar_mapa(resultado, mensaje=None, pregunta=None):
+    """Indica si la respuesta requiere aportar un mapa de ubicación."""
+    if not isinstance(resultado, dict):
+        return False
+
+    tema = resultado.get("tema")
+    if tema in {"ubicacion", "mapa"}:
+        return True
+
+    if tema != "faq_admin":
+        return False
+
+    texto = mensaje or ""
+    if pregunta and getattr(pregunta, "pregunta", None):
+        texto = texto or pregunta.pregunta
+
+    if not texto:
+        return False
+
+    tema_texto = detectar_tema_por_condiciones(texto)
+    return tema_texto in {"ubicacion", "mapa"}
 
 
 def crear_vectores_tfidf(
@@ -2061,6 +2150,15 @@ def buscar_respuesta_tfidf(
             vector_documento
         )
 
+        terminos_comunes = set(
+            chatbot_tokens(mensaje)
+        ) & set(
+            chatbot_tokens(registros[indice].pregunta)
+        )
+
+        if not terminos_comunes:
+            continue
+
         if similitud > mejor_similitud:
             mejor_indice = indice
             mejor_similitud = similitud
@@ -2113,6 +2211,18 @@ def procesar_mensaje_chatbot(
     # COINCIDENCIA EXACTA O PARCIAL NORMALIZADA
     local_found = False
 
+    faq_texto = obtener_faq_por_texto_exacto(mensaje)
+    if faq_texto:
+        pregunta, respuesta = faq_texto
+        logger.info("Chatbot local encontrado: True (coincidencia exacta por texto)")
+        return {
+            "respuesta": respuesta,
+            "tema": inferir_tema(pregunta.pregunta),
+            "confianza": 100,
+            "metodo": "faq_admin_exacta_texto",
+            "reconocido": True,
+        }
+
     for pregunta in preguntas:
 
         pregunta_normalizada = normalize_text(
@@ -2120,8 +2230,6 @@ def procesar_mensaje_chatbot(
         )
 
         if pregunta_normalizada == mensaje_normalizado:
-            # Preferir la respuesta almacenada si existe; si no, continuar
-            # para permitir que Gemini intente responder.
             respuesta_pregunta = plain_text(pregunta.respuesta)
             if respuesta_pregunta:
                 logger.info("Chatbot local encontrado: True (coincidencia exacta)")
@@ -2134,7 +2242,6 @@ def procesar_mensaje_chatbot(
                     "metodo": "coincidencia exacta",
                     "reconocido": True,
                 }
-            # No hay respuesta local en la FAQ, continuar y permitir fallback a Gemini.
 
     # PRIMERA PARTE: CONDICIONES IF Y ELIF
     tema = detectar_tema_por_condiciones(
@@ -2189,8 +2296,8 @@ def procesar_mensaje_chatbot(
         preguntas
     )
 
-    # 0.25 equivale al 25 % de similitud mínima.
-    umbral = 0.25
+    # Umbral conservador para evitar responder una FAQ no relacionada.
+    umbral = 0.55
 
     if (
         mejor_pregunta
@@ -2356,10 +2463,135 @@ def api_chatbot(request):
         )
 
     try:
-        resultado = procesar_mensaje_chatbot(
+        faq_exacta = obtener_faq_exacta(
+            datos.get("pregunta_id"),
             mensaje,
-            get_informacion_activa(),
-        )
+        ) if datos.get("pregunta_id") is not None else None
+        faq_pregunta = None
+
+        if faq_exacta:
+            pregunta, respuesta = faq_exacta
+            faq_pregunta = pregunta
+            resultado = {
+                "reconocido": True,
+                "respuesta": respuesta,
+                "tema": "faq_admin",
+                "confianza": 100,
+                "metodo": "faq_admin_exacta",
+                "sugerencias": [],
+            }
+            logger.info(
+                "FAQ exacta seleccionada: id=%s metodo=faq_admin_exacta confianza=100",
+                pregunta.id,
+            )
+        else:
+            faq_texto = obtener_faq_por_texto_exacto(mensaje)
+            if faq_texto:
+                pregunta, respuesta = faq_texto
+                faq_pregunta = pregunta
+                resultado = {
+                    "reconocido": True,
+                    "respuesta": respuesta,
+                    "tema": "faq_admin",
+                    "confianza": 100,
+                    "metodo": "faq_admin_exacta_texto",
+                    "sugerencias": [],
+                }
+                logger.info(
+                    "FAQ exacta por texto seleccionada: id=%s metodo=faq_admin_exacta_texto confianza=100",
+                    pregunta.id,
+                )
+            else:
+                resultado = None
+
+        servicio_detectado = None
+        if resultado is None:
+            contexto = request.session.get("chatbot_contexto", {})
+            mensaje_normalizado = normalize_text(mensaje)
+            contexto_ambiguo = bool(contexto) and any(
+                frase in mensaje_normalizado for frase in (
+                    "cuanto cuesta",
+                    "precio",
+                    "cuanto vale",
+                    "cuantas personas",
+                    "cuántas personas",
+                    "hay que reservar",
+                    "requiere reserva",
+                    "disponibilidad",
+                    "esta disponible",
+                    "que incluye",
+                    "qué incluye",
+                    "quiero hospedarme",
+                    "quiero alojarme",
+                    "quiero reservar",
+                )
+            )
+
+            tema_detectado = detectar_tema_por_condiciones(mensaje)
+            if contexto_ambiguo and tema_detectado in {"precios", "reserva_general", "servicios", "alojamiento"}:
+                servicio_contexto = detectar_servicio(mensaje, contexto)
+                if servicio_contexto is not None:
+                    servicio_detectado = servicio_contexto
+                    respuesta_servicio = construir_respuesta_servicio(servicio_detectado, mensaje)
+                    if respuesta_servicio:
+                        resultado = {
+                            "reconocido": True,
+                            "respuesta": respuesta_servicio,
+                            "tema": tema_detectado,
+                            "confianza": 100,
+                            "sugerencias": sugerencias_por_servicio(servicio_detectado),
+                        }
+
+            if resultado is None:
+                tema_detectado = detectar_tema_por_condiciones(mensaje)
+                if tema_detectado:
+                    respuesta_tema = respuesta_por_condicion(tema_detectado, mensaje, get_informacion_activa())
+                    if respuesta_tema:
+                        resultado = {
+                            "reconocido": True,
+                            "respuesta": respuesta_tema,
+                            "tema": tema_detectado,
+                            "confianza": 100,
+                            "sugerencias": [],
+                        }
+
+            if resultado is None:
+                servicio_detectado = detectar_servicio(mensaje, contexto)
+                nombre_explicito = (
+                    servicio_detectado is not None and (
+                        normalize_text(servicio_detectado.nombre) in mensaje_normalizado
+                        or normalize_text(servicio_detectado.nombre).split()[0] in mensaje_normalizado.split()
+                    )
+                )
+                solicitud_servicio = any(
+                    frase in mensaje_normalizado for frase in (
+                        "quiero hospedarme",
+                        "quiero alojarme",
+                        "quiero reservar",
+                        "quiero quedarme",
+                        "me puedo quedar",
+                    )
+                )
+                if servicio_detectado is not None and not (
+                    nombre_explicito or contexto_ambiguo or solicitud_servicio
+                ):
+                    servicio_detectado = None
+
+        if resultado is None:
+            if servicio_detectado is not None:
+                respuesta_servicio = construir_respuesta_servicio(servicio_detectado, mensaje)
+                if respuesta_servicio:
+                    resultado = {
+                        "reconocido": True,
+                        "respuesta": respuesta_servicio,
+                        "tema": "servicio",
+                        "confianza": 100,
+                        "sugerencias": sugerencias_por_servicio(servicio_detectado),
+                    }
+                else:
+                    resultado = procesar_mensaje_chatbot(mensaje, get_informacion_activa())
+            else:
+                resultado = procesar_mensaje_chatbot(mensaje, get_informacion_activa())
 
         if isinstance(resultado, str):
             resultado = {
@@ -2391,46 +2623,40 @@ def api_chatbot(request):
             ],
         )
 
-        historial = request.session.get(
-            "historial_chatbot",
-            [],
-        )
+        if servicio_detectado is not None:
+            request.session["chatbot_contexto"] = crear_contexto_chatbot(
+                servicio_detectado,
+                tema=resultado.get("tema", "servicio"),
+                intencion="consulta_servicio"
+            )
+        elif resultado and resultado.get("tema") in {"alojamiento", "camping", "servicio"}:
+            servicio_detectado = detectar_servicio(mensaje, request.session.get("chatbot_contexto", {}))
+            if servicio_detectado is not None:
+                request.session["chatbot_contexto"] = crear_contexto_chatbot(
+                    servicio_detectado,
+                    tema=resultado.get("tema", "servicio"),
+                    intencion="consulta_servicio"
+                )
 
+        historial = request.session.get("historial_chatbot", [])
         historial.append({
             "usuario": mensaje,
             "chatbot": resultado["respuesta"],
-            "tema": resultado.get(
-                "tema",
-                "desconocido",
-            ),
-            "confianza": resultado.get(
-                "confianza",
-                0,
-            ),
+            "tema": resultado.get("tema", "desconocido"),
+            "confianza": resultado.get("confianza", 0),
         })
-
         request.session["historial_chatbot"] = historial[-10:]
 
         resultado.setdefault("sugerencias", [])
 
-        # Agrega el mapa cuando la respuesta pertenece a ubicación.
-        if resultado.get("tema") == "ubicacion":
-
+        if debe_adjuntar_mapa(resultado, mensaje, faq_pregunta):
             contacto = get_contacto_activo()
-
             if contacto:
-
                 mapa_embed_url, mapa_link = build_map_embed(
                     contacto.mapa_embed_url,
                     contacto.direccion,
                 )
-
-                direccion = plain_text(
-                    contacto.direccion
-                )
-
-                # Si el enlace corto no puede convertirse,
-                # genera el mapa utilizando la dirección registrada.
+                direccion = plain_text(contacto.direccion)
                 if not mapa_embed_url and direccion:
                     mapa_embed_url = (
                         "https://maps.google.com/maps"
@@ -2439,38 +2665,37 @@ def api_chatbot(request):
                         "&hl=es"
                         "&output=embed"
                     )
-
                 resultado["mapa"] = {
                     "embed_url": mapa_embed_url or "",
-                    "link": (
-                        mapa_link
-                        or contacto.mapa_embed_url
-                        or ""
-                    ),
-                    "titulo": (
-                        "Ubicación del Centro Turístico "
-                        "Mirador Illari"
-                    ),
+                    "link": mapa_link or contacto.mapa_embed_url or "",
+                    "titulo": "Ubicación del Centro Turístico Mirador Illari",
                 }
 
+        request.session.modified = True
         return JsonResponse(resultado)
 
     except Exception:
-        logger.exception(
-            "Error al procesar el mensaje del chatbot."
-        )
-
+        logger.exception("Error al procesar el mensaje del chatbot.")
         return JsonResponse(
             {
                 "reconocido": False,
-                "respuesta": (
-                    "Ocurrió un error interno al procesar "
-                    "la pregunta."
-                ),
+                "respuesta": "Ocurrió un error interno al procesar la pregunta.",
                 "confianza": 0,
             },
             status=500,
         )
+
+
+@require_POST
+def limpiar_chatbot(request):
+    request.session["historial_chatbot"] = []
+    request.session["chatbot_contexto"] = {
+        "ultimo_servicio": None,
+        "ultimo_tema": None,
+        "ultima_intencion": None,
+    }
+    request.session.modified = True
+    return JsonResponse({"ok": True, "mensaje": "Sesión del chatbot reiniciada."})
 
 
 def chatbot(request):

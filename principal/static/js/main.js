@@ -64,7 +64,7 @@ function obtenerTokenCsrf() {
     return meta ? meta.content : "";
 }
 
-async function consultarChatbotLocal(mensaje) {
+async function consultarChatbotLocal(mensaje, preguntaId = null) {
     const cajaChatbot = document.getElementById(
         "chatbotBox"
     );
@@ -93,6 +93,7 @@ async function consultarChatbotLocal(mensaje) {
         },
         body: JSON.stringify({
             mensaje: mensaje,
+            ...(preguntaId !== null ? { pregunta_id: preguntaId } : {}),
         }),
     });
 
@@ -709,7 +710,7 @@ function iniciarChatbot() {
 
     const introWidget =
         widget.dataset.chatbotIntro ||
-        "Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?";
+        "Hola, soy Jeyson, tu guía virtual del Mirador Illari. ¿En qué puedo ayudarte?";
 
     const placeholderWidget =
         widget.dataset.chatbotPlaceholder ||
@@ -751,6 +752,9 @@ function iniciarChatbot() {
 
     const botonVoz =
         document.getElementById("chatbotVoiceBtn");
+
+    const botonVozInicial =
+        document.getElementById("initialVoiceBtn");
 
     function ajustarChatbotTeclado() {
         if (!window.visualViewport) {
@@ -795,6 +799,10 @@ function iniciarChatbot() {
         widget.dataset.preguntasApiUrl ||
         "/api/preguntas/";
 
+    let preguntasDisponibles = [];
+    let paginaPreguntas = 0;
+    const preguntasPorPagina = 4;
+
     const contenidoOriginalBoton =
         botonEnviar.innerHTML;
 
@@ -825,6 +833,35 @@ function iniciarChatbot() {
 
     let enviando = false;
     let vozActivada = true;
+
+    function leerBanderaSaludoHablado() {
+        try {
+            return sessionStorage.getItem("illari_saludo_hablado") === "1";
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function guardarBanderaSaludoHablado() {
+        try {
+            sessionStorage.setItem("illari_saludo_hablado", "1");
+        } catch (error) {
+        }
+    }
+
+    function esSaludo(texto) {
+        const normalizado = normalizarTextoVoz(texto);
+        return /^(hola+|holi|buenos dias|buen dia|buenas tardes|buenas noches|que tal)(\s|$)/.test(normalizado);
+    }
+
+    function esAgradecimientoODespedida(texto) {
+        const normalizado = normalizarTextoVoz(texto);
+        return /^(gracias|muchas gracias|eso era todo|nos vemos|adios|chao)(\s|$)/.test(normalizado);
+    }
+
+    function debeHablarAutomaticamente(texto) {
+        return esSaludo(texto) || esAgradecimientoODespedida(texto);
+    }
 
     if (horaInicial) {
         horaInicial.textContent = obtenerHoraActual();
@@ -909,6 +946,8 @@ function iniciarChatbot() {
             "Cerrar asistente virtual"
         );
 
+        mostrarSaludoInicial();
+
         window.setTimeout(function () {
             const esCelular = window.matchMedia(
                 "(max-width: 600px)"
@@ -954,17 +993,78 @@ function iniciarChatbot() {
     }
 
     function mostrarOpcionesRapidas() {
+        if (!opcionesRapidas || preguntasDisponibles.length === 0) {
+            return;
+        }
+
+        const cantidadPaginas = Math.ceil(
+            preguntasDisponibles.length / preguntasPorPagina
+        );
+
+        paginaPreguntas =
+            paginaPreguntas + 1 >= cantidadPaginas
+                ? 0
+                : paginaPreguntas + 1;
+
+        renderizarPreguntasFrecuentes();
+    }
+
+    function actualizarBotonPreguntas() {
+        if (!botonMostrarOpciones) {
+            return;
+        }
+
+        const hayMasDeUnaPagina = preguntasDisponibles.length > preguntasPorPagina;
+        botonMostrarOpciones.hidden = !hayMasDeUnaPagina;
+
+        if (!hayMasDeUnaPagina) {
+            return;
+        }
+
+        const ultimaPagina =
+            paginaPreguntas >= Math.ceil(
+                preguntasDisponibles.length / preguntasPorPagina
+            ) - 1;
+
+        botonMostrarOpciones.textContent = ultimaPagina
+            ? "↺ Volver al inicio"
+            : "Ver más opciones";
+    }
+
+    function renderizarPreguntasFrecuentes() {
         if (!opcionesRapidas) {
             return;
         }
 
+        const inicio = paginaPreguntas * preguntasPorPagina;
+        const grupoActual = preguntasDisponibles.slice(
+            inicio,
+            inicio + preguntasPorPagina
+        );
+
+        opcionesRapidas.innerHTML = "";
         opcionesRapidas.classList.remove("oculto");
-        opcionesRapidas.classList.add("expandido");
 
-        if (botonMostrarOpciones) {
-            botonMostrarOpciones.hidden = true;
-        }
+        grupoActual.forEach(function (registro) {
+            const boton = document.createElement("button");
 
+            boton.type = "button";
+            boton.className = "quick-chip";
+            boton.textContent = registro.pregunta;
+            boton.dataset.mensaje = registro.pregunta;
+            boton.dataset.preguntaId = String(registro.id);
+
+            boton.addEventListener("click", function () {
+                enviarConsulta(
+                    registro.pregunta,
+                    registro.id,
+                );
+            });
+
+            opcionesRapidas.appendChild(boton);
+        });
+
+        actualizarBotonPreguntas();
         desplazarAlFinal(true);
     }
 
@@ -1000,6 +1100,19 @@ function iniciarChatbot() {
         hora.textContent = obtenerHoraActual();
 
         burbuja.appendChild(contenido);
+
+        if (tipo === "bot" && texto) {
+            const botonLectura = document.createElement("button");
+            botonLectura.type = "button";
+            botonLectura.className = "chatbot-message-voice";
+            botonLectura.textContent = "🔊";
+            botonLectura.title = "Escuchar respuesta";
+            botonLectura.setAttribute("aria-label", "Escuchar respuesta");
+            botonLectura.addEventListener("click", function () {
+                hablar(texto, true);
+            });
+            burbuja.appendChild(botonLectura);
+        }
 
         const datosMapa =
             datos &&
@@ -1064,15 +1177,37 @@ function iniciarChatbot() {
         return mensaje;
     }
 
-    function crearIndicadorEscritura() {
-        const mensaje = document.createElement("div");
+    function mostrarSaludoInicial() {
+        if (contenedorMensajes.querySelector(".message")) {
+            return;
+        }
 
+        crearMensaje(introWidget, "bot");
+    }
+
+    function removerIndicadorEscritura() {
+        const indicador = document.querySelector(".message.bot.loader");
+
+        if (indicador) {
+            indicador.remove();
+        }
+    }
+
+    function mostrarIndicadorEscritura() {
+        removerIndicadorEscritura();
+
+        const mensaje = document.createElement("div");
         mensaje.className = "message bot loader";
 
         const burbuja = document.createElement("div");
         burbuja.className = "bubble";
-        burbuja.textContent = "Escribiendo...";
 
+        const textoIndicador = document.createElement("div");
+        textoIndicador.className = "chatbot-loader";
+        textoIndicador.setAttribute("aria-live", "polite");
+        textoIndicador.innerHTML = "<span>Illari está escribiendo</span><span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span>";
+
+        burbuja.appendChild(textoIndicador);
         mensaje.appendChild(burbuja);
         contenedorMensajes.appendChild(mensaje);
 
@@ -1095,112 +1230,117 @@ function iniciarChatbot() {
         return normalizarTextoVoz(texto);
     }
 
-    function detectarComandoNavegacion(texto) {
-        const destinosDirectos = [
-            "inicio",
-            "pagina principal",
-            "servicios",
-            "galeria",
-            "eventos",
-            "contacto",
-            "nosotros"
-        ];
+    function obtenerEtiquetaSugerencia(texto) {
+        const normalizado = normalizarTextoVoz(texto);
 
-        if (destinosDirectos.includes(texto)) {
-            return texto === "pagina principal"
-                ? "inicio"
-                : texto;
+        if (normalizado.includes("horario") || normalizado.includes("atencion")) {
+            return "🕒 Horarios";
         }
 
-        const acciones = [
-            "ir",
-            "ve",
-            "vete",
-            "ver",
-            "dirigete",
-            "llevame",
-            "abre",
-            "abrir",
-            "muestrame",
-            "mostrar",
-            "navega",
-            "regresa",
-            "regresar",
-            "volver",
-            "quiero ir",
-            "quiero ver"
-        ];
+        if (normalizado.includes("precio") || normalizado.includes("costo") || normalizado.includes("cuanto cuesta")) {
+            return "💲 Precios";
+        }
 
-        const tieneAccion = acciones.some(function (accion) {
-            return new RegExp(`(^|\\s)${accion}(\\s|$)`).test(texto);
-        });
+        if (normalizado.includes("servicio")) {
+            return "🌿 Servicios";
+        }
 
-        const contieneDestino = function (destinos) {
-            return destinos.some(function (destino) {
-                return new RegExp(`(^|\\s)${destino}(\\s|$)`).test(texto);
-            });
+        if (normalizado.includes("ubicacion") || normalizado.includes("donde queda")) {
+            return "📍 Ubicación";
+        }
+
+        if (normalizado.includes("parqueadero") || normalizado.includes("estacionamiento")) {
+            return "🅿️ Parqueadero";
+        }
+
+        if (normalizado.includes("ingresar") || normalizado.includes("entrada")) {
+            return "🚶 Acceso";
+        }
+
+        if (normalizado.includes("evento") || normalizado.includes("novedad")) {
+            return "📅 Eventos";
+        }
+
+        if (normalizado.includes("contacto") || normalizado.includes("whatsapp")) {
+            return "💬 Contacto";
+        }
+
+        if (normalizado.includes("glamping")) {
+            return "🏕️ Glamping";
+        }
+
+        return texto.length > 28
+            ? `${texto.slice(0, 25).trim()}...`
+            : texto;
+    }
+
+    function detectarNavegacion(texto) {
+        const normalizado = normalizarComando(texto);
+        const destinosDirectos = {
+            inicio: /\b(inicio|pagina principal)\b/,
+            nosotros: /\b(nosotros|quienes somos|quienes son)\b/,
+            servicios: /\b(servicio|servicios)\b/,
+            eventos: /\b(evento|eventos|novedad|novedades)\b/,
+            galeria: /\b(galeria|foto|fotos|imagen|imagenes)\b/,
+            contacto: /\b(contacto|contactarlos|comunicarnos)\b/
         };
 
-        if (
-            tieneAccion &&
-            contieneDestino(["inicio", "pagina principal"])
-        ) {
+        if (/^(inicio|pagina principal)$/.test(normalizado)) {
             return "inicio";
         }
 
-        if (tieneAccion && contieneDestino(["servicio", "servicios"])) {
-            return "servicios";
+        const tieneIntencionExplicita =
+            /\b(ir|ve|vete|dirigete|llevame|llevarme|abre|abrir|muestrame|mostrar|navega|regresa|regresar|volver)\b/.test(normalizado) ||
+            /\bquiero (ir|ver|conocer)\b/.test(normalizado) ||
+            /\bquiero contactarlos\b/.test(normalizado);
+
+        if (!tieneIntencionExplicita) {
+            return null;
         }
 
-        if (
-            tieneAccion &&
-            contieneDestino([
-                "galeria",
-                "foto",
-                "fotos",
-                "imagen",
-                "imagenes"
-            ])
-        ) {
-            return "galeria";
-        }
-
-        if (
-            tieneAccion &&
-            contieneDestino(["evento", "eventos", "novedad", "novedades"])
-        ) {
-            return "eventos";
-        }
-
-        if (tieneAccion && contieneDestino(["contacto"])) {
-            return "contacto";
-        }
-
-        if (tieneAccion && contieneDestino(["nosotros"])) {
-            return "nosotros";
+        for (const [destino, patron] of Object.entries(destinosDirectos)) {
+            if (patron.test(normalizado)) {
+                return destino;
+            }
         }
 
         return null;
     }
 
-    function hablar(texto) {
-        if (!vozActivada || !("speechSynthesis" in window)) {
+    function detectarComandoNavegacion(texto) {
+        return detectarNavegacion(texto);
+    }
+
+    function procesarIntencionNavegacion(textoOriginal) {
+        const destino = detectarNavegacion(textoOriginal);
+
+        if (!destino) {
+            return false;
+        }
+
+        crearMensaje(textoOriginal, "user");
+        return ejecutarNavegacion(destino);
+    }
+
+    function hablar(texto, forzar = false) {
+        if ((!vozActivada && !forzar) || !("speechSynthesis" in window)) {
             return;
         }
 
-        window.speechSynthesis.cancel();
+        try {
+            window.speechSynthesis.cancel();
 
-        const mensaje = new SpeechSynthesisUtterance(
-            texto
-        );
-
-        mensaje.lang = "es-EC";
-        mensaje.rate = 1;
-        mensaje.pitch = 1;
-        window.speechSynthesis.speak(mensaje);
+            const mensaje = new SpeechSynthesisUtterance(texto);
+            mensaje.lang = "es-EC";
+            mensaje.rate = 1;
+            mensaje.pitch = 1;
+            window.speechSynthesis.speak(mensaje);
+        } catch (error) {
+            console.error("No fue posible reproducir la respuesta por voz:", error);
+        }
     }
 
-    function responderConVoz(texto, datos = null) {
+    function responderConVoz(texto, datos = null, hablarAutomaticamente = false) {
         const textoLimpio = limpiarTextoParaChat(texto);
 
         if (!textoLimpio) {
@@ -1208,14 +1348,17 @@ function iniciarChatbot() {
         }
 
         crearMensaje(textoLimpio, "bot", datos);
-        hablar(textoLimpio);
+
+        if (hablarAutomaticamente) {
+            hablar(textoLimpio);
+        }
     }
 
     function programarNavegacion(texto, url) {
         responderConVoz(texto);
         window.setTimeout(function () {
             window.location.href = url;
-        }, 900);
+        }, 650);
     }
 
     const rutasChatbot = {
@@ -1306,10 +1449,8 @@ function iniciarChatbot() {
             return true;
         }
 
-        const destino = detectarComandoNavegacion(normalizado);
-        if (destino) {
-            crearMensaje(textoOriginal, "user");
-            return ejecutarNavegacion(destino);
+        if (procesarIntencionNavegacion(textoOriginal)) {
+            return true;
         }
 
         const busqueda = normalizado.match(
@@ -1344,23 +1485,27 @@ function iniciarChatbot() {
             : contenidoOriginalBoton;
     }
 
-    async function enviarConsulta(texto) {
+    async function enviarConsulta(texto, preguntaId = null) {
         const mensaje = String(texto || "").trim();
 
         if (!mensaje || enviando) {
             return;
         }
 
-        ocultarOpcionesRapidas();
+        if (procesarIntencionNavegacion(mensaje)) {
+            return;
+        }
+
         crearMensaje(mensaje, "user");
 
-        const indicador = crearIndicadorEscritura();
+        mostrarIndicadorEscritura();
 
         cambiarEstadoEnvio(true);
 
         try {
             const resultado = await consultarChatbotLocal(
-                mensaje
+                mensaje,
+                preguntaId,
             );
 
             const respuesta = resultado.respuesta;
@@ -1368,32 +1513,28 @@ function iniciarChatbot() {
                 respuesta
             );
 
-            indicador.remove();
-            responderConVoz(respuestaLimpia, resultado);
+            removerIndicadorEscritura();
+            const hablarRespuesta = debeHablarAutomaticamente(mensaje);
+            responderConVoz(respuestaLimpia, resultado, hablarRespuesta);
+
+            if (esSaludo(mensaje)) {
+                guardarBanderaSaludoHablado();
+            }
+
         } catch (error) {
             console.error(
                 "Error al consultar el chatbot:",
                 error
             );
 
-            indicador.remove();
-
-            const mensajeError =
-                error instanceof TypeError
-                    ? (
-                        "No fue posible comunicarse con el servidor. " +
-                        "Comprueba que Django esté ejecutándose."
-                    )
-                    : (
-                        error.message ||
-                        "No pude procesar la pregunta."
-                    );
+            removerIndicadorEscritura();
 
             crearMensaje(
-                mensajeError,
+                "No pude procesar tu mensaje en este momento. Inténtalo nuevamente.",
                 "bot"
             );
         } finally {
+            removerIndicadorEscritura();
             cambiarEstadoEnvio(false);
             if (window.matchMedia("(max-width: 600px)").matches) {
                 window.setTimeout(function () {
@@ -1429,7 +1570,7 @@ function iniciarChatbot() {
                     "click",
                     function () {
                         enviarConsulta(
-                            boton.textContent.trim()
+                            boton.dataset.mensaje || boton.textContent.trim()
                         );
                     }
                 );
@@ -1471,39 +1612,74 @@ function iniciarChatbot() {
                 return;
             }
 
-            opcionesRapidas.innerHTML = "";
-
-            datos.preguntas
-                .slice(0, 5)
-                .forEach(function (registro) {
-                    const preguntaTexto = textoPlano(
-                        registro.pregunta
-                    );
-
-                    const boton =
-                        document.createElement("button");
-
-                    boton.type = "button";
-                    boton.className = "quick-chip";
-                    boton.textContent = preguntaTexto;
-
-                    boton.addEventListener(
-                        "click",
-                        function () {
-                            enviarConsulta(
-                                preguntaTexto
-                            );
-                        }
-                    );
-
-                    opcionesRapidas.appendChild(
-                        boton
-                    );
+            preguntasDisponibles = datos.preguntas
+                .map(function (registro) {
+                    return {
+                        id: registro.id,
+                        pregunta: String(registro.pregunta || ""),
+                    };
+                })
+                .filter(function (registro) {
+                    return registro.pregunta.trim().length > 0;
                 });
+            paginaPreguntas = 0;
+            renderizarPreguntasFrecuentes();
         } catch (error) {
             asignarEventosOpciones();
         }
     }
+
+    const botonNuevaConversacion = document.getElementById("chatbotNuevaConversacion");
+
+    async function resetearChatbot() {
+        const botonReset = document.getElementById("chatbotNuevaConversacion");
+
+        if (botonReset) {
+            botonReset.disabled = true;
+        }
+
+        removerIndicadorEscritura();
+
+        preguntasDisponibles = [];
+        paginaPreguntas = 0;
+        if (botonMostrarOpciones) {
+            botonMostrarOpciones.hidden = true;
+            botonMostrarOpciones.textContent = "Ver más opciones";
+        }
+
+        const mensajes = contenedorMensajes.querySelectorAll(".message");
+        mensajes.forEach(function (mensaje) {
+            mensaje.remove();
+        });
+
+        mostrarSaludoInicial();
+
+        try {
+            await fetch("/api/chatbot/limpiar/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": obtenerTokenCsrf(),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify({}),
+            });
+        } catch (error) {
+            console.error("No fue posible limpiar la sesión del chatbot:", error);
+        }
+
+        if (opcionesRapidas) {
+            opcionesRapidas.innerHTML = "";
+            cargarPreguntasFrecuentes();
+        }
+
+        if (botonReset) {
+            botonReset.disabled = false;
+        }
+    }
+
+    botonNuevaConversacion.addEventListener("click", resetearChatbot);
 
     botonAbrir.addEventListener(
         "click",
@@ -1557,6 +1733,12 @@ function iniciarChatbot() {
             if (!vozActivada && "speechSynthesis" in window) {
                 window.speechSynthesis.cancel();
             }
+        });
+    }
+
+    if (botonVozInicial) {
+        botonVozInicial.addEventListener("click", function () {
+            hablar(introWidget, true);
         });
     }
 

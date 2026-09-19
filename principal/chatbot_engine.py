@@ -2,6 +2,15 @@ import math
 import re
 import unicodedata
 from collections import Counter
+from html import unescape
+
+
+def plain_text(value: str) -> str:
+    texto = unescape(str(value or ""))
+    texto = re.sub(r"<[^>]+>", " ", texto)
+    texto = re.sub(r"\s+", " ", texto)
+    return texto.strip()
+
 
 PALABRAS_VACIAS = {
     "a", "al", "algo", "como", "con", "cual", "cuando",
@@ -399,6 +408,288 @@ def buscar_mejor_respuesta(
         return None
 
     return mejor_resultado
+
+
+def _servicio_contextual_referencia(contexto: dict | None):
+    if not contexto:
+        return None
+
+    valor = contexto.get("ultimo_servicio")
+
+    if not valor:
+        return None
+
+    from .models import ServicioTuristico
+
+    try:
+        servicio_id = int(valor)
+    except (TypeError, ValueError):
+        servicio_id = None
+
+    consulta = ServicioTuristico.objects.filter(activo=True)
+
+    if servicio_id is not None:
+        servicio = consulta.filter(id=servicio_id).first()
+        if servicio:
+            return servicio
+
+    if isinstance(valor, str):
+        normalizado = normalizar_texto(valor)
+        for servicio in consulta.order_by("nombre"):
+            if normalizar_texto(servicio.nombre) == normalizado:
+                return servicio
+            if normalizado in normalizar_texto(servicio.nombre):
+                return servicio
+
+    return None
+
+
+def obtener_precio_servicio(servicio):
+    if servicio is None:
+        return None
+
+    if servicio.precio_adulto is not None:
+        return f"${servicio.precio_adulto}"
+
+    if servicio.precio_niño is not None:
+        return f"${servicio.precio_niño}"
+
+    if servicio.precio_tercera_edad is not None:
+        return f"${servicio.precio_tercera_edad}"
+
+    if servicio.precio_desde is not None:
+        return f"${servicio.precio_desde}"
+
+    if servicio.precio_texto:
+        return servicio.precio_texto.strip()
+
+    return None
+
+
+def obtener_capacidad_servicio(servicio):
+    if servicio is None:
+        return None
+
+    if servicio.capacidad is not None:
+        return str(servicio.capacidad)
+
+    return None
+
+
+def obtener_disponibilidad_servicio(servicio):
+    if servicio is None:
+        return None
+
+    texto = plain_text(getattr(servicio, "disponibilidad", "") or "")
+    if texto:
+        return texto
+
+    return None
+
+
+def obtener_reserva_servicio(servicio):
+    if servicio is None:
+        return None
+
+    return bool(getattr(servicio, "requiere_reserva", False))
+
+
+def obtener_incluye_servicio(servicio):
+    if servicio is None:
+        return None
+
+    texto = plain_text(getattr(servicio, "incluye", "") or "")
+    if texto:
+        return texto
+
+    return None
+
+
+def crear_contexto_chatbot(servicio=None, tema=None, intencion=None):
+    contexto = {
+        "ultimo_servicio": None,
+        "ultimo_tema": tema,
+        "ultima_intencion": intencion,
+    }
+
+    if servicio is not None:
+        contexto["ultimo_servicio"] = getattr(servicio, "id", None)
+        contexto["ultimo_servicio_nombre"] = getattr(servicio, "nombre", "")
+
+    return contexto
+
+
+def detectar_servicio(mensaje: str, contexto: dict | None = None):
+    """Detecta el servicio activo más probable, usando contexto y sinónimos del alojamiento."""
+    if not mensaje:
+        return None
+
+    from .models import ServicioTuristico
+
+    texto = normalizar_texto(mensaje)
+    if not texto:
+        return None
+
+    servicios = list(
+        ServicioTuristico.objects.filter(activo=True).order_by("nombre")
+    )
+
+    if not servicios:
+        return None
+
+    contexto_servicio = _servicio_contextual_referencia(contexto)
+    frases_contextuales = (
+        "ese",
+        "esa",
+        "eso",
+        "ese servicio",
+        "esa opcion",
+        "cuanto cuesta",
+        "y el precio",
+        "cuantas personas",
+        "cuántas personas",
+        "hay que reservar",
+        "requiere reserva",
+        "esta disponible",
+        "qué incluye",
+        "que incluye",
+        "cuanto vale",
+        "precio",
+        "capacidad",
+        "disponibilidad",
+    )
+    if contexto_servicio and any(frase in texto for frase in frases_contextuales):
+        return contexto_servicio
+
+    nombres = [normalizar_texto(servicio.nombre) for servicio in servicios]
+    for servicio in servicios:
+        nombre_norm = normalizar_texto(servicio.nombre)
+        if nombre_norm and nombre_norm in texto:
+            return servicio
+        if texto in nombre_norm:
+            return servicio
+
+    # Sinónimos y expresiones comunes para alojamiento, especialmente glamping.
+    hosting_aliases = (
+        "alojamiento",
+        "hospedaje",
+        "hospedarme",
+        "hospedarse",
+        "quedarme a dormir",
+        "quedarse a dormir",
+        "dormir ahi",
+        "pasar la noche",
+        "alojamiento en la naturaleza",
+        "glamping",
+        "hospedarse",
+        "alojarme",
+        "alojarse",
+        "lugar para dormir",
+        "lugar para quedarse",
+    )
+    if any(alias in texto for alias in hosting_aliases):
+        hoteles = [
+            servicio for servicio in servicios
+            if servicio.tipo == "Hospedaje"
+            or "glamping" in normalizar_texto(servicio.nombre)
+            or "hospedaje" in normalizar_texto(servicio.nombre)
+            or "alojamiento" in normalizar_texto(servicio.nombre)
+        ]
+        if hoteles:
+            return hoteles[0]
+
+    campings = [
+        servicio for servicio in servicios
+        if "camping" in normalizar_texto(servicio.nombre)
+    ]
+    if "camping" in texto and not "glamping" in texto and campings:
+        return campings[0]
+
+    mejor_servicio = None
+    mejor_puntuacion = 0
+    for servicio in servicios:
+        tokens_servicio = set(tokenizar(servicio.nombre))
+        tokens_mensaje = set(tokenizar(mensaje))
+        coincidencias = len(tokens_servicio & tokens_mensaje)
+        if coincidencias > mejor_puntuacion:
+            mejor_puntuacion = coincidencias
+            mejor_servicio = servicio
+
+    return mejor_servicio if mejor_puntuacion > 0 else None
+
+
+def construir_respuesta_servicio(servicio: object, mensaje: str | None = None):
+    if servicio is None:
+        return None
+
+    texto = normalizar_texto(mensaje or "")
+    if ("que es glamping" in texto) or ("glamping" in texto and "que es" in texto):
+        base = (
+            "El glamping es una forma de hospedaje en la naturaleza que combina la experiencia "
+            "de acampar con mayor comodidad."
+        )
+        detalle = plain_text(getattr(servicio, "descripcion", "") or "")
+        if detalle:
+            base = f"{base} {detalle}"
+        return base
+
+    if any(frase in texto for frase in ("cuanto cuesta", "cuánto cuesta", "precio", "cuanto vale", "y el precio")):
+        precio = obtener_precio_servicio(servicio)
+        if precio:
+            return f"El precio de {servicio.nombre} es {precio}."
+        return "No tengo registrado ese dato actualmente. ¿Quieres saber otra cosa de este servicio?"
+
+    if any(frase in texto for frase in ("cuantas personas", "cuántas personas", "capacidad", "personas entran")):
+        capacidad = obtener_capacidad_servicio(servicio)
+        if capacidad:
+            return f"La capacidad de {servicio.nombre} es de {capacidad} personas."
+        return "No tengo registrado ese dato actualmente. ¿Quieres saber otra cosa de este servicio?"
+
+    if any(frase in texto for frase in ("hay que reservar", "requiere reserva", "reserva", "reservar")):
+        reserva = obtener_reserva_servicio(servicio)
+        if reserva is not None:
+            return (
+                "Sí, requiere reserva previa."
+                if reserva else
+                "No requiere reserva previa."
+            )
+        return "No tengo registrado ese dato actualmente. ¿Quieres saber otra cosa de este servicio?"
+
+    if "disponible" in texto or "disponibilidad" in texto or "hay disponibilidad" in texto:
+        disponibilidad = obtener_disponibilidad_servicio(servicio)
+        if disponibilidad:
+            return f"La disponibilidad de {servicio.nombre} es: {disponibilidad}."
+        return "No tengo registrado ese dato actualmente. ¿Quieres saber otra cosa de este servicio?"
+
+    if "incluye" in texto or "que incluye" in texto or "qué incluye" in texto:
+        incluye = obtener_incluye_servicio(servicio)
+        if incluye:
+            return f"{servicio.nombre} incluye: {incluye}."
+        return "No tengo registrado ese dato actualmente. ¿Quieres saber otra cosa de este servicio?"
+
+    descripcion = plain_text(getattr(servicio, "descripcion", "") or "")
+    if descripcion:
+        return f"{servicio.nombre}: {descripcion}"
+    return f"Estoy revisando la información disponible de {servicio.nombre}."
+
+
+def sugerencias_por_servicio(servicio):
+    sugerencias = [
+        "💲 Ver precio",
+        "👥 Ver capacidad",
+        "📅 ¿Requiere reserva?",
+        "📍 Cómo llegar",
+    ]
+    if servicio is None:
+        return sugerencias
+    if getattr(servicio, "tipo", "") == "Hospedaje":
+        sugerencias = [
+            "💲 Ver precio",
+            "👥 Ver capacidad",
+            "📅 ¿Requiere reserva?",
+            "🏡 ¿Qué incluye?",
+        ]
+    return sugerencias
 
 
 def procesar_mensaje(

@@ -257,7 +257,7 @@ class InformacionInstitucional(models.Model):
     galeria_titulo = models.CharField(max_length=100, blank=True, default="Galería Multimedia", verbose_name="Título de galería")
     contacto_titulo = models.CharField(max_length=100, blank=True, default="Contacto", verbose_name="Título de contacto")
     chatbot_titulo = models.CharField(max_length=150, blank=True, default="Chatbot Mirador Illari", verbose_name="Título del Chatbot")
-    chatbot_intro = CKEditor5Field('Texto de bienvenida del chatbot', config_name='default', blank=True, default="Hola 👋 Soy el chatbot del Mirador Illari. ¿En qué puedo ayudarte?")
+    chatbot_intro = CKEditor5Field('Texto de bienvenida del chatbot', config_name='default', blank=True, default="Hola, soy Jeyson, tu guía virtual del Mirador Illari. ¿En qué puedo ayudarte?")
     chatbot_placeholder = models.CharField(max_length=150, blank=True, default="Escribe tu mensaje...", verbose_name="Texto del placeholder de entrada")
     chatbot_enviar_texto = models.CharField(max_length=50, blank=True, default="Enviar", verbose_name="Texto del botón Enviar")
     chatbot_opciones_etiqueta = models.CharField(max_length=150, blank=True, default="Opciones rápidas", verbose_name="Etiqueta de opciones rápidas")

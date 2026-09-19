@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from decimal import Decimal
 from io import BytesIO
 from unittest.mock import patch
 
@@ -39,6 +40,17 @@ class ChatbotSeguridadTests(TestCase):
         return self.client.cookies[
             'csrftoken'
         ].value
+
+    def _create_valid_image(self):
+        image = Image.new('RGB', (1200, 900), color='green')
+        buffer = BytesIO()
+        image.save(buffer, format='PNG')
+        buffer.seek(0)
+        return SimpleUploadedFile(
+            'servicio.png',
+            buffer.getvalue(),
+            content_type='image/png',
+        )
 
     def test_api_rechaza_get(self):
         respuesta = self.client.get(self.url)
@@ -120,7 +132,7 @@ class ChatbotSeguridadTests(TestCase):
         )
 
     def test_api_preguntas_no_expone_respuestas(self):
-        PreguntaFrecuente.objects.create(
+        pregunta = PreguntaFrecuente.objects.create(
             pregunta='¿Aceptan mascotas?',
             respuesta='Sí, bajo responsabilidad del propietario.',
             activo=True,
@@ -139,9 +151,206 @@ class ChatbotSeguridadTests(TestCase):
             registro,
         )
 
+        self.assertEqual(registro['id'], pregunta.id)
+
         self.assertNotIn(
             'respuesta',
             registro,
+        )
+
+    def test_id_faq_devuelve_respuesta_exacta(self):
+        pregunta = PreguntaFrecuente.objects.create(
+            pregunta='¿Cuál es el horario de atención?',
+            respuesta='RESPUESTA HORARIO TEST',
+            activo=True,
+        )
+        token = self.obtener_token_csrf()
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({
+                'mensaje': pregunta.pregunta,
+                'pregunta_id': pregunta.id,
+            }),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=token,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        datos = respuesta.json()
+        self.assertEqual(datos['respuesta'], 'RESPUESTA HORARIO TEST')
+        self.assertEqual(datos['metodo'], 'faq_admin_exacta')
+        self.assertEqual(datos['confianza'], 100)
+
+    def test_faq_exacta_de_ubicacion_adjunta_mapa(self):
+        Contacto.objects.create(
+            direccion='Parroquia Puerto Napo, cantón Tena, provincia de Napo, Ecuador',
+            mapa_embed_url='https://maps.app.goo.gl/X1ngzxzPrM7uRkXK6',
+            whatsapp='0991234567',
+            correo='info@ejemplo.com',
+            horarios_atencion='Lun - Dom 08:00 - 18:00',
+            activo=True,
+        )
+        pregunta = PreguntaFrecuente.objects.create(
+            pregunta='¿Dónde está ubicado el Centro Turístico Mirador Illari?',
+            respuesta='El Centro Turístico Mirador Illari está ubicado en la parroquia Puerto Napo, cantón Tena, provincia de Napo, Ecuador.',
+            activo=True,
+        )
+        token = self.obtener_token_csrf()
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({
+                'mensaje': pregunta.pregunta,
+                'pregunta_id': pregunta.id,
+            }),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=token,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        datos = respuesta.json()
+        self.assertEqual(datos['respuesta'], pregunta.respuesta)
+        self.assertIn('mapa', datos)
+        self.assertTrue(datos['mapa'].get('embed_url') or datos['mapa'].get('link'))
+
+    def test_ubicacion_manual_adjunta_mapa(self):
+        Contacto.objects.create(
+            direccion='Parroquia Puerto Napo, cantón Tena, provincia de Napo, Ecuador',
+            mapa_embed_url='https://maps.app.goo.gl/X1ngzxzPrM7uRkXK6',
+            whatsapp='0991234567',
+            correo='info@ejemplo.com',
+            horarios_atencion='Lun - Dom 08:00 - 18:00',
+            activo=True,
+        )
+        token = self.obtener_token_csrf()
+
+        for mensaje in [
+            '¿Dónde están ubicados?',
+        ]:
+            with self.subTest(mensaje=mensaje):
+                respuesta = self.client.post(
+                    self.url,
+                    data=json.dumps({'mensaje': mensaje}),
+                    content_type='application/json',
+                    HTTP_X_CSRFTOKEN=token,
+                )
+                self.assertEqual(respuesta.status_code, 200)
+                datos = respuesta.json()
+                self.assertIn('mapa', datos)
+                self.assertTrue(datos['mapa'].get('embed_url') or datos['mapa'].get('link'))
+
+    def test_consultas_no_ubicacion_no_devuelven_mapa(self):
+        Contacto.objects.create(
+            direccion='Parroquia Puerto Napo, cantón Tena, provincia de Napo, Ecuador',
+            mapa_embed_url='https://maps.app.goo.gl/X1ngzxzPrM7uRkXK6',
+            whatsapp='0991234567',
+            correo='info@ejemplo.com',
+            horarios_atencion='Lun - Dom 08:00 - 18:00',
+            activo=True,
+        )
+        token = self.obtener_token_csrf()
+
+        for mensaje in [
+            '¿Cuánto cuesta la entrada?',
+            '¿Qué servicios tienen?',
+        ]:
+            with self.subTest(mensaje=mensaje):
+                respuesta = self.client.post(
+                    self.url,
+                    data=json.dumps({'mensaje': mensaje}),
+                    content_type='application/json',
+                    HTTP_X_CSRFTOKEN=token,
+                )
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertNotIn('mapa', respuesta.json())
+
+    def test_faq_explicita_gana_al_contexto_de_glamping(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Cuál es el horario de atención?',
+            respuesta='RESPUESTA HORARIO TEST',
+            activo=True,
+        )
+        servicio = ServicioTuristico.objects.create(
+            nombre='Glamping Mirador',
+            tipo='Hospedaje',
+            descripcion='Alojamiento en la naturaleza.',
+            precio_adulto=Decimal('120.00'),
+            capacidad=2,
+            imagen_principal=self._create_valid_image(),
+            activo=True,
+        )
+        self.client.session['chatbot_contexto'] = {
+            'ultimo_servicio': servicio.id,
+        }
+        self.client.session.save()
+        token = self.obtener_token_csrf()
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({
+                'mensaje': '¿Cuál es el horario de atención?',
+            }),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=token,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(
+            respuesta.json()['respuesta'],
+            'RESPUESTA HORARIO TEST',
+        )
+
+    def test_diez_faq_devuelven_su_respuesta_por_id(self):
+        preguntas = [
+            PreguntaFrecuente.objects.create(
+                pregunta=f'Pregunta frecuente {indice}?',
+                respuesta=f'Respuesta exacta {indice}',
+                activo=True,
+            )
+            for indice in range(1, 11)
+        ]
+        token = self.obtener_token_csrf()
+
+        for pregunta in preguntas:
+            respuesta = self.client.post(
+                self.url,
+                data=json.dumps({
+                    'mensaje': pregunta.pregunta,
+                    'pregunta_id': pregunta.id,
+                }),
+                content_type='application/json',
+                HTTP_X_CSRFTOKEN=token,
+            )
+
+            self.assertEqual(respuesta.status_code, 200)
+            self.assertEqual(
+                respuesta.json()['respuesta'],
+                pregunta.respuesta,
+            )
+
+    @patch('principal.views.obtener_respuesta_gemini', return_value=None)
+    def test_baja_similitud_no_elige_faq_no_relacionada(self, obtener_gemini):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Cuál es el horario de atención?',
+            respuesta='RESPUESTA HORARIO TEST',
+            activo=True,
+        )
+        token = self.obtener_token_csrf()
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({
+                'mensaje': '¿Qué colores tiene el atardecer?',
+            }),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=token,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertNotEqual(
+            respuesta.json()['respuesta'],
+            'RESPUESTA HORARIO TEST',
         )
 
     def test_mensaje_vacio_rechaza(self):
@@ -257,6 +466,115 @@ class EventoNovedadValidationTests(SimpleTestCase):
 
         with self.assertRaises(ValidationError):
             evento.full_clean()
+
+
+class ChatbotContextMemoryTests(TestCase):
+
+    def setUp(self):
+        cache.clear()
+        self.client = Client(enforce_csrf_checks=True)
+        self.url = reverse('api_chatbot')
+        self.client.get(reverse('inicio'))
+        self.csrf = self.client.cookies['csrftoken'].value
+
+    def _create_valid_image(self, fmt='PNG'):
+        image = Image.new('RGB', (1200, 900), color='green')
+        buffer = BytesIO()
+        image.save(buffer, format=fmt)
+        buffer.seek(0)
+        return SimpleUploadedFile(
+            f'servicio.{fmt.lower()}',
+            buffer.getvalue(),
+            content_type='image/png' if fmt == 'PNG' else 'image/jpeg',
+        )
+
+    def _build_evento(self, **kwargs):
+        data = {
+            'titulo': 'Evento de prueba',
+            'contenido': 'Contenido de prueba',
+            'tipo': 'Evento',
+            'imagen': self._create_valid_image(),
+            'fecha_evento': date(2026, 8, 15),
+        }
+        data.update(kwargs)
+        return EventoNovedad(**data)
+
+    def test_contexto_recuerda_servicio_y_precio(self):
+        servicio = ServicioTuristico.objects.create(
+            nombre='Glamping Mirador',
+            tipo='Hospedaje',
+            descripcion='Un alojamiento en la naturaleza.',
+            precio_desde=Decimal('120.00'),
+            precio_adulto=Decimal('120.00'),
+            capacidad=2,
+            requiere_reserva=True,
+            disponibilidad='Disponible todo el año',
+            imagen_principal=self._create_valid_image(),
+            activo=True,
+        )
+
+        respuesta1 = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': 'Quiero hospedarme'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta1.status_code, 200)
+        self.assertIn('alojamiento', respuesta1.json()['respuesta'].lower())
+
+        contexto = self.client.session.get('chatbot_contexto', {})
+        self.assertTrue(contexto)
+
+        respuesta2 = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cuánto cuesta?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta2.status_code, 200)
+        respuesta2_json = respuesta2.json()
+        self.assertIn(str(servicio.precio_adulto), respuesta2_json['respuesta'])
+
+        respuesta3 = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cuántas personas entran?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta3.status_code, 200)
+        self.assertIn('2', respuesta3.json()['respuesta'])
+
+        respuesta4 = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Hay que reservar?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta4.status_code, 200)
+        self.assertIn('reserv', respuesta4.json()['respuesta'].lower())
+
+    def test_glamping_explica_sin_inventar_datos(self):
+        ServicioTuristico.objects.create(
+            nombre='Glamping Mirador',
+            tipo='Hospedaje',
+            descripcion='Alojamiento tranquilo en la naturaleza.',
+            precio_desde=Decimal('150.00'),
+            capacidad=2,
+            imagen_principal=self._create_valid_image(),
+            activo=True,
+        )
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Qué es glamping?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta.status_code, 200)
+        texto = respuesta.json()['respuesta']
+        self.assertIn('glamping', texto.lower())
+        self.assertIn('hospedaje', texto.lower())
+        self.assertIn('naturaleza', texto.lower())
 
     def test_evento_con_fecha_valida(self):
         evento = self._build_evento()
@@ -586,6 +904,301 @@ class ChatbotFuncionamientoTests(TestCase):
                     tema_esperado,
                     mensaje,
                 )
+
+
+class ChatbotPrecisionRegressionTests(TestCase):
+
+    def setUp(self):
+        cache.clear()
+        self.client = Client(enforce_csrf_checks=True)
+        self.url = reverse('api_chatbot')
+        self.client.get(reverse('inicio'))
+        self.csrf = self.client.cookies['csrftoken'].value
+
+    def _create_valid_image(self, fmt='PNG', color='blue', filename='servicio.png'):
+        image = Image.new('RGB', (1200, 900), color=color)
+        buffer = BytesIO()
+        image.save(buffer, format=fmt)
+        buffer.seek(0)
+        return SimpleUploadedFile(
+            filename,
+            buffer.getvalue(),
+            content_type='image/png' if fmt == 'PNG' else 'image/jpeg',
+        )
+
+    def test_faq_exacta_por_texto_gana_a_servicio(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Cuál es el costo de la entrada?',
+            respuesta='RESPUESTA FAQ ENTRADA',
+            activo=True,
+        )
+        ServicioTuristico.objects.create(
+            nombre='Entrada al Mirador',
+            tipo='Atracciones',
+            descripcion='RESPUESTA SERVICIO',
+            imagen_principal=self._create_valid_image(filename='entrada.png', color='green'),
+            activo=True,
+        )
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cuál es el costo de la entrada?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta.json()['respuesta'], 'RESPUESTA FAQ ENTRADA')
+
+    def test_puedo_llevar_comida_no_va_a_mascotas(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Se puede ingresar con alimentos?',
+            respuesta='RESPUESTA FAQ ALIMENTOS',
+            activo=True,
+        )
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Puedo llevar comida?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta.json()['respuesta'], 'RESPUESTA FAQ ALIMENTOS')
+
+    def test_puedo_llevar_mi_perro_va_a_faq_mascotas(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Se puede ingresar con mascotas?',
+            respuesta='RESPUESTA FAQ MASCOTAS',
+            activo=True,
+        )
+
+        respuesta = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Puedo llevar mi perro?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta.json()['respuesta'], 'RESPUESTA FAQ MASCOTAS')
+
+    def test_parqueadero_responde_faq_por_sinonimos(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Existe parqueadero?',
+            respuesta='RESPUESTA FAQ PARQUEADERO',
+            activo=True,
+        )
+
+        for mensaje in [
+            '¿Tienen parqueadero?',
+            '¿Hay estacionamiento?',
+            '¿Dónde puedo dejar el carro?',
+        ]:
+            with self.subTest(mensaje=mensaje):
+                respuesta = self.client.post(
+                    self.url,
+                    data=json.dumps({'mensaje': mensaje}),
+                    content_type='application/json',
+                    HTTP_X_CSRFTOKEN=self.csrf,
+                )
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertEqual(respuesta.json()['respuesta'], 'RESPUESTA FAQ PARQUEADERO')
+
+    def test_pagos_usan_faq_y_no_precio(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Qué métodos de pago aceptan?',
+            respuesta='RESPUESTA FAQ PAGOS',
+            activo=True,
+        )
+
+        for mensaje in [
+            '¿Cómo puedo pagar?',
+            '¿Puedo pagar por transferencia?',
+            '¿Aceptan efectivo?',
+        ]:
+            with self.subTest(mensaje=mensaje):
+                respuesta = self.client.post(
+                    self.url,
+                    data=json.dumps({'mensaje': mensaje}),
+                    content_type='application/json',
+                    HTTP_X_CSRFTOKEN=self.csrf,
+                )
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertEqual(respuesta.json()['respuesta'], 'RESPUESTA FAQ PAGOS')
+
+    def test_reserva_general_usa_faq_sin_contexto_y_servicio_con_contexto(self):
+        faq = PreguntaFrecuente.objects.create(
+            pregunta='¿Necesito reservar?',
+            respuesta='RESPUESTA FAQ RESERVA',
+            activo=True,
+        )
+        ServicioTuristico.objects.create(
+            nombre='Glamping Illari',
+            tipo='Hospedaje',
+            descripcion='Alojamiento en la naturaleza.',
+            precio_adulto=Decimal('120.00'),
+            capacidad=2,
+            requiere_reserva=True,
+            imagen_principal=self._create_valid_image(filename='glamping.png', color='orange'),
+            activo=True,
+        )
+
+        respuesta_sin_contexto = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Hay que reservar?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta_sin_contexto.status_code, 200)
+        self.assertEqual(respuesta_sin_contexto.json()['respuesta'], faq.respuesta)
+
+        self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Tienen glamping?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+
+        respuesta_con_contexto = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Hay que reservar?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(respuesta_con_contexto.status_code, 200)
+        self.assertIn('reserva', respuesta_con_contexto.json()['respuesta'].lower())
+
+    def test_mejor_momento_usa_faq_y_no_horario_general(self):
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Cuál es el mejor horario para visitar?',
+            respuesta='RESPUESTA FAQ MEJOR MOMENTO',
+            activo=True,
+        )
+
+        for mensaje in [
+            '¿A qué hora conviene ir?',
+            '¿Cuál es la mejor hora para ir?',
+            '¿A qué hora se ve el atardecer?',
+        ]:
+            with self.subTest(mensaje=mensaje):
+                respuesta = self.client.post(
+                    self.url,
+                    data=json.dumps({'mensaje': mensaje}),
+                    content_type='application/json',
+                    HTTP_X_CSRFTOKEN=self.csrf,
+                )
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertEqual(respuesta.json()['respuesta'], 'RESPUESTA FAQ MEJOR MOMENTO')
+
+    def test_contacto_y_camping_y_hospedaje_seguiran_reglas_reales(self):
+        Contacto.objects.create(
+            direccion='Parroquia Puerto Napo, Tena',
+            mapa_embed_url='https://maps.google.com/?q=Parroquia+Puerto+Napo',
+            whatsapp='0991234567',
+            correo='info@ejemplo.com',
+            horarios_atencion='Lun - Dom 08:00 - 18:00',
+            activo=True,
+        )
+        ServicioTuristico.objects.create(
+            nombre='Glamping Illari',
+            tipo='Hospedaje',
+            descripcion='Alojamiento real tipo glamping.',
+            precio_adulto=Decimal('180.00'),
+            capacidad=2,
+            imagen_principal=self._create_valid_image(filename='glamping2.png', color='purple'),
+            activo=True,
+        )
+
+        contacto = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cómo puedo contactarlos?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(contacto.status_code, 200)
+        self.assertIn('0991234567', contacto.json()['respuesta'])
+
+        camping = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Tienen camping?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(camping.status_code, 200)
+        self.assertNotIn('sí', camping.json()['respuesta'].lower())
+
+        hospedaje = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Tienen glamping?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(hospedaje.status_code, 200)
+        self.assertIn('glamping', hospedaje.json()['respuesta'].lower())
+
+    def test_mapas_se_adjuntan_solo_para_ubicacion_y_mapa(self):
+        Contacto.objects.create(
+            direccion='Parroquia Puerto Napo, Tena',
+            mapa_embed_url='https://maps.google.com/?q=Parroquia+Puerto+Napo',
+            whatsapp='0991234567',
+            correo='info@ejemplo.com',
+            horarios_atencion='Lun - Dom 08:00 - 18:00',
+            activo=True,
+        )
+        PreguntaFrecuente.objects.create(
+            pregunta='¿Cómo llego?',
+            respuesta='RESPUESTA FAQ COMO LLEGAR',
+            activo=True,
+        )
+
+        llegar_exacto = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cómo llego?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(llegar_exacto.status_code, 200)
+        self.assertEqual(llegar_exacto.json()['respuesta'], 'RESPUESTA FAQ COMO LLEGAR')
+        self.assertNotIn('mapa', llegar_exacto.json())
+
+        llegar_equivalente = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cómo puedo llegar?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(llegar_equivalente.status_code, 200)
+        self.assertEqual(llegar_equivalente.json()['respuesta'], 'RESPUESTA FAQ COMO LLEGAR')
+        self.assertNotIn('mapa', llegar_equivalente.json())
+
+        ubicacion = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Dónde están ubicados?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(ubicacion.status_code, 200)
+        self.assertIn('mapa', ubicacion.json())
+
+        mapa = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': 'Muéstrame el mapa'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(mapa.status_code, 200)
+        self.assertIn('mapa', mapa.json())
+
+        costo = self.client.post(
+            self.url,
+            data=json.dumps({'mensaje': '¿Cuál es el costo de la entrada?'}),
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=self.csrf,
+        )
+        self.assertEqual(costo.status_code, 200)
+        self.assertNotIn('mapa', costo.json())
 
 
 class PaginasPublicasTest(TestCase):
