@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
 from django.utils.html import format_html, strip_tags
 from html import unescape
@@ -87,7 +87,6 @@ class VistaPreviaImagenAdminMixin:
             '<img src="{}" '
             'alt="Vista previa de {}" '
             'class="image-preview-admin-thumb">'
-            '<span>Ver imagen completa</span>'
             '</button>',
             imagen.url,
             str(obj),
@@ -101,7 +100,6 @@ class ContenidoInicioAdminForm(forms.ModelForm):
         model = ContenidoInicio
         fields = "__all__"
         labels = {
-            "activo_informacion": "¿Mostrar el contenido de Inicio?",
             "hero_titulo": "Título principal",
             "hero_subtitulo": "Texto debajo del título",
             "hero_boton_texto": "Texto del botón principal",
@@ -122,10 +120,6 @@ class ContenidoInicioAdminForm(forms.ModelForm):
             "atractivo_4_desc": "Descripción de la tarjeta",
         }
         help_texts = {
-            "activo_informacion": (
-                "Activa o desactiva los textos administrables de la "
-                "página Inicio."
-            ),
             "hero_titulo": "Es el texto grande que aparece sobre el carrusel.",
             "hero_subtitulo": (
                 "Es la frase corta que aparece debajo del título principal."
@@ -146,21 +140,21 @@ class ContenidoInicioAdminForm(forms.ModelForm):
                 "de Nuestros atractivos."
             ),
             "atractivo_1_activo": (
-                "Desmarca esta opción si no quieres mostrar Paisajes."
+                "Desmarca esta opción para ocultar Paisajes de la página de Inicio."
             ),
             "atractivo_1_titulo": "Nombre visible de la tarjeta Paisajes.",
             "atractivo_1_desc": (
                 "Texto corto que explica qué encontrará el visitante."
             ),
             "atractivo_2_activo": (
-                "Desmarca esta opción si no quieres mostrar Aventura."
+                "Desmarca esta opción para ocultar Aventura de la página de Inicio."
             ),
             "atractivo_2_titulo": "Nombre visible de la tarjeta Aventura.",
             "atractivo_2_desc": (
                 "Descripción corta de las actividades de aventura."
             ),
             "atractivo_3_activo": (
-                "Desmarca esta opción si no quieres mostrar Cultura local."
+                "Desmarca esta opción para ocultar Cultura local de la página de Inicio."
             ),
             "atractivo_3_titulo": (
                 "Nombre visible de la tarjeta Cultura local."
@@ -169,7 +163,7 @@ class ContenidoInicioAdminForm(forms.ModelForm):
                 "Descripción corta relacionada con cultura y comunidad."
             ),
             "atractivo_4_activo": (
-                "Desmarca esta opción si no quieres mostrar Atención."
+                "Desmarca esta opción para ocultar Atención de la página de Inicio."
             ),
             "atractivo_4_titulo": "Nombre visible de la tarjeta Atención.",
             "atractivo_4_desc": (
@@ -188,11 +182,22 @@ class InformacionInstitucionalAdminForm(forms.ModelForm):
             "eslogan": "Frase debajo del título",
             "descripcion": "Presentación general",
             "historia": "Historia",
+            "logo": "Logo institucional",
             "proposito_titulo": "Título de la sección Propósito",
             "proposito": "Propósito",
             "mision": "Misión",
             "vision": "Visión",
             "valores_titulo": "Título de la sección Valores",
+            "chatbot_titulo": "Nombre del asistente",
+            "chatbot_intro": "Mensaje de bienvenida",
+            "chatbot_placeholder": "Texto del campo para escribir",
+            "chatbot_enviar_texto": "Texto del botón Enviar",
+            "chatbot_opciones_etiqueta": "Texto de opciones rápidas",
+            "chatbot_respuesta_predeterminada": "Respuesta predeterminada",
+            "servicios_titulo": "Título de servicios",
+            "eventos_titulo": "Título de eventos y novedades",
+            "galeria_titulo": "Título de la galería",
+            "contacto_titulo": "Título de contacto",
         }
         help_texts = {
             "nosotros_eyebrow": (
@@ -207,6 +212,9 @@ class InformacionInstitucionalAdminForm(forms.ModelForm):
             "historia": (
                 "Cuenta brevemente el origen y trayectoria del establecimiento."
             ),
+            "logo": (
+                "Imagen que identifica visualmente al centro turístico."
+            ),
             "proposito": (
                 "Explica la razón de ser y el propósito del lugar."
             ),
@@ -217,6 +225,104 @@ class InformacionInstitucionalAdminForm(forms.ModelForm):
             "valores_titulo": (
                 "Título que aparece antes de las tarjetas de Valores."
             ),
+            "chatbot_titulo": (
+                "Nombre visible del asistente virtual."
+            ),
+            "chatbot_intro": (
+                "Este mensaje aparece cuando se inicia una nueva conversación."
+            ),
+            "chatbot_placeholder": (
+                "Texto que aparece dentro del campo donde el visitante escribe su consulta."
+            ),
+            "chatbot_enviar_texto": (
+                "Texto que se muestra en el botón de envío del chatbot."
+            ),
+            "chatbot_opciones_etiqueta": (
+                "Etiqueta que introducen las opciones rápidas del asistente."
+            ),
+            "chatbot_respuesta_predeterminada": (
+                "Respuesta que se muestra cuando el chatbot no tiene una respuesta específica."
+            ),
+            "servicios_titulo": (
+                "Encabezado de la sección de servicios turísticos en la web."
+            ),
+            "eventos_titulo": (
+                "Encabezado de la sección de eventos y novedades."
+            ),
+            "galeria_titulo": (
+                "Encabezado de la sección de galería multimedia."
+            ),
+            "contacto_titulo": (
+                "Encabezado de la sección de contacto."
+            ),
+        }
+
+
+class ContactoAdminFormLocal(ContactoAdminForm):
+    class Meta(ContactoAdminForm.Meta):
+        labels = {
+            "direccion": "Dirección",
+            "mapa_embed_url": "Mapa de Google",
+            "whatsapp": "WhatsApp",
+            "telefono": "Teléfono",
+            "correo": "Correo electrónico",
+            "horarios_atencion": "Horarios de atención",
+            "facebook_url": "Facebook",
+            "instagram_url": "Instagram",
+            "tiktok_url": "TikTok",
+            "youtube_url": "YouTube",
+            "activo": "¿Mostrar en la página pública?",
+        }
+        help_texts = {
+            "direccion": "Dirección física del centro turístico para visitantes.",
+            "mapa_embed_url": (
+                "Enlace oficial de Google Maps que muestra la ubicación del centro."
+            ),
+            "whatsapp": (
+                "Número que utilizarán los visitantes para comunicarse por WhatsApp."
+            ),
+            "telefono": "Número fijo del centro turístico, si existe.",
+            "correo": "Correo electrónico público del centro turístico.",
+            "horarios_atencion": (
+                "Horario que se mostrará a los visitantes en la página pública."
+            ),
+            "facebook_url": "Pegue el enlace completo del perfil oficial de Facebook.",
+            "instagram_url": "Pegue el enlace completo del perfil oficial de Instagram.",
+            "tiktok_url": "Pegue el enlace completo del perfil oficial de TikTok.",
+            "youtube_url": "Pegue el enlace completo del perfil oficial de YouTube.",
+            "activo": "Active esta información para utilizarla en la página pública de Contacto.",
+        }
+
+
+class ServicioTuristicoAdminForm(ServicioTuristicoForm):
+    class Meta(ServicioTuristicoForm.Meta):
+        labels = {
+            "nombre": "Nombre del servicio",
+            "tipo": "Tipo de servicio",
+            "descripcion": "Descripción",
+            "imagen_principal": "Imagen principal",
+            "precio_texto": "Texto de precio",
+            "precio_desde": "Precio desde",
+            "precio_adulto": "Precio adulto",
+            "precio_niño": "Precio niño",
+            "precio_tercera_edad": "Precio tercera edad",
+            "disponibilidad": "Disponibilidad",
+            "capacidad": "Capacidad",
+            "requiere_reserva": "¿Requiere reserva?",
+            "incluye": "¿Qué incluye?",
+            "activo": "¿Mostrar este servicio?",
+        }
+        help_texts = {
+            "precio_texto": "Texto libre para mostrar información especial de precios.",
+            "precio_desde": "Precio referencial desde el cual inicia el servicio.",
+            "precio_adulto": "Precio correspondiente a visitantes adultos.",
+            "precio_niño": "Precio correspondiente a niños.",
+            "precio_tercera_edad": "Precio correspondiente a adultos mayores.",
+            "disponibilidad": "Indique disponibilidad, fechas o horarios del servicio.",
+            "capacidad": "Número máximo de personas permitidas, si aplica.",
+            "requiere_reserva": "Marque esta opción si el visitante debe reservar antes de utilizar el servicio.",
+            "incluye": "Describa lo que incluye el servicio para el visitante.",
+            "activo": "Active este servicio para mostrarlo en la página pública.",
         }
 
 
@@ -234,17 +340,10 @@ class ContenidoInicioAdmin(
         "vista_previa_atractivo_3",
         "vista_previa_atractivo_4",
     )
-    list_display = ("hero_titulo", "activo_informacion")
-    list_editable = ("activo_informacion",)
+    list_display = ("hero_titulo",)
+    list_editable = ()
     fieldsets = (
-        ("1. Estado de la página Inicio", {
-            "fields": ("activo_informacion",),
-            "description": (
-                "Desde aquí puedes activar o desactivar el contenido "
-                "administrable de la página principal."
-            ),
-        }),
-        ("2. Portada principal - Carrusel", {
+        ("Portada principal - Carrusel", {
             "fields": (
                 "hero_titulo",
                 "hero_subtitulo",
@@ -256,17 +355,17 @@ class ContenidoInicioAdmin(
                 "del carrusel principal."
             ),
         }),
-        ("3. Sección Nuestros atractivos", {
+        ("Sección Nuestros atractivos", {
             "fields": (
                 "atractivos_titulo",
                 "atractivos_descripcion",
             ),
             "description": (
                 "Configura el título y texto introductorio que aparecen "
-                "antes de las cuatro tarjetas."
+                "antes de los atractivos destacados."
             ),
         }),
-        ("4. Atractivo 1 - Paisajes", {
+        ("Atractivo 1 - Paisajes", {
             "fields": (
                 "atractivo_1_activo",
                 "atractivo_1_titulo",
@@ -275,11 +374,10 @@ class ContenidoInicioAdmin(
                 "vista_previa_atractivo_1",
             ),
             "description": (
-                "Configura el texto y la fotografía "
-                "de la tarjeta Paisajes que aparece en Inicio."
+                "Configure el título, descripción e imagen del primer atractivo."
             ),
         }),
-        ("5. Atractivo 2 - Aventura", {
+        ("Atractivo 2 - Aventura", {
             "fields": (
                 "atractivo_2_activo",
                 "atractivo_2_titulo",
@@ -288,11 +386,10 @@ class ContenidoInicioAdmin(
                 "vista_previa_atractivo_2",
             ),
             "description": (
-                "Configura el texto y la fotografía "
-                "de la tarjeta Aventura."
+                "Configure el título, descripción e imagen del segundo atractivo."
             ),
         }),
-        ("6. Atractivo 3 - Cultura local", {
+        ("Atractivo 3 - Cultura local", {
             "fields": (
                 "atractivo_3_activo",
                 "atractivo_3_titulo",
@@ -300,14 +397,20 @@ class ContenidoInicioAdmin(
                 "atractivo_3_imagen",
                 "vista_previa_atractivo_3",
             ),
+            "description": (
+                "Configure el título, descripción e imagen del tercer atractivo."
+            ),
         }),
-        ("7. Atractivo 4 - Atención", {
+        ("Atractivo 4 - Atención", {
             "fields": (
                 "atractivo_4_activo",
                 "atractivo_4_titulo",
                 "atractivo_4_desc",
                 "atractivo_4_imagen",
                 "vista_previa_atractivo_4",
+            ),
+            "description": (
+                "Configure el título, descripción e imagen del cuarto atractivo."
             ),
         }),
     )
@@ -352,6 +455,16 @@ class CarruselInicioAdminForm(forms.ModelForm):
     class Meta:
         model = CarruselInicio
         fields = '__all__'
+        labels = {
+            "imagen": "Fotografía del carrusel",
+            "orden": "Orden de aparición",
+            "activo": "¿Mostrar esta imagen?",
+        }
+        help_texts = {
+            "imagen": "Seleccione la fotografía que aparecerá en el carrusel de la página de Inicio.",
+            "orden": "Use números para definir el orden. Un número menor aparecerá primero.",
+            "activo": "Desmarque esta opción para ocultar temporalmente la imagen del carrusel.",
+        }
 
     def clean_imagen(self):
         imagen = self.cleaned_data.get('imagen')
@@ -364,14 +477,44 @@ class CarruselInicioAdminForm(forms.ModelForm):
 @admin.register(CarruselInicio)
 class CarruselInicioAdmin(AdministradorAuditoriaMixin, admin.ModelAdmin):
     form = CarruselInicioAdminForm
-    list_display = ("orden", "imagen_preview", "activo")
-    list_display_links = ("imagen_preview",)
+    list_display = ("orden", "miniatura_carrusel", "activo")
+    list_display_links = ("miniatura_carrusel",)
     list_editable = ("orden", "activo")
     ordering = ("orden",)
     readonly_fields = ("imagen_preview",)
+    fieldsets = (
+        (
+            "Imagen del carrusel",
+            {
+                "fields": ("imagen", "orden", "activo", "imagen_preview"),
+                "description": (
+                    "Seleccione la fotografía, defina el orden en el que aparecerá y "
+                    "controle si debe mostrarse en la portada de Inicio."
+                ),
+            },
+        ),
+    )
 
     class Media:
         js = ("js/admin_image_preview.js",)
+
+    def changelist_view(self, request, extra_context=None):
+        messages.info(
+            request,
+            "Haz clic en una imagen para modificarla. Puedes cambiar el orden y la visibilidad desde esta lista.",
+        )
+        return super().changelist_view(request, extra_context=extra_context)
+
+    @admin.display(description="Imagen")
+    def miniatura_carrusel(self, obj):
+        if not obj or not obj.imagen:
+            return "Sin imagen"
+
+        return format_html(
+            '<img src="{0}" alt="{1}" style="max-width:100px; max-height:90px; width:auto; height:auto; object-fit:cover; border-radius:8px; display:block;" />',
+            obj.imagen.url,
+            obj,
+        )
 
     def imagen_preview(self, obj):
         if obj.imagen:
@@ -382,7 +525,8 @@ class CarruselInicioAdmin(AdministradorAuditoriaMixin, admin.ModelAdmin):
                 obj.imagen.url,
             )
         return "-"
-    imagen_preview.short_description = "Imagen"
+    imagen_preview.short_description = "Vista previa de la imagen"
+    imagen_preview.help_text = "Aquí se muestra una vista previa de la fotografía guardada."
 
 
 @admin.register(InformacionInstitucional)
@@ -396,48 +540,65 @@ class InformacionInstitucionalAdmin(
     list_display = ("titulo", "eslogan", "activo")
     list_editable = ("activo",)
     fieldsets = (
-        ("1. Portada de Nosotros", {
+        ("Portada de Nosotros", {
             "fields": ("nosotros_eyebrow", "titulo", "eslogan", "logo"),
             "description": (
-                "Estos textos y el logo aparecen en la parte superior "
-                "de la página Nosotros."
+                "Configure los textos principales que aparecen en la portada de la "
+                "página Nosotros."
             ),
         }),
-        ("2. Historia y presentación", {
+        ("Historia y presentación", {
             "fields": ("descripcion", "historia"),
             "description": (
-                "Información que explica quiénes somos y la historia del lugar."
+                "Información que presenta el Centro Turístico Mirador Illari y su historia."
             ),
         }),
-        ("3. Nuestra esencia", {
+        ("Nuestra esencia", {
             "fields": (
                 "proposito_titulo",
                 "proposito",
                 "mision",
                 "vision",
             ),
-            "description": "Configura Propósito, Misión y Visión.",
-        }),
-        ("4. Valores", {
-            "fields": ("valores_titulo",),
             "description": (
-                "Los valores individuales se administran desde "
-                "4. Valores Institucionales."
+                "Contenido institucional que explica el propósito, misión y visión del centro turístico."
             ),
         }),
-        ("5. Configuración y otros textos", {
+        ("Valores institucionales", {
+            "fields": ("valores_titulo",),
+            "description": (
+                "Configure el título que aparece antes de los valores institucionales. "
+                "Los valores individuales se gestionan desde su propio módulo."
+            ),
+        }),
+        ("Chatbot Illari", {
             "fields": (
-                "activo",
-                "servicios_titulo",
-                "eventos_titulo",
-                "galeria_titulo",
-                "contacto_titulo",
                 "chatbot_titulo",
                 "chatbot_intro",
                 "chatbot_placeholder",
                 "chatbot_enviar_texto",
                 "chatbot_opciones_etiqueta",
                 "chatbot_respuesta_predeterminada",
+            ),
+            "description": (
+                "Textos básicos que se muestran en el asistente virtual Illari."
+            ),
+        }),
+        ("Textos adicionales del sitio", {
+            "fields": (
+                "servicios_titulo",
+                "eventos_titulo",
+                "galeria_titulo",
+                "contacto_titulo",
+            ),
+            "description": (
+                "Textos utilizados como títulos o encabezados en otras secciones públicas."
+            ),
+        }),
+        ("Estado", {
+            "fields": ("activo",),
+            "description": (
+                "Active esta información para utilizarla en las páginas públicas del sitio."
             ),
         }),
     )
@@ -449,15 +610,38 @@ class ContactoAdmin(
     AdministradorAuditoriaMixin,
     admin.ModelAdmin,
 ):
-    form = ContactoAdminForm
+    form = ContactoAdminFormLocal
     list_display = ("direccion", "whatsapp", "correo", "activo")
     list_editable = ("activo",)
     fieldsets = (
         ("Datos de contacto", {
-            'fields': ('direccion', 'horarios_atencion', 'whatsapp', 'telefono', 'correo', 'mapa_embed_url')
+            "fields": ("direccion", "telefono", "whatsapp", "correo"),
+            "description": (
+                "Información principal que verá el visitante para comunicarse con el "
+                "Centro Turístico Mirador Illari."
+            ),
+        }),
+        ("Horarios de atención", {
+            "fields": ("horarios_atencion",),
+            "description": (
+                "Configure los horarios que se mostrarán públicamente a los visitantes."
+            ),
+        }),
+        ("Ubicación y mapa", {
+            "fields": ("mapa_embed_url",),
+            "description": (
+                "Configure la información utilizada para mostrar la ubicación del centro turístico."
+            ),
         }),
         ("Redes sociales", {
-            'fields': ('facebook_url', 'instagram_url', 'tiktok_url', 'youtube_url')
+            "fields": ("facebook_url", "instagram_url", "tiktok_url", "youtube_url"),
+            "description": (
+                "Enlaces oficiales que se mostrarán en la página de Contacto."
+            ),
+        }),
+        ("Estado", {
+            "fields": ("activo",),
+            "description": "Active esta información para utilizarla en la página pública de Contacto."
         }),
     )
 
@@ -473,33 +657,54 @@ class ServicioTuristicoAdmin(
     class Media:
         js = ("js/admin_image_preview.js",)
 
-    form = ServicioTuristicoForm
+    form = ServicioTuristicoAdminForm
     list_display = (
         "nombre",
         "tipo",
-        "precio_adulto",
-        "precio_niño",
-        "precio_tercera_edad",
+        "disponibilidad",
+        "requiere_reserva",
         "activo",
     )
     list_filter = ("tipo", "activo", "requiere_reserva")
     search_fields = ("nombre", "tipo", "descripcion")
     list_editable = ("activo",)
     fieldsets = (
-        ("Información General", {
-            'fields': (
-                'nombre', 'tipo', 'descripcion', 'imagen_principal', 'vista_previa_imagen', 'activo'
-            )
+        ("Información general", {
+            "fields": (
+                "nombre",
+                "tipo",
+                "descripcion",
+                "imagen_principal",
+                "vista_previa_imagen",
+                "activo",
+            ),
+            "description": (
+                "Datos principales que identifican este servicio en la página pública."
+            ),
         }),
-        ("Precios y disponibilidad", {
-            'fields': (
-                'precio_texto', 'precio_desde', 'precio_adulto',
-                'precio_niño', 'precio_tercera_edad', 'disponibilidad',
-                'requiere_reserva',
-            )
+        ("Precios", {
+            "fields": (
+                "precio_texto",
+                "precio_desde",
+                "precio_adulto",
+                "precio_niño",
+                "precio_tercera_edad",
+            ),
+            "description": (
+                "Configure únicamente los precios que correspondan a este servicio."
+            ),
         }),
-        ("Detalles opcionales", {
-            'fields': ('capacidad', 'incluye'),
+        ("Disponibilidad y reserva", {
+            "fields": ("disponibilidad", "capacidad", "requiere_reserva"),
+            "description": (
+                "Indique cuándo está disponible el servicio, su capacidad y si requiere reserva."
+            ),
+        }),
+        ("Información adicional", {
+            "fields": ("incluye",),
+            "description": (
+                "Detalle lo que incluye el servicio y cualquier información complementaria."
+            ),
         }),
     )
 
@@ -526,18 +731,20 @@ class EventoNovedadAdminForm(forms.ModelForm):
             "contenido": "Descripción",
             "tipo": "Tipo de publicación",
             "fecha_evento": "Fecha del evento",
+            "fecha_publicacion": "Fecha de publicación",
             "imagen": "Imagen principal",
             "precio_texto": "Información de precio",
             "activo": "¿Mostrar esta publicación?",
         }
         help_texts = {
             "titulo": "Nombre que verá el visitante en la tarjeta.",
-            "contenido": "Resumen de la actividad o novedad.",
-            "tipo": "Indica si el contenido se mostrará como Evento o Novedad.",
-            "fecha_evento": "Fecha asociada al evento. Es obligatoria para los eventos.",
+            "contenido": "Escriba la información que verá el visitante.",
+            "tipo": "Seleccione si corresponde a un evento o a una novedad.",
+            "fecha_evento": "Fecha en la que se realizará el evento.",
+            "fecha_publicacion": "Fecha en la que se publicó este contenido.",
             "imagen": "Fotografía principal que aparecerá en la página.",
-            "precio_texto": "Información visible sobre el precio o acceso.",
-            "activo": "Desmarca esta opción si no deseas mostrar la publicación.",
+            "precio_texto": "Deje vacío si no corresponde informar un precio o acceso.",
+            "activo": "Desmarque esta opción para ocultar temporalmente la publicación.",
         }
 
 
@@ -548,6 +755,10 @@ class EventoNovedadAdmin(
     admin.ModelAdmin,
 ):
     campo_imagen = "imagen"
+    readonly_fields = (
+        "vista_previa_imagen",
+        "fecha_publicacion",
+    )
 
     class Media:
         js = ("js/admin_image_preview.js",)
@@ -559,23 +770,49 @@ class EventoNovedadAdmin(
     list_filter = (EventoNovedadTipoFilter,)
     search_fields = ("titulo", "contenido", "tipo")
     fieldsets = (
-        ("1. Información principal", {
-            "fields": ("titulo", "contenido"),
-            "description": "Texto que verá el visitante en la publicación.",
-        }),
-        ("2. Publicación", {
-            "fields": (
-                "tipo",
-                "fecha_evento",
-                "imagen",
-                "vista_previa_imagen",
+        ("Información principal", {
+            "fields": ("titulo", "tipo", "contenido", "imagen", "vista_previa_imagen"),
+            "description": (
+                "Configure el título, tipo, contenido e imagen que verá el visitante."
             ),
-            "description": "Define si es evento o novedad y su contenido visual.",
         }),
-        ("3. Visibilidad y precio", {
-            "fields": ("precio_texto", "activo"),
+        ("Publicación", {
+            "fields": ("fecha_evento", "fecha_publicacion"),
+            "description": (
+                "La fecha del evento puede modificarse. La fecha de publicación se registra automáticamente cuando se crea el contenido."
+            ),
+        }),
+        ("Precio o acceso", {
+            "fields": ("precio_texto",),
+            "description": (
+                "Configure el precio únicamente si este evento o actividad lo requiere."
+            ),
+        }),
+        ("Visibilidad", {
+            "fields": ("activo",),
+            "description": "Active este contenido para mostrarlo en la página pública.",
         }),
     )
+
+
+class GaleriaMultimediaAdminForm(forms.ModelForm):
+    class Meta:
+        model = GaleriaMultimedia
+        fields = "__all__"
+        labels = {
+            "titulo": "Título de la imagen",
+            "descripcion": "Descripción corta",
+            "imagen": "Fotografía",
+            "fecha_subida": "Fecha de carga",
+            "activo": "¿Mostrar esta imagen en la galería?",
+        }
+        help_texts = {
+            "titulo": "Nombre o descripción corta que identificará la fotografía.",
+            "descripcion": "Texto breve opcional para contextualizar la imagen.",
+            "imagen": "Seleccione la fotografía que desea mostrar en la galería.",
+            "fecha_subida": "Fecha en la que la imagen fue agregada al sistema.",
+            "activo": "Desmarque esta opción para ocultar temporalmente la imagen de la galería.",
+        }
 
 
 @admin.register(GaleriaMultimedia)
@@ -589,6 +826,7 @@ class GaleriaMultimediaAdmin(
     class Media:
         js = ("js/admin_image_preview.js",)
 
+    form = GaleriaMultimediaAdminForm
     list_display = (
         "titulo",
         "fecha_subida",
@@ -603,20 +841,62 @@ class GaleriaMultimediaAdmin(
         "activo",
     )
 
+    readonly_fields = ("fecha_subida", "vista_previa_imagen")
+
+    search_fields = (
+        "titulo",
+    )
+
     fieldsets = (
         (
-            "Información de la imagen",
+            "Imagen de galería",
             {
                 "fields": (
                     "titulo",
                     "descripcion",
                     "imagen",
                     "vista_previa_imagen",
+                ),
+                "description": (
+                    "Agregue la fotografía y la información que se mostrará en la galería pública del sitio."
+                ),
+            },
+        ),
+        (
+            "Información de publicación",
+            {
+                "fields": (
+                    "fecha_subida",
                     "activo",
+                ),
+                "description": (
+                    "Revise la fecha de carga y controle si esta imagen debe mostrarse públicamente."
                 ),
             },
         ),
     )
+
+
+class PreguntaFrecuenteAdminForm(forms.ModelForm):
+    class Meta:
+        model = PreguntaFrecuente
+        fields = "__all__"
+        labels = {
+            "pregunta": "Pregunta del visitante",
+            "respuesta": "Respuesta del chatbot",
+            "activo": "¿Usar esta pregunta en el chatbot?",
+        }
+        help_texts = {
+            "pregunta": (
+                "Escriba la pregunta tal como podría formularla un visitante."
+            ),
+            "respuesta": (
+                "Esta es la respuesta que mostrará el chatbot cuando identifique esta pregunta."
+            ),
+            "activo": (
+                "Desmarque esta opción para dejar de utilizar temporalmente esta pregunta."
+            ),
+        }
 
 
 @admin.register(PreguntaFrecuente)
@@ -624,6 +904,7 @@ class PreguntaFrecuenteAdmin(
     AdministradorAuditoriaMixin,
     admin.ModelAdmin
 ):
+    form = PreguntaFrecuenteAdminForm
     list_display = (
         "pregunta_limpia",
         "activo",
@@ -637,9 +918,33 @@ class PreguntaFrecuenteAdmin(
         "activo",
     )
 
+    list_filter = ("activo",)
+
     search_fields = (
         "pregunta",
         "respuesta",
+    )
+
+    fieldsets = (
+        (
+            "Pregunta y respuesta",
+            {
+                "fields": ("pregunta", "respuesta"),
+                "description": (
+                    "Escriba la pregunta que puede realizar el visitante y la respuesta exacta "
+                    "que deberá mostrar el chatbot."
+                ),
+            },
+        ),
+        (
+            "Estado",
+            {
+                "fields": ("activo",),
+                "description": (
+                    "Active esta pregunta para que pueda utilizarse en el chatbot."
+                ),
+            },
+        ),
     )
 
     @admin.display(
@@ -652,9 +957,41 @@ class PreguntaFrecuenteAdmin(
         )
 
 
+class ValorAdminForm(forms.ModelForm):
+    class Meta:
+        model = Valor
+        fields = "__all__"
+        labels = {
+            "titulo": "Nombre del valor",
+            "descripcion": "Descripción",
+            "icono_emoji": "Icono",
+            "orden": "Orden de aparición",
+            "activo": "¿Mostrar este valor?",
+        }
+        help_texts = {
+            "titulo": "Nombre del valor institucional que verá el visitante.",
+            "descripcion": "Explique brevemente qué representa este valor.",
+            "icono_emoji": "Icono que acompañará al valor en la página pública.",
+            "orden": "Use números para definir el orden. Un número menor aparecerá primero.",
+            "activo": "Desmarque esta opción para ocultar temporalmente este valor.",
+        }
+
+
 @admin.register(Valor)
 class ValorAdmin(AdministradorAuditoriaMixin, admin.ModelAdmin):
+    form = ValorAdminForm
     list_display = ("titulo", "orden", "icono_emoji", "activo")
     list_editable = ("orden", "activo")
     list_display_links = ("titulo",)
     ordering = ("orden",)
+    fieldsets = (
+        (
+            "Valor institucional",
+            {
+                "fields": ("titulo", "descripcion", "icono_emoji", "orden", "activo"),
+                "description": (
+                    "Configure la información que se mostrará en la sección de valores institucionales."
+                ),
+            },
+        ),
+    )

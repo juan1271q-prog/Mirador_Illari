@@ -1,5 +1,101 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
     let elementoAnterior = null;
+    let objectUrlTemporalPreview = null;
+
+    function limpiarObjectUrlTemporal() {
+        if (objectUrlTemporalPreview) {
+            URL.revokeObjectURL(objectUrlTemporalPreview);
+            objectUrlTemporalPreview = null;
+        }
+    }
+
+    function obtenerContenedorVistaPrevia() {
+        const selectores = [
+            ".field-vista_previa_imagen .readonly",
+            ".field-vista_previa_imagen",
+            ".field-imagen_preview .readonly",
+            ".field-imagen_preview",
+        ];
+
+        for (const selector of selectores) {
+            const contenedor = document.querySelector(selector);
+            if (contenedor) {
+                return contenedor;
+            }
+        }
+
+        return null;
+    }
+
+    function crearEnlaceVistaPrevia(url) {
+        const contenedor = obtenerContenedorVistaPrevia();
+
+        if (!contenedor) {
+            return null;
+        }
+
+        const esServicio = !!contenedor.closest(".field-vista_previa_imagen");
+
+        let enlaceExistente = contenedor.querySelector(
+            ".image-preview-toggle"
+        );
+
+        if (!enlaceExistente) {
+            enlaceExistente = document.createElement("a");
+            enlaceExistente.className = "image-preview-toggle";
+            enlaceExistente.title = "Ver imagen en modal";
+            enlaceExistente.setAttribute("aria-label", "Vista previa de la imagen");
+
+            const imagenNueva = document.createElement("img");
+            imagenNueva.alt = "Vista previa de la imagen";
+            imagenNueva.style.maxWidth = esServicio ? "220px" : "200px";
+            imagenNueva.style.maxHeight = esServicio ? "180px" : "120px";
+            imagenNueva.style.objectFit = esServicio ? "contain" : "cover";
+            imagenNueva.style.borderRadius = "10px";
+            imagenNueva.style.display = "block";
+            imagenNueva.style.verticalAlign = "middle";
+
+            enlaceExistente.appendChild(imagenNueva);
+            enlaceExistente.style.display = "inline-flex";
+            enlaceExistente.style.alignItems = "center";
+            enlaceExistente.style.marginLeft = "12px";
+
+            contenedor.textContent = "";
+            contenedor.appendChild(enlaceExistente);
+        }
+
+        return enlaceExistente;
+    }
+
+    function actualizarVistaPreviaArchivo(file) {
+        if (!file || !file.type || !file.type.startsWith("image/")) {
+            return;
+        }
+
+        const urlTemporal = URL.createObjectURL(file);
+        limpiarObjectUrlTemporal();
+        objectUrlTemporalPreview = urlTemporal;
+
+        const enlaceVistaPrevia = crearEnlaceVistaPrevia(urlTemporal) || document.querySelector(
+            '.image-preview-toggle[data-image-url]'
+        );
+
+        if (enlaceVistaPrevia) {
+            enlaceVistaPrevia.href = urlTemporal;
+            enlaceVistaPrevia.dataset.imageUrl = urlTemporal;
+
+            const imagenPrevia = enlaceVistaPrevia.querySelector("img");
+            if (imagenPrevia) {
+                imagenPrevia.src = urlTemporal;
+                imagenPrevia.alt = "Vista previa de la nueva imagen seleccionada";
+            }
+        }
+
+        if (modal && modal.classList.contains("open")) {
+            imagenModal.src = urlTemporal;
+            imagenModal.alt = "Vista previa de la nueva imagen seleccionada";
+        }
+    }
 
     function crearModalImagen() {
         const modalExistente = document.getElementById(
@@ -125,6 +221,25 @@
             elementoAnterior.focus();
         }
     }
+
+    const inputsImagen = [
+        document.getElementById("id_imagen"),
+        document.getElementById("id_imagen_principal"),
+        document.querySelector('input[type="file"][name="imagen"]'),
+        document.querySelector('input[type="file"][name="imagen_principal"]'),
+    ].filter(Boolean);
+
+    inputsImagen.forEach((inputImagen) => {
+        inputImagen.addEventListener("change", (event) => {
+            const archivo = event.target.files && event.target.files[0];
+
+            if (!archivo || !archivo.type || !archivo.type.startsWith("image/")) {
+                return;
+            }
+
+            actualizarVistaPreviaArchivo(archivo);
+        });
+    });
 
     document.body.addEventListener("click", (event) => {
         const botonVistaPrevia = event.target.closest(

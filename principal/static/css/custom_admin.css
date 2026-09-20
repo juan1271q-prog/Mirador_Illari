@@ -179,4 +179,27 @@ body.image-preview-open {
     }
 }
 
+.field-vista_previa_imagen .image-preview-admin-button {
+    width: auto;
+    max-width: 220px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.field-vista_previa_imagen .image-preview-admin-thumb {
+    width: auto;
+    max-width: 220px;
+    max-height: 180px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
 
