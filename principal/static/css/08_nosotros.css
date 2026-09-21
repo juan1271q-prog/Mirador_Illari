@@ -33,9 +33,9 @@
         ),
         linear-gradient(
             180deg,
-            #2f7d57 0%,
-            #1f684b 48%,
-            #124936 100%
+            var(--verde-amazonico) 0%,
+            var(--verde-amazonico-medio) 48%,
+            var(--verde-amazonico-profundo) 100%
         );
     isolation: isolate;
 }

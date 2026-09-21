@@ -13,21 +13,41 @@
 
     --site-max-width: 1440px;
 
+    /* ==================================================
+       PALETA PRINCIPAL - MIRADOR ILLARI
+       ================================================== */
+
+    /* Verdes estructurales */
     --verde-bosque: #0b3d2e;
+    --verde-navbar: #0b3d2e;
     --verde-principal: #0b513d;
     --verde-secundario: #087558;
     --verde-salvia: #dde9e1;
+
+    /* Verde amazónico de portadas */
+    --verde-amazonico: #2f7d57;
+    --verde-amazonico-medio: #1f684b;
+    --verde-amazonico-profundo: #124936;
+
+    /* Fondos claros */
     --crema: #f4f0e6;
     --superficie: #faf9f5;
-    --dorado: #d5ad45;
-    --texto-principal: #24342d;
-    --texto-secundario: #5b675f;
-    --borde-suave: rgba(11, 81, 61, 0.14);
-
     --fondo-pagina: #f4f6f1;
     --fondo-tarjeta: var(--superficie);
     --fondo-suave: var(--verde-salvia);
 
+    /* Acentos */
+    --dorado: #d5ad45;
+
+    /* Textos */
+    --texto-principal: #24342d;
+    --texto-secundario: #5b675f;
+    --texto-encabezado: #ffffff;
+
+    /* Bordes */
+    --borde-suave: rgba(11, 81, 61, 0.14);
+
+    /* Alias estructurales */
     --borde: var(--borde-suave);
     --sombra-suave: 0 8px 24px rgba(11, 61, 46, 0.08);
     --sombra-media: 0 14px 34px rgba(11, 61, 46, 0.12);
@@ -36,9 +56,7 @@
     --radio-md: 16px;
     --radio-lg: 24px;
     --transicion: 0.25s ease;
-
     --encabezado: var(--verde-bosque);
-    --texto-encabezado: #ffffff;
 }
 
 html[data-tema="oscuro"] {
