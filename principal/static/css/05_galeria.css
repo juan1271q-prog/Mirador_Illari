@@ -96,7 +96,7 @@
 .galeria-seccion {
     position: relative;
     z-index: 2;
-    padding: 26px 5% 68px;
+    padding: 5px 5% 68px;
     overflow-x: clip;
     overflow-y: visible;
     background: var(--crema);
@@ -123,11 +123,13 @@
 
 .galeria-encabezado {
     max-width: 760px;
-    margin: 0 auto 28px;
+    margin: 0 auto 10px;
     text-align: center;
 }
 
 .galeria-subtitulo {
+    display: block;
+    margin-bottom: 8px;
     color: var(--verde-secundario);
     font-size: 0.76rem;
     font-weight: 800;
@@ -136,7 +138,7 @@
 }
 
 .galeria-encabezado h2 {
-    margin: 12px 0;
+    margin: 6px 0 8px;
     color: var(--verde-bosque);
     font-family: Georgia, "Times New Roman", serif;
     font-size: 2.5rem;

@@ -85,7 +85,7 @@
 
 .eventos-contenido {
     position: relative;
-    padding: 28px 5% 68px;
+    padding: 6px 5% 68px;
     overflow: visible;
     overflow-x: clip;
     z-index: 2;
@@ -113,11 +113,13 @@
 
 .eventos-encabezado {
     max-width: 720px;
-    margin: 0 auto 28px;
+    margin: 0 auto 10px;
     text-align: center;
 }
 
 .eventos-subtitulo {
+    display: block;
+    margin-bottom: 6px;
     color: var(--verde-secundario);
     font-size: 0.76rem;
     font-weight: 800;
@@ -126,7 +128,7 @@
 }
 
 .eventos-encabezado h2 {
-    margin: 12px 0 10px;
+    margin: 6px 0 6px;
     color: var(--verde-bosque);
     font-family: Georgia, "Times New Roman", serif;
     font-size: 2.5rem;
