@@ -14,7 +14,29 @@
     justify-content: center;
     color: var(--crema);
     text-align: center;
-    background: var(--verde-bosque);
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(104, 181, 116, 0.40) 0%,
+            rgba(62, 143, 92, 0.22) 34%,
+            transparent 58%
+        ),
+        radial-gradient(
+            circle at 12% 58%,
+            rgba(88, 157, 89, 0.20) 0%,
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 88% 55%,
+            rgba(76, 151, 91, 0.18) 0%,
+            transparent 40%
+        ),
+        linear-gradient(
+            180deg,
+            #2f7d57 0%,
+            #1f684b 48%,
+            #124936 100%
+        );
     isolation: isolate;
 }
 
@@ -31,23 +53,18 @@
     background: url("../img/fondo.jpeg") center center / cover no-repeat;
     filter: blur(5px) saturate(0.88);
     transform: scale(1.04);
-    opacity: 0.52;
+    opacity: 0.2;
 }
 
 .nosotros-portada::after {
     inset: 0;
     z-index: -2;
     background:
-        radial-gradient(
-            circle at 50% 42%,
-            rgba(8, 117, 88, 0.18),
-            transparent 42%
-        ),
         linear-gradient(
             90deg,
-            rgba(4, 42, 31, 0.92),
-            rgba(7, 72, 53, 0.72),
-            rgba(4, 42, 31, 0.92)
+            rgba(5, 39, 31, 0.14),
+            rgba(11, 74, 58, 0.10),
+            rgba(5, 39, 31, 0.14)
         );
 }
 
