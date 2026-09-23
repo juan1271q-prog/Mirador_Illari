@@ -442,7 +442,6 @@
 
 @media (max-width: 600px) {
     .chatbot-widget { right: 8px; bottom: calc(12px + var(--chatbot-keyboard-offset)); left: 8px; align-items: flex-end; }
-    .chatbot-box { width: calc(100vw - 16px); height: min(75dvh, 620px); margin-bottom: 8px; }
     .chatbot-launcher-texto { display: none; }
     .chatbot-launcher-avatar { width: 52px; height: 52px; flex-basis: 52px; }
     .chatbot-launcher-icono { width: 40px; height: 40px; }
@@ -455,8 +454,70 @@
     .chatbot-mapa-iframe { height: 135px; }
 }
 
+@media (max-width: 480px) {
+    .chatbot-widget {
+        right: 14px;
+        bottom: calc(12px + var(--chatbot-keyboard-offset));
+        left: auto;
+        align-items: flex-end;
+    }
+
+    .chatbot-box {
+        width: calc(100vw - 28px);
+        max-width: 390px;
+        height: 56dvh;
+        min-height: 360px;
+        max-height: 430px;
+        margin-bottom: 12px;
+    }
+
+    .chatbot-header {
+        min-height: 58px;
+        padding: 8px 10px;
+    }
+
+    .chatbot-body {
+        gap: 6px;
+        padding: 8px 8px 6px;
+    }
+
+    .chatbot-messages {
+        gap: 8px;
+        padding: 0 2px 4px 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .quick-chips {
+        gap: 6px;
+        padding: 1px 0 2px;
+    }
+
+    .quick-chip {
+        min-height: 42px;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .chat-input-area {
+        min-height: 58px;
+        gap: 6px;
+        padding: 6px 8px 7px;
+    }
+
+    .chatbot-voice-button,
+    #sendBtn {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+    }
+
+    .chat-contenedor { width: calc(100% - 24px); margin: 20px auto; }
+    .chat-body { height: auto; min-height: 320px; }
+}
+
 @media (max-width: 360px) {
-    .chatbot-box { height: min(78dvh, 620px); }
+    .chatbot-box { height: 56dvh; min-height: 360px; max-height: 430px; }
     .chatbot-body { padding-inline: 8px; }
     .chat-input-area { gap: 4px; padding-inline: 6px; }
     .chatbot-voice-button, #sendBtn { width: 40px; height: 40px; flex-basis: 40px; font-size: 16px; }
@@ -467,9 +528,4 @@
     .quick-chips {
         grid-template-columns: 1fr;
     }
-}
-
-@media (max-width: 480px) {
-    .chat-contenedor { width: calc(100% - 24px); margin: 20px auto; }
-    .chat-body { height: auto; min-height: 320px; }
 }
