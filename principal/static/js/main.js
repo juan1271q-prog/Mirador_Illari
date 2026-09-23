@@ -935,6 +935,7 @@ function iniciarChatbot() {
 
     function abrirChatbot() {
         bloquearScrollFondo();
+        document.body.classList.add("chatbot-mobile-open");
         caja.classList.add("activo");
         caja.classList.remove("minimized");
         widget.classList.add("chat-open");
@@ -962,7 +963,11 @@ function iniciarChatbot() {
     function cerrarChatbot() {
         caja.classList.remove("activo");
         caja.classList.remove("minimized");
+        caja.classList.remove("chatbot-mobile-expanded");
         widget.classList.remove("chat-open");
+        widget.classList.remove("chatbot-mobile-expanded");
+        document.body.classList.remove("chatbot-mobile-open");
+        document.body.classList.remove("chatbot-mobile-expanded");
         restaurarScrollFondo();
 
         caja.setAttribute("aria-hidden", "true");
@@ -977,6 +982,26 @@ function iniciarChatbot() {
 
     function minimizarChatbot() {
         caja.classList.toggle("minimized");
+    }
+
+    function activarExpansionMovilChatbot() {
+        if (!window.matchMedia("(max-width: 600px)").matches) {
+            return;
+        }
+
+        caja.classList.add("chatbot-mobile-expanded");
+        widget.classList.add("chatbot-mobile-expanded");
+        document.body.classList.add("chatbot-mobile-expanded");
+    }
+
+    function restaurarTamanoMovilChatbot() {
+        if (!window.matchMedia("(max-width: 600px)").matches) {
+            return;
+        }
+
+        caja.classList.remove("chatbot-mobile-expanded");
+        widget.classList.remove("chatbot-mobile-expanded");
+        document.body.classList.remove("chatbot-mobile-expanded");
     }
 
     function ocultarOpcionesRapidas() {
@@ -1849,6 +1874,16 @@ function iniciarChatbot() {
         "focusin",
         function () {
             ajustarChatbotTeclado();
+            activarExpansionMovilChatbot();
+        }
+    );
+
+    entrada.addEventListener(
+        "blur",
+        function () {
+            if (window.matchMedia("(max-width: 600px)").matches) {
+                restaurarTamanoMovilChatbot();
+            }
         }
     );
 
@@ -1857,6 +1892,7 @@ function iniciarChatbot() {
         function () {
             window.setTimeout(function () {
                 enfocarEntradaConScrollSeguro();
+                activarExpansionMovilChatbot();
             }, 0);
         },
         { passive: true }
@@ -1865,7 +1901,14 @@ function iniciarChatbot() {
     if (window.visualViewport) {
         window.visualViewport.addEventListener(
             "resize",
-            ajustarChatbotTeclado,
+            function () {
+                ajustarChatbotTeclado();
+                if (document.activeElement === entrada && window.matchMedia("(max-width: 600px)").matches) {
+                    activarExpansionMovilChatbot();
+                } else if (window.matchMedia("(max-width: 600px)").matches) {
+                    restaurarTamanoMovilChatbot();
+                }
+            },
             { passive: true }
         );
     }
