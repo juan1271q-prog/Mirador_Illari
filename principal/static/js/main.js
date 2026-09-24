@@ -756,24 +756,29 @@ function iniciarChatbot() {
     const botonVozInicial =
         document.getElementById("initialVoiceBtn");
 
-    function ajustarChatbotTeclado() {
-        if (!window.visualViewport) {
-            document.documentElement.style.setProperty(
-                "--chatbot-keyboard-offset",
-                "0px"
-            );
-            return;
-        }
+    function actualizarAlturaChat() {
+        const viewport = window.visualViewport;
+        const visibleHeight = viewport
+            ? viewport.height
+            : window.innerHeight;
 
-        const offset = Math.max(
-            0,
-            window.innerHeight - window.visualViewport.height
+        document.documentElement.style.setProperty(
+            "--chat-visible-height",
+            `${visibleHeight}px`
         );
+
+        const offset = viewport
+            ? Math.max(0, window.innerHeight - viewport.height)
+            : 0;
 
         document.documentElement.style.setProperty(
             "--chatbot-keyboard-offset",
             `${offset}px`
         );
+    }
+
+    function ajustarChatbotTeclado() {
+        actualizarAlturaChat();
     }
 
     const opcionesRapidas =
@@ -867,23 +872,32 @@ function iniciarChatbot() {
         horaInicial.textContent = obtenerHoraActual();
     }
 
+    function scrollChatToBottom() {
+        if (!contenedorMensajes) {
+            return;
+        }
+
+        requestAnimationFrame(function () {
+            contenedorMensajes.scrollTo({
+                top: contenedorMensajes.scrollHeight,
+                behavior: "smooth"
+            });
+        });
+    }
+
     function desplazarAlFinal(forzar = false) {
-        window.setTimeout(function () {
-            const cercaDelFinal =
-                cuerpo &&
-                (cuerpo.scrollHeight - cuerpo.scrollTop - cuerpo.clientHeight) < 180;
+        if (!contenedorMensajes) {
+            return;
+        }
 
-            if (!forzar && !cercaDelFinal) {
-                return;
-            }
+        const cercaDelFinal =
+            contenedorMensajes.scrollHeight - contenedorMensajes.scrollTop - contenedorMensajes.clientHeight < 180;
 
-            if (cuerpo) {
-                cuerpo.scrollTop = cuerpo.scrollHeight;
-            }
+        if (!forzar && !cercaDelFinal) {
+            return;
+        }
 
-            contenedorMensajes.scrollTop =
-                contenedorMensajes.scrollHeight;
-        }, 40);
+        scrollChatToBottom();
     }
 
     let scrollFijoEnFoco = 0;
@@ -917,22 +931,6 @@ function iniciarChatbot() {
         });
     }
 
-    function enfocarEntradaConScrollSeguro() {
-        if (!entrada) {
-            return;
-        }
-
-        if ("focus" in HTMLInputElement.prototype) {
-            try {
-                entrada.focus({ preventScroll: true });
-            } catch (error) {
-                entrada.focus();
-            }
-        } else {
-            entrada.focus();
-        }
-    }
-
     function abrirChatbot() {
         bloquearScrollFondo();
         document.body.classList.add("chatbot-mobile-open");
@@ -950,12 +948,6 @@ function iniciarChatbot() {
         mostrarSaludoInicial();
 
         window.setTimeout(function () {
-            const esCelular = window.matchMedia(
-                "(max-width: 600px)"
-            ).matches;
-            if (!esCelular) {
-                enfocarEntradaConScrollSeguro();
-            }
             desplazarAlFinal();
         }, 150);
     }
@@ -1561,12 +1553,8 @@ function iniciarChatbot() {
         } finally {
             removerIndicadorEscritura();
             cambiarEstadoEnvio(false);
-            if (window.matchMedia("(max-width: 600px)").matches) {
-                window.setTimeout(function () {
-                    enfocarEntradaConScrollSeguro();
-                }, 50);
-            } else {
-                enfocarEntradaConScrollSeguro();
+            if (document.activeElement === entrada) {
+                entrada.blur();
             }
         }
     }
@@ -1575,11 +1563,11 @@ function iniciarChatbot() {
         const texto = entrada.value.trim();
 
         if (!texto) {
-            entrada.focus();
             return;
         }
 
         entrada.value = "";
+        entrada.blur();
         await enviarConsulta(texto);
     }
 
@@ -1887,22 +1875,11 @@ function iniciarChatbot() {
         }
     );
 
-    entrada.addEventListener(
-        "touchstart",
-        function () {
-            window.setTimeout(function () {
-                enfocarEntradaConScrollSeguro();
-                activarExpansionMovilChatbot();
-            }, 0);
-        },
-        { passive: true }
-    );
-
     if (window.visualViewport) {
         window.visualViewport.addEventListener(
             "resize",
             function () {
-                ajustarChatbotTeclado();
+                actualizarAlturaChat();
                 if (document.activeElement === entrada && window.matchMedia("(max-width: 600px)").matches) {
                     activarExpansionMovilChatbot();
                 } else if (window.matchMedia("(max-width: 600px)").matches) {
@@ -1912,6 +1889,8 @@ function iniciarChatbot() {
             { passive: true }
         );
     }
+
+    actualizarAlturaChat();
 
     entrada.addEventListener(
         "keydown",

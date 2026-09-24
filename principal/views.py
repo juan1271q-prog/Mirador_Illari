@@ -1172,25 +1172,11 @@ def generic_response_prompt(informacion=None):
 
 def greeting_response(informacion=None):
     """
-    Respuesta para los saludos.
+    Respuesta breve para los saludos.
     """
 
-    if (
-        informacion
-        and getattr(
-            informacion,
-            "chatbot_intro",
-            None
-        )
-    ):
-        return plain_text(
-            informacion.chatbot_intro
-        )
-
-    return (
-        "¡Hola! Soy el chatbot del Mirador Illari. "
-        "Puedes preguntarme por horarios, ubicación, "
-        "servicios, precios, eventos o contacto."
+    return plain_text(
+        "¡Hola! ¿En qué información del Mirador Illari puedo ayudarte?"
     )
 
 # Palabras utilizadas para reconocer cada tema.
