@@ -756,15 +756,32 @@ function iniciarChatbot() {
     const botonVozInicial =
         document.getElementById("initialVoiceBtn");
 
+    let timerViewport;
+    let ultimaAlturaViewport = 0;
+
     function actualizarAlturaChat() {
         const viewport = window.visualViewport;
-        const visibleHeight = viewport
+        const visibleHeight = Math.round(viewport
             ? viewport.height
-            : window.innerHeight;
+            : window.innerHeight);
+
+        if (Math.abs(visibleHeight - ultimaAlturaViewport) < 2) {
+            return;
+        }
+
+        ultimaAlturaViewport = visibleHeight;
 
         document.documentElement.style.setProperty(
             "--chat-visible-height",
             `${visibleHeight}px`
+        );
+    }
+
+    function programarActualizacionViewport() {
+        window.clearTimeout(timerViewport);
+        timerViewport = window.setTimeout(
+            actualizarAlturaChat,
+            100
         );
     }
 
@@ -1869,7 +1886,7 @@ function iniciarChatbot() {
     if (window.visualViewport) {
         window.visualViewport.addEventListener(
             "resize",
-            actualizarAlturaChat,
+            programarActualizacionViewport,
             { passive: true }
         );
     }

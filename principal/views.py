@@ -962,6 +962,7 @@ def is_greeting(text):
         "buenas",
         "buenos",
         "hola",
+        "holas",
         "saludos",
         "hey",
         "que tal",
@@ -1178,6 +1179,23 @@ def greeting_response(informacion=None):
     return plain_text(
         "¡Hola! ¿En qué información del Mirador Illari puedo ayudarte?"
     )
+
+
+def obtener_faq_saludo_administrado():
+    """Devuelve la primera FAQ activa cuyo texto sea un saludo."""
+    preguntas = PreguntaFrecuente.objects.filter(
+        activo=True,
+    ).order_by("id")
+
+    for pregunta in preguntas:
+        if not is_greeting(pregunta.pregunta):
+            continue
+
+        respuesta = plain_text(pregunta.respuesta)
+        if respuesta:
+            return pregunta, respuesta
+
+    return None
 
 # Palabras utilizadas para reconocer cada tema.
 REGLAS_TEMAS = {
@@ -2229,6 +2247,32 @@ def procesar_mensaje_chatbot(
                     "reconocido": True,
                 }
 
+    # SALUDO: consultar primero la respuesta administrada.
+    if is_greeting(mensaje):
+        saludo_administrado = obtener_faq_saludo_administrado()
+
+        if saludo_administrado:
+            pregunta, respuesta = saludo_administrado
+            logger.info("Chatbot local encontrado: True (saludo administrado)")
+            return {
+                "respuesta": respuesta,
+                "tema": "saludo",
+                "confianza": 100,
+                "metodo": "faq_admin_saludo",
+                "reconocido": True,
+            }
+
+        logger.info("Chatbot local encontrado: True (saludo fallback)")
+        return {
+            "respuesta": greeting_response(
+                informacion
+            ),
+            "tema": "saludo",
+            "confianza": 100,
+            "metodo": "condiciones if/elif",
+            "reconocido": True,
+        }
+
     # PRIMERA PARTE: CONDICIONES IF Y ELIF
     tema = detectar_tema_por_condiciones(
         mensaje
@@ -2250,20 +2294,6 @@ def procesar_mensaje_chatbot(
                 "reconocido": True,
             }
         # Si la condición no generó una respuesta útil, continuar.
-
-    # SALUDO
-    if is_greeting(mensaje):
-        # is_greeting ahora devuelve True solo para saludos "puros".
-        logger.info("Chatbot local encontrado: True (saludo)")
-        return {
-            "respuesta": greeting_response(
-                informacion
-            ),
-            "tema": "saludo",
-            "confianza": 100,
-            "metodo": "condiciones if/elif",
-            "reconocido": True,
-        }
 
     # DESPEDIDA O AGRADECIMIENTO
     if is_farewell(mensaje):
