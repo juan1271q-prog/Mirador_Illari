@@ -909,12 +909,18 @@ function iniciarChatbot() {
     }
 
     let scrollFijoEnFoco = 0;
+    let paginaBloqueadaPorChat = false;
 
     function bloquearScrollFondo() {
+        if (paginaBloqueadaPorChat) {
+            return;
+        }
+
         scrollFijoEnFoco =
             window.scrollY ||
             document.documentElement.scrollTop ||
             0;
+        paginaBloqueadaPorChat = true;
 
         document.body.classList.add("chatbot-open");
         document.body.style.position = "fixed";
@@ -925,6 +931,10 @@ function iniciarChatbot() {
     }
 
     function restaurarScrollFondo() {
+        if (!paginaBloqueadaPorChat) {
+            return;
+        }
+
         document.body.classList.remove("chatbot-open");
         document.body.style.position = "";
         document.body.style.top = "";
@@ -937,6 +947,8 @@ function iniciarChatbot() {
             left: 0,
             behavior: "auto"
         });
+
+        paginaBloqueadaPorChat = false;
     }
 
     function abrirChatbot() {
