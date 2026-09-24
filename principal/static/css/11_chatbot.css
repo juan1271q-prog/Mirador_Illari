@@ -9,7 +9,7 @@
     --chatbot-border: #d8e7df;
     --chatbot-surface: #ffffff;
     --chatbot-background: #f3f8f5;
-    --chat-keyboard-inset: 0px;
+    --chat-keyboard-offset: 0px;
 }
 
 .chatbot-widget {
@@ -20,6 +20,11 @@
     display: flex;
     flex-direction: column-reverse;
     align-items: flex-end;
+    transform: translate3d(
+        0,
+        calc(-1 * var(--chat-keyboard-offset, 0px)),
+        0
+    );
     pointer-events: none;
 }
 
@@ -183,7 +188,6 @@
 .chatbot-body {
     flex: 1 1 auto;
     min-height: 0;
-    max-height: calc(100% - var(--chat-keyboard-inset, 0px));
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -195,7 +199,6 @@
 .chatbot-box > .chatbot-body {
     flex: 1 1 0;
     height: auto;
-    max-height: calc(100% - var(--chat-keyboard-inset, 0px));
     overflow: hidden;
 }
 
@@ -349,7 +352,6 @@
 
 .chat-input-area {
     flex: 0 0 auto;
-    margin-bottom: var(--chat-keyboard-inset, 0px);
     display: flex;
     align-items: center;
     gap: 6px;

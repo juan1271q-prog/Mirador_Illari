@@ -756,14 +756,16 @@ function iniciarChatbot() {
     const botonVozInicial =
         document.getElementById("initialVoiceBtn");
 
-    let timerTeclado;
+    let frameTeclado = null;
 
-    function actualizarTecladoMovil() {
-        window.clearTimeout(timerTeclado);
+    function actualizarPosicionTeclado() {
+        if (frameTeclado) {
+            window.cancelAnimationFrame(frameTeclado);
+        }
 
-        timerTeclado = window.setTimeout(function () {
+        frameTeclado = window.requestAnimationFrame(function () {
             const viewport = window.visualViewport;
-            const keyboardInset = viewport
+            const keyboardOffset = viewport
                 ? Math.max(
                     0,
                     window.innerHeight -
@@ -773,10 +775,10 @@ function iniciarChatbot() {
                 : 0;
 
             document.documentElement.style.setProperty(
-                "--chat-keyboard-inset",
-                `${Math.round(keyboardInset)}px`
+                "--chat-keyboard-offset",
+                `${Math.round(keyboardOffset)}px`
             );
-        }, 100);
+        });
     }
 
     const opcionesRapidas =
@@ -1848,12 +1850,12 @@ function iniciarChatbot() {
     if (window.visualViewport) {
         window.visualViewport.addEventListener(
             "resize",
-            actualizarTecladoMovil,
+            actualizarPosicionTeclado,
             { passive: true }
         );
     }
 
-    actualizarTecladoMovil();
+    actualizarPosicionTeclado();
 
     entrada.addEventListener(
         "keydown",
