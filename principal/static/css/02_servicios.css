@@ -732,8 +732,8 @@
     .servicios-encabezado h2 { font-size: 1.8rem; }
 
     .servicios-portada {
-        min-height: 180px;
-        padding: 6px 18px 14px;
+        min-height: 220px;
+        padding: 16px 18px 46px;
     }
 
     .servicios-seccion {

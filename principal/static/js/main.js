@@ -1074,7 +1074,8 @@ function iniciarChatbot() {
         desplazarAlFinal(true);
     }
 
-    function crearMensaje(texto, tipo, datos = null) {
+    function crearMensaje(texto, tipo, datos = null, opciones = {}) {
+        const autoScroll = opciones.autoScroll !== false;
         const mensaje = document.createElement("div");
 
         mensaje.className = `message ${tipo}`;
@@ -1178,9 +1179,33 @@ function iniciarChatbot() {
 
         contenedorMensajes.appendChild(mensaje);
 
-        desplazarAlFinal();
+        if (autoScroll) {
+            desplazarAlFinal();
+        }
 
         return mensaje;
+    }
+
+    function mostrarMensajeUsuarioConRespuesta(mensajeUsuario) {
+        if (!contenedorMensajes || !mensajeUsuario) {
+            return;
+        }
+
+        requestAnimationFrame(function () {
+            const rectContenedor =
+                contenedorMensajes.getBoundingClientRect();
+            const rectMensaje =
+                mensajeUsuario.getBoundingClientRect();
+            const destino =
+                contenedorMensajes.scrollTop +
+                (rectMensaje.top - rectContenedor.top) -
+                8;
+
+            contenedorMensajes.scrollTo({
+                top: Math.max(0, destino),
+                behavior: "smooth"
+            });
+        });
     }
 
     function mostrarSaludoInicial() {
@@ -1199,7 +1224,7 @@ function iniciarChatbot() {
         }
     }
 
-    function mostrarIndicadorEscritura() {
+    function mostrarIndicadorEscritura(autoScroll = true) {
         removerIndicadorEscritura();
 
         const mensaje = document.createElement("div");
@@ -1217,7 +1242,9 @@ function iniciarChatbot() {
         mensaje.appendChild(burbuja);
         contenedorMensajes.appendChild(mensaje);
 
-        desplazarAlFinal();
+        if (autoScroll) {
+            desplazarAlFinal();
+        }
 
         return mensaje;
     }
@@ -1346,14 +1373,19 @@ function iniciarChatbot() {
         }
     }
 
-    function responderConVoz(texto, datos = null, hablarAutomaticamente = false) {
+    function responderConVoz(
+        texto,
+        datos = null,
+        hablarAutomaticamente = false,
+        opciones = {}
+    ) {
         const textoLimpio = limpiarTextoParaChat(texto);
 
         if (!textoLimpio) {
             return;
         }
 
-        crearMensaje(textoLimpio, "bot", datos);
+        crearMensaje(textoLimpio, "bot", datos, opciones);
 
         if (hablarAutomaticamente) {
             hablar(textoLimpio);
@@ -1502,9 +1534,16 @@ function iniciarChatbot() {
             return;
         }
 
-        crearMensaje(mensaje, "user");
+        const mensajeUsuario = crearMensaje(
+            mensaje,
+            "user",
+            null,
+            { autoScroll: false }
+        );
 
-        mostrarIndicadorEscritura();
+        mostrarMensajeUsuarioConRespuesta(mensajeUsuario);
+
+        mostrarIndicadorEscritura(false);
 
         cambiarEstadoEnvio(true);
 
@@ -1521,7 +1560,12 @@ function iniciarChatbot() {
 
             removerIndicadorEscritura();
             const hablarRespuesta = debeHablarAutomaticamente(mensaje);
-            responderConVoz(respuestaLimpia, resultado, hablarRespuesta);
+            responderConVoz(
+                respuestaLimpia,
+                resultado,
+                hablarRespuesta,
+                { autoScroll: false }
+            );
 
             if (esSaludo(mensaje)) {
                 guardarBanderaSaludoHablado();
@@ -1537,7 +1581,9 @@ function iniciarChatbot() {
 
             crearMensaje(
                 "No pude procesar tu mensaje en este momento. Inténtalo nuevamente.",
-                "bot"
+                "bot",
+                null,
+                { autoScroll: false }
             );
         } finally {
             removerIndicadorEscritura();
