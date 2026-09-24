@@ -756,33 +756,27 @@ function iniciarChatbot() {
     const botonVozInicial =
         document.getElementById("initialVoiceBtn");
 
-    let timerViewport;
-    let ultimaAlturaViewport = 0;
+    let timerTeclado;
 
-    function actualizarAlturaChat() {
-        const viewport = window.visualViewport;
-        const visibleHeight = Math.round(viewport
-            ? viewport.height
-            : window.innerHeight);
+    function actualizarTecladoMovil() {
+        window.clearTimeout(timerTeclado);
 
-        if (Math.abs(visibleHeight - ultimaAlturaViewport) < 2) {
-            return;
-        }
+        timerTeclado = window.setTimeout(function () {
+            const viewport = window.visualViewport;
+            const keyboardInset = viewport
+                ? Math.max(
+                    0,
+                    window.innerHeight -
+                    viewport.height -
+                    viewport.offsetTop
+                )
+                : 0;
 
-        ultimaAlturaViewport = visibleHeight;
-
-        document.documentElement.style.setProperty(
-            "--chat-visible-height",
-            `${visibleHeight}px`
-        );
-    }
-
-    function programarActualizacionViewport() {
-        window.clearTimeout(timerViewport);
-        timerViewport = window.setTimeout(
-            actualizarAlturaChat,
-            100
-        );
+            document.documentElement.style.setProperty(
+                "--chat-keyboard-inset",
+                `${Math.round(keyboardInset)}px`
+            );
+        }, 100);
     }
 
     const opcionesRapidas =
@@ -1854,12 +1848,12 @@ function iniciarChatbot() {
     if (window.visualViewport) {
         window.visualViewport.addEventListener(
             "resize",
-            programarActualizacionViewport,
+            actualizarTecladoMovil,
             { passive: true }
         );
     }
 
-    actualizarAlturaChat();
+    actualizarTecladoMovil();
 
     entrada.addEventListener(
         "keydown",

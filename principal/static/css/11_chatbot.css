@@ -9,7 +9,7 @@
     --chatbot-border: #d8e7df;
     --chatbot-surface: #ffffff;
     --chatbot-background: #f3f8f5;
-    --chat-visible-height: 100dvh;
+    --chat-keyboard-inset: 0px;
 }
 
 .chatbot-widget {
@@ -117,7 +117,7 @@
     flex-direction: column;
     width: min(390px, calc(100vw - 32px));
     max-width: none;
-    height: min(620px, calc(var(--chat-visible-height, 100dvh) - 56px));
+    height: min(620px, calc(100dvh - 56px));
     min-height: 0;
     margin-bottom: 12px;
     overflow: hidden;
@@ -183,6 +183,7 @@
 .chatbot-body {
     flex: 1 1 auto;
     min-height: 0;
+    max-height: calc(100% - var(--chat-keyboard-inset, 0px));
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -194,7 +195,7 @@
 .chatbot-box > .chatbot-body {
     flex: 1 1 0;
     height: auto;
-    max-height: none;
+    max-height: calc(100% - var(--chat-keyboard-inset, 0px));
     overflow: hidden;
 }
 
@@ -348,6 +349,7 @@
 
 .chat-input-area {
     flex: 0 0 auto;
+    margin-bottom: var(--chat-keyboard-inset, 0px);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -479,19 +481,9 @@
     .chatbot-box {
         width: calc(100vw - 28px);
         max-width: 390px;
-        height: min(
-            56dvh,
-            430px,
-            calc(var(--chat-visible-height, 100dvh) - 12px)
-        );
-        min-height: min(
-            360px,
-            calc(var(--chat-visible-height, 100dvh) - 12px)
-        );
-        max-height: min(
-            430px,
-            calc(var(--chat-visible-height, 100dvh) - 12px)
-        );
+        height: 56dvh;
+        min-height: 360px;
+        max-height: 430px;
         margin-bottom: 12px;
     }
 

@@ -94,7 +94,7 @@ html {
     transition:
         background-color var(--transicion),
         color var(--transicion);
-    overscroll-behavior: none;
+    overscroll-behavior-y: auto;
 }
 
 body {
@@ -111,7 +111,7 @@ body {
     transition:
         background-color var(--transicion),
         color var(--transicion);
-    overscroll-behavior: none;
+    overscroll-behavior-y: auto;
 }
 
 .site-shell {
