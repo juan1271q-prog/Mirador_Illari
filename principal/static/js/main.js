@@ -766,15 +766,6 @@ function iniciarChatbot() {
             "--chat-visible-height",
             `${visibleHeight}px`
         );
-
-        const offset = viewport
-            ? Math.max(0, window.innerHeight - viewport.height)
-            : 0;
-
-        document.documentElement.style.setProperty(
-            "--chatbot-keyboard-offset",
-            `${offset}px`
-        );
     }
 
     function ajustarChatbotTeclado() {
@@ -1878,14 +1869,7 @@ function iniciarChatbot() {
     if (window.visualViewport) {
         window.visualViewport.addEventListener(
             "resize",
-            function () {
-                actualizarAlturaChat();
-                if (document.activeElement === entrada && window.matchMedia("(max-width: 600px)").matches) {
-                    activarExpansionMovilChatbot();
-                } else if (window.matchMedia("(max-width: 600px)").matches) {
-                    restaurarTamanoMovilChatbot();
-                }
-            },
+            actualizarAlturaChat,
             { passive: true }
         );
     }
